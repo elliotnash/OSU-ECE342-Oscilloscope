@@ -2668,10 +2668,12 @@ dependencies = [
 name = "oscope-tauri"
 version = "0.1.0"
 dependencies = [
+ "cssparser-color",
  "linux_theme",
  "serde",
  "serde_json",
  "specta",
+ "specta-typescript",
  "tauri",
  "tauri-build",
  "tauri-plugin-opener",
@@ -3880,6 +3882,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "ab7f01e9310a820edd31c80fde3cae445295adde21a3f9416517d7d65015b971"
 dependencies = [
  "paste",
+ "serde",
  "specta-macros",
  "thiserror 1.0.69",
 ]

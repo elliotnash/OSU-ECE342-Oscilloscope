@@ -1,24 +1,31 @@
 use specta::Type;
 use serde::{Deserialize, Serialize};
+
+#[cfg(target_os = "linux")]
+mod linux;
+
+mod default;
  
-// The `specta::Type` macro allows us to understand your types
-// We implement `specta::Type` on primitive types for you.
-// If you want to use a type from an external crate you may need to enable the feature on Specta.
-#[derive(Serialize, Type)]
-pub struct MyCustomReturnType {
-    pub some_field: String,
+#[derive(Serialize, Deserialize, Type)]
+pub struct Color {
+    red: u8,
+    green: u8,
+    blue: u8,
+    alpha: u8,
 }
- 
-#[derive(Deserialize, Type)]
-pub struct MyCustomArgumentType {
-    pub foo: String,
-    pub bar: i32,
+
+#[derive(Deserialize, Serialize, Type)]
+pub struct OscopeTheme {
+    pub accent_color: Option<Color>,
 }
 
 #[tauri::command]
-#[specta::specta] // <-- This bit here
-fn greet3() -> MyCustomReturnType {
-    MyCustomReturnType {
-        some_field: "Hello World".into(),
-    }
+#[specta::specta]
+pub fn get_system_theme() -> OscopeTheme {
+    // Platform specific theme implementations
+    #[cfg(target_os = "linux")]
+    return linux::get_system_theme();
+
+    #[allow(unreachable_code)]
+    default::get_system_theme()
 }
