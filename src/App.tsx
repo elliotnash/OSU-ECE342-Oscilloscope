@@ -1,8 +1,8 @@
 import { useState } from "react";
 import reactLogo from "./assets/react.svg";
-import { invoke } from "@tauri-apps/api/core";
 import "./App.css";
 import { commands } from "./bindings";
+import { error, info } from "@tauri-apps/plugin-log";
 
 function App() {
   const [greetMsg, setGreetMsg] = useState("");
@@ -10,8 +10,8 @@ function App() {
 
   async function greet() {
     // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
-    let systemTheme = await commands.getSystemTheme();
-    console.log(systemTheme);
+    const systemTheme = await commands.getSystemTheme();
+    info(`Accent color: ${systemTheme.accent_color?.toString() ?? "No accent color"}`);
     setGreetMsg(systemTheme.accent_color?.toString() ?? "No accent color");
   }
 
