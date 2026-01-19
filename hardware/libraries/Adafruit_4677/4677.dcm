@@ -1,0 +1,9 @@
+EESchema-DOCLIB  Version 2.0
+#
+$CMP 4677
+D Adafruit Accessories Generic 64 Mbit Serial Pseudo SRAM - 3.3V 133 MHz
+K
+F https://www.espressif.com/sites/default/files/documentation/esp-psram64_esp-psram64h_datasheet_en.pdf
+$ENDCMP
+#
+#End Doc Library

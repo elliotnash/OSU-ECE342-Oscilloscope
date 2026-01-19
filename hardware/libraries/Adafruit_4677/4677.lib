@@ -1,0 +1,29 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model 4677
+#/13266396/1870090/2.50/8/3/Connector
+DEF 4677 J 0 30 Y Y 1 F N
+F0 "J" 1450 300 50 H V L CNN
+F1 "4677" 1450 200 50 H V L CNN
+F2 "SOIC127P600X175-8N" 1450 100 50 H I L CNN
+F3 "https://www.espressif.com/sites/default/files/documentation/esp-psram64_esp-psram64h_datasheet_en.pdf" 1450 0 50 H I L CNN
+F4 "Adafruit Accessories Generic 64 Mbit Serial Pseudo SRAM - 3.3V 133 MHz" 1450 -100 50 H I L CNN "Description"
+F5 "1.75" 1450 -200 50 H I L CNN "Height"
+F6 "485-4677" 1450 -300 50 H I L CNN "Mouser Part Number"
+F7 "https://www.mouser.co.uk/ProductDetail/Adafruit/4677?qs=DPoM0jnrROUZDCYEDSsMew%3D%3D" 1450 -400 50 H I L CNN "Mouser Price/Stock"
+F8 "Adafruit" 1450 -500 50 H I L CNN "Manufacturer_Name"
+F9 "4677" 1450 -600 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X CE# 1 0 0 200 R 50 50 0 0 P
+X SO/SIO[1] 2 0 -100 200 R 50 50 0 0 P
+X SIO[2] 3 0 -200 200 R 50 50 0 0 P
+X VSS 4 0 -300 200 R 50 50 0 0 P
+X VCC 8 1600 0 200 L 50 50 0 0 P
+X SIO[3] 7 1600 -100 200 L 50 50 0 0 P
+X SCLK 6 1600 -200 200 L 50 50 0 0 P
+X SI/SIO[0] 5 1600 -300 200 L 50 50 0 0 P
+P 5 0 1 6 200 100 1400 100 1400 -400 200 -400 200 100 N
+ENDDRAW
+ENDDEF
+#
+#End Library
