@@ -1429,6 +1429,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" ""
+			(at 78.74 60.96 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "fb43ee94-957d-4611-b3ff-3a05841da3ca")
 		)
@@ -1684,6 +1693,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" ""
+			(at 97.79 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "e6b12548-289b-4bd6-82b1-12f747fcad3b")
 		)
@@ -1796,6 +1814,15 @@
 			)
 		)
 		(property "Sim.Name" "kicad_builtin_opamp"
+			(at 167.64 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" ""
 			(at 167.64 69.85 0)
 			(effects
 				(font
@@ -1924,6 +1951,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" ""
+			(at 130.81 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "c78917bb-c843-499e-980a-6616d7d15d50")
 		)
@@ -2000,6 +2036,15 @@
 		)
 		(property "Description" "Unpolarized capacitor"
 			(at 58.42 67.31 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" ""
+			(at 58.42 67.31 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2155,6 +2200,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" ""
+			(at 120.65 57.15 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f8111fe2-4359-4440-83c4-1589ecf92f54")
 		)
@@ -2229,6 +2283,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" ""
+			(at 134.62 77.47 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "fd27b632-0b53-4452-98e5-adfd17a9bf20")
 		)
@@ -2296,6 +2359,15 @@
 		)
 		(property "Description" "Resistor, US symbol"
 			(at 113.03 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" ""
+			(at 113.03 69.85 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2397,6 +2469,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" ""
+			(at 78.74 72.39 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "8e5317d6-9e16-41d2-8fb5-8a4db80b9ead")
 		)
@@ -2465,6 +2546,15 @@
 			)
 		)
 		(property "Description" "Resistor, US symbol"
+			(at 66.04 71.12 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" ""
 			(at 66.04 71.12 0)
 			(effects
 				(font
@@ -2899,6 +2989,15 @@
 			)
 		)
 		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(at 34.29 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" ""
 			(at 34.29 69.85 0)
 			(effects
 				(font
