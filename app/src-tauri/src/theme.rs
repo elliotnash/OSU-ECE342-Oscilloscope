@@ -16,7 +16,10 @@ pub struct Color {
 
 #[derive(Deserialize, Serialize, Type)]
 pub struct OscopeTheme {
-    pub accent_color: Option<Color>,
+    pub accent_bg: Option<Color>,
+    pub accent_fg: Option<Color>,
+    pub window_bg: Option<Color>,
+    pub window_fg: Option<Color>,
 }
 
 #[tauri::command]

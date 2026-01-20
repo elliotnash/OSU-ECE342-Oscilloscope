@@ -9,7 +9,7 @@ pub mod theme;
 pub fn run() {
     let builder = tauri_specta::Builder::<tauri::Wry>::new()
         .commands(collect_commands![
-            get_system_theme
+            get_system_theme,
         ]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
