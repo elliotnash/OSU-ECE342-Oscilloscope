@@ -712,7 +712,7 @@
           "group_by": false,
           "label": "Purchase Link",
           "name": "Purchase Link",
-          "show": false
+          "show": true
         }
       ],
       "filter_string": "",
@@ -780,6 +780,10 @@
     [
       "73c3c5fb-df78-41b9-8072-c8773a39fe38",
       "analog frontend"
+    ],
+    [
+      "6296dfbc-bf5e-4649-b078-009c1ac21de6",
+      "PSU"
     ]
   ],
   "text_variables": {}
