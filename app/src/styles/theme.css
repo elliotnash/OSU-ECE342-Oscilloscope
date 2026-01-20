@@ -1,0 +1,40 @@
+@import "tailwindcss";
+
+:root {
+  --radius: 0.625rem;
+  --window-bg: oklch(1 0 0);
+  --window-fg: oklch(0.141 0.005 285.823);
+  --accent-bg: oklch(1 0 0);
+  --accent-fg: oklch(0.141 0.005 285.823);
+}
+
+.dark {
+  --window-bg: oklch(0.141 0.005 285.823);
+  --window-fg: oklch(0.985 0 0);
+  --accent-bg: oklch(0.141 0.005 285.823);
+  --accent-fg: oklch(0.985 0 0);
+}
+
+@theme {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+
+  --color-window-bg: var(--window-bg);
+  --color-window-fg: var(--window-fg);
+  --color-accent-bg: var(--accent-bg);
+  --color-accent-fg: var(--accent-fg);
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings:
+      "rlig" 1,
+      "calt" 1;
+  }
+}
