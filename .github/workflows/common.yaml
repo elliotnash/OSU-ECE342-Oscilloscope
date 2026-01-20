@@ -1,4 +1,4 @@
-name: Common crate
+name: common
 
 on: [push]
 
