@@ -1,15 +1,15 @@
 // This file is adapted from the `serializable_log_record` crate for no_std compatibility:
 // https://github.com/8192K/serializable_log_record/blob/main/src/lib.rs
-// 
+//
 // Portions copyright (c) 2022 8192K. Licensed under either MIT or Apache-2.0.
 // See original repository for details.
 
 use log::{Level, Record};
 
-use alloc::string::{String, ToString};
-use alloc::str::FromStr;
 use alloc::borrow::ToOwned;
-use serde::{Serialize, Deserialize};
+use alloc::str::FromStr;
+use alloc::string::{String, ToString};
+use serde::{Deserialize, Serialize};
 
 /// A custom representation of the `log::Record` struct which is unfortunately
 /// not directly serializable (due to the use of `fmt::Arguments`).

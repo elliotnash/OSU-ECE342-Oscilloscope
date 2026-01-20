@@ -1,7 +1,7 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-pub mod message;
 pub mod log;
+pub mod message;
 
 // Hide the into_log_record macro in the root export
 #[doc(hidden)]
