@@ -6503,7 +6503,7 @@
 	)
 	(text "Power for analog component. This is assuming that VSYS is going to be a \n5V input otherwise resistor values will have to be adjusted for the \nfeedback loop. Can take an input voltage range of 2.7V to 5.5V. Can \noutput with a range of +-1.5V to +-5.5V"
 		(exclude_from_sim no)
-		(at 136.398 78.74 0)
+		(at 136.652 81.788 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -11703,7 +11703,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "094872d1-5c37-4018-aca4-89083893a18a")
+			(uuid "094872d1-5c37-4018-aca4-89083893a18b")
 		)
 		(instances
 			(project ""
@@ -13858,10 +13858,10 @@
 			)
 		)
 		(pin "1"
-			(uuid "261b006a-1e3f-4b71-bbfd-027317cf143d")
+			(uuid "261b006a-1e3f-4b71-bbfd-027317cf143e")
 		)
 		(pin "2"
-			(uuid "8747a697-ce14-4566-a24d-1083f890500e")
+			(uuid "8747a697-ce14-4566-a24d-1083f890500f")
 		)
 		(instances
 			(project ""
@@ -14456,10 +14456,10 @@
 			)
 		)
 		(pin "2"
-			(uuid "9ddfb43a-6b2c-4cd2-a9ee-672d7ee9d63b")
+			(uuid "9ddfb43a-6b2c-4cd2-a9ee-672d7ee9d63c")
 		)
 		(pin "1"
-			(uuid "0764b474-7885-4e20-a67d-3e4377b8c639")
+			(uuid "0764b474-7885-4e20-a67d-3e4377b8c63a")
 		)
 		(instances
 			(project ""
@@ -15602,10 +15602,10 @@
 			)
 		)
 		(pin "2"
-			(uuid "9ddfb43a-6b2c-4cd2-a9ee-672d7ee9d63b")
+			(uuid "9ddfb43a-6b2c-4cd2-a9ee-672d7ee9d63d")
 		)
 		(pin "1"
-			(uuid "0764b474-7885-4e20-a67d-3e4377b8c639")
+			(uuid "0764b474-7885-4e20-a67d-3e4377b8c63b")
 		)
 		(instances
 			(project ""
@@ -15670,10 +15670,10 @@
 			)
 		)
 		(pin "2"
-			(uuid "9ddfb43a-6b2c-4cd2-a9ee-672d7ee9d63b")
+			(uuid "9ddfb43a-6b2c-4cd2-a9ee-672d7ee9d63e")
 		)
 		(pin "1"
-			(uuid "0764b474-7885-4e20-a67d-3e4377b8c639")
+			(uuid "0764b474-7885-4e20-a67d-3e4377b8c63c")
 		)
 		(instances
 			(project ""
@@ -16503,6 +16503,24 @@
 			)
 		)
 		(property "Description" "Low-noise inverting charge pump with both positive and negative LDO's, with 2.7V-5.5V input to +1.5 to +5V and -1.5 to -5V Output Voltage, WSON-12"
+			(at 128.27 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Price" "$0.76"
+			(at 128.27 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.ti.com/product/LM27762"
 			(at 128.27 43.18 0)
 			(effects
 				(font
