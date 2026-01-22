@@ -5794,7 +5794,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "43ae3f4a-e016-4f6a-9884-5d9f562cc6ae")
+			(uuid "43ae3f4a-e016-4f6a-9884-5d9f562cc6af")
 		)
 		(instances
 			(project ""

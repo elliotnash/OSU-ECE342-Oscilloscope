@@ -10748,6 +10748,36 @@
 				(justify left top)
 			)
 		)
+		(pin "SELR1" input
+			(at 453.39 78.74 0)
+			(uuid "3c9ec631-33d7-44c2-b49a-c11f9ed1993c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "ASIG" output
+			(at 453.39 86.36 0)
+			(uuid "ed04ea10-f6c8-4043-a0dc-08eac7908dcf")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SELR2" input
+			(at 453.39 82.55 0)
+			(uuid "d4ccfac4-53ff-4b6d-9b84-0e8a932c4dc6")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(instances
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"

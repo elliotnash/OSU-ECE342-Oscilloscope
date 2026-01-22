@@ -5,4 +5,5 @@
   (lib (name "UJ20-C-H-G-SMT-1-P16-TR")(type "KiCad")(uri "${KIPRJMOD}/libraries/USBC_UJ20-C-H-G-SMT-1-P16-TR/UJ20-C-H-G-SMT-1-P16-TR.kicad_sym")(options "")(descr ""))
   (lib (name "2026-01-20_08-03-32")(type "KiCad")(uri "${KIPRJMOD}/libraries/MIC5205_3_3YM5_TR/2026-01-20_08-03-32.kicad_sym")(options "")(descr ""))
   (lib (name "VSYS")(type "KiCad")(uri "${KIPRJMOD}/VSYS.kicad_sym")(options "")(descr ""))
+  (lib (name "ADG621BRMZ (switch)")(type "KiCad")(uri "C:/Users/osmsi/Downloads/ADG621BRMZ/KiCADv6/2026-01-22_05-37-30.kicad_sym")(options "")(descr ""))
 )
