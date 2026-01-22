@@ -2464,7 +2464,7 @@
 	)
 	(text "Power for analog component. This is assuming that VSYS is going to be a \n5V input otherwise resistor values will have to be adjusted for the \nfeedback loop. Can take an input voltage range of 2.7V to 5.5V. Can \noutput with a range of +-1.5V to +-5.5V"
 		(exclude_from_sim no)
-		(at 176.022 97.028 0)
+		(at 189.738 96.012 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2484,7 +2484,7 @@
 	)
 	(text "Voltage reference point. I will take an input voltage from \nthe USB C and output a 3.3V voltage ref. Capacitors are \nthere to further filter out any noise but the IC itself is \nalready supplies incredibly clean voltage."
 		(exclude_from_sim no)
-		(at 198.882 154.432 0)
+		(at 182.372 148.082 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -2522,7 +2522,7 @@
 		(uuid "357f89c0-fe27-4fd0-921e-8037a2c4560c")
 	)
 	(junction
-		(at 189.23 128.27)
+		(at 172.72 121.92)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "50467b08-a3c0-43f8-ae9e-ea0b0dfec82b")
@@ -2576,7 +2576,7 @@
 		(uuid "bdceaaec-56b4-44ac-a9ef-9d008031637a")
 	)
 	(junction
-		(at 184.15 128.27)
+		(at 167.64 121.92)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "c439528a-fed5-484e-ae32-44f6b719457a")
@@ -2657,7 +2657,7 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 120.65) (xy 200.66 119.38)
+			(xy 184.15 114.3) (xy 184.15 113.03)
 		)
 		(stroke
 			(width 0)
@@ -2777,7 +2777,7 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 120.65) (xy 198.12 114.3)
+			(xy 181.61 114.3) (xy 181.61 107.95)
 		)
 		(stroke
 			(width 0)
@@ -2917,7 +2917,7 @@
 	)
 	(wire
 		(pts
-			(xy 205.74 128.27) (xy 207.01 128.27)
+			(xy 189.23 121.92) (xy 190.5 121.92)
 		)
 		(stroke
 			(width 0)
@@ -2947,7 +2947,7 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 128.27) (xy 184.15 130.81)
+			(xy 167.64 121.92) (xy 167.64 124.46)
 		)
 		(stroke
 			(width 0)
@@ -2987,7 +2987,7 @@
 	)
 	(wire
 		(pts
-			(xy 189.23 128.27) (xy 190.5 128.27)
+			(xy 172.72 121.92) (xy 173.99 121.92)
 		)
 		(stroke
 			(width 0)
@@ -3097,7 +3097,7 @@
 	)
 	(wire
 		(pts
-			(xy 189.23 135.89) (xy 189.23 128.27)
+			(xy 172.72 129.54) (xy 172.72 121.92)
 		)
 		(stroke
 			(width 0)
@@ -3107,7 +3107,7 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 135.89) (xy 189.23 135.89)
+			(xy 181.61 129.54) (xy 172.72 129.54)
 		)
 		(stroke
 			(width 0)
@@ -3177,7 +3177,7 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 128.27) (xy 189.23 128.27)
+			(xy 167.64 121.92) (xy 172.72 121.92)
 		)
 		(stroke
 			(width 0)
@@ -3267,7 +3267,7 @@
 	)
 	(wire
 		(pts
-			(xy 207.01 128.27) (xy 207.01 133.35)
+			(xy 190.5 121.92) (xy 190.5 127)
 		)
 		(stroke
 			(width 0)
@@ -3277,7 +3277,7 @@
 	)
 	(wire
 		(pts
-			(xy 219.71 119.38) (xy 222.25 119.38)
+			(xy 203.2 113.03) (xy 205.74 113.03)
 		)
 		(stroke
 			(width 0)
@@ -3287,7 +3287,7 @@
 	)
 	(wire
 		(pts
-			(xy 184.15 138.43) (xy 184.15 140.97)
+			(xy 167.64 132.08) (xy 167.64 134.62)
 		)
 		(stroke
 			(width 0)
@@ -3447,7 +3447,7 @@
 	)
 	(wire
 		(pts
-			(xy 222.25 119.38) (xy 222.25 124.46)
+			(xy 205.74 113.03) (xy 205.74 118.11)
 		)
 		(stroke
 			(width 0)
@@ -3467,7 +3467,7 @@
 	)
 	(wire
 		(pts
-			(xy 198.12 114.3) (xy 207.01 114.3)
+			(xy 181.61 107.95) (xy 190.5 107.95)
 		)
 		(stroke
 			(width 0)
@@ -3477,7 +3477,7 @@
 	)
 	(wire
 		(pts
-			(xy 200.66 119.38) (xy 212.09 119.38)
+			(xy 184.15 113.03) (xy 195.58 113.03)
 		)
 		(stroke
 			(width 0)
@@ -3487,7 +3487,7 @@
 	)
 	(wire
 		(pts
-			(xy 181.61 128.27) (xy 184.15 128.27)
+			(xy 165.1 121.92) (xy 167.64 121.92)
 		)
 		(stroke
 			(width 0)
@@ -3737,7 +3737,7 @@
 	)
 	(hierarchical_label "VREF"
 		(shape output)
-		(at 207.01 114.3 0)
+		(at 190.5 107.95 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -3748,7 +3748,7 @@
 	)
 	(symbol
 		(lib_id "Reference_Voltage:REF35330QDBVR")
-		(at 198.12 128.27 90)
+		(at 181.61 121.92 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3757,7 +3757,7 @@
 		(fields_autoplaced yes)
 		(uuid "23d3205b-bdbb-407c-bfac-06f384b3c2c3")
 		(property "Reference" "U2"
-			(at 212.09 122.8246 90)
+			(at 195.58 116.4746 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3765,7 +3765,7 @@
 			)
 		)
 		(property "Value" "REF35330QDBVR"
-			(at 212.09 125.3646 90)
+			(at 195.58 119.0146 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3773,7 +3773,7 @@
 			)
 		)
 		(property "Footprint" "Package_TO_SOT_SMD:SOT-23-6"
-			(at 219.71 128.27 0)
+			(at 203.2 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3782,7 +3782,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.ti.com/lit/ds/symlink/ref35.pdf"
-			(at 217.17 128.27 0)
+			(at 200.66 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3791,7 +3791,25 @@
 			)
 		)
 		(property "Description" "3.3V, Ultra Low-Power, High-Precision Voltage Reference, SOT-23-6"
-			(at 179.07 128.27 0)
+			(at 162.56 121.92 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Price" "$2.16"
+			(at 181.61 121.92 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/texas-instruments/REF35330QDBVR/18111313"
+			(at 181.61 121.92 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4301,7 +4319,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 222.25 124.46 0)
+		(at 205.74 118.11 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4310,7 +4328,7 @@
 		(fields_autoplaced yes)
 		(uuid "4e97e8e5-c438-4623-b8a1-986f0ff14b41")
 		(property "Reference" "#PWR043"
-			(at 222.25 130.81 0)
+			(at 205.74 124.46 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4319,7 +4337,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 222.25 129.54 0)
+			(at 205.74 123.19 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4327,7 +4345,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 222.25 124.46 0)
+			(at 205.74 118.11 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4336,7 +4354,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 222.25 124.46 0)
+			(at 205.74 118.11 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4345,7 +4363,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 222.25 124.46 0)
+			(at 205.74 118.11 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4810,7 +4828,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 207.01 133.35 0)
+		(at 190.5 127 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4819,7 +4837,7 @@
 		(fields_autoplaced yes)
 		(uuid "62c9d2c7-2a47-4ca0-8018-805d9653740e")
 		(property "Reference" "#PWR042"
-			(at 207.01 139.7 0)
+			(at 190.5 133.35 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4828,7 +4846,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 207.01 138.43 0)
+			(at 190.5 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4836,7 +4854,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 207.01 133.35 0)
+			(at 190.5 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4845,7 +4863,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 207.01 133.35 0)
+			(at 190.5 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4854,7 +4872,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 207.01 133.35 0)
+			(at 190.5 127 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4876,7 +4894,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 215.9 119.38 270)
+		(at 199.39 113.03 270)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -4885,7 +4903,7 @@
 		(fields_autoplaced yes)
 		(uuid "69837636-6554-410e-86bd-e0ffd0fbe4d4")
 		(property "Reference" "C27"
-			(at 215.9 111.76 90)
+			(at 199.39 105.41 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4893,7 +4911,7 @@
 			)
 		)
 		(property "Value" "1 uF"
-			(at 215.9 114.3 90)
+			(at 199.39 107.95 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4901,7 +4919,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 212.09 120.3452 0)
+			(at 195.58 113.9952 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4910,7 +4928,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 215.9 119.38 0)
+			(at 199.39 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4919,7 +4937,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 215.9 119.38 0)
+			(at 199.39 113.03 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5418,7 +5436,7 @@
 	)
 	(symbol
 		(lib_id "Device:C")
-		(at 184.15 134.62 0)
+		(at 167.64 128.27 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -5427,7 +5445,7 @@
 		(fields_autoplaced yes)
 		(uuid "8fa6c541-3e0a-42da-b80c-2a29b9fa873f")
 		(property "Reference" "C26"
-			(at 187.96 133.3499 0)
+			(at 171.45 126.9999 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5436,7 +5454,7 @@
 			)
 		)
 		(property "Value" "0.1 uF"
-			(at 187.96 135.8899 0)
+			(at 171.45 129.5399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5445,7 +5463,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 185.1152 138.43 0)
+			(at 168.6052 132.08 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5454,7 +5472,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 184.15 134.62 0)
+			(at 167.64 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5463,7 +5481,7 @@
 			)
 		)
 		(property "Description" "Unpolarized capacitor"
-			(at 184.15 134.62 0)
+			(at 167.64 128.27 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5663,6 +5681,24 @@
 			)
 		)
 		(property "Description" "1A Low drop-out regulator, Fixed Output 3.3V, SOT-223"
+			(at 85.09 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/onsemi/NCP1117LPST33T3G/2194024"
+			(at 85.09 113.03 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Price" "$0.33"
 			(at 85.09 113.03 0)
 			(effects
 				(font
@@ -6038,7 +6074,7 @@
 	)
 	(symbol
 		(lib_id "power:VDC")
-		(at 181.61 128.27 90)
+		(at 165.1 121.92 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6047,7 +6083,7 @@
 		(fields_autoplaced yes)
 		(uuid "d9aeaa92-5989-469d-bd22-9955d5898bb6")
 		(property "Reference" "#PWR040"
-			(at 185.42 128.27 0)
+			(at 168.91 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6056,7 +6092,7 @@
 			)
 		)
 		(property "Value" "VSYS"
-			(at 177.8 128.2699 90)
+			(at 161.29 121.9199 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6065,7 +6101,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 181.61 128.27 0)
+			(at 165.1 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6074,7 +6110,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 181.61 128.27 0)
+			(at 165.1 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6083,7 +6119,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"VDC\""
-			(at 181.61 128.27 0)
+			(at 165.1 121.92 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6105,7 +6141,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 184.15 140.97 0)
+		(at 167.64 134.62 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -6114,7 +6150,7 @@
 		(fields_autoplaced yes)
 		(uuid "e1f5a2e2-dabb-4f80-83fa-7807e619a7bb")
 		(property "Reference" "#PWR041"
-			(at 184.15 147.32 0)
+			(at 167.64 140.97 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6123,7 +6159,7 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 184.15 146.05 0)
+			(at 167.64 139.7 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6131,7 +6167,7 @@
 			)
 		)
 		(property "Footprint" ""
-			(at 184.15 140.97 0)
+			(at 167.64 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6140,7 +6176,7 @@
 			)
 		)
 		(property "Datasheet" ""
-			(at 184.15 140.97 0)
+			(at 167.64 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -6149,7 +6185,7 @@
 			)
 		)
 		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
-			(at 184.15 140.97 0)
+			(at 167.64 134.62 0)
 			(effects
 				(font
 					(size 1.27 1.27)
