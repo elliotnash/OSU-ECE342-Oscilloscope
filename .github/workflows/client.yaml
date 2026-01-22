@@ -15,6 +15,11 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      - name: Install system dependencies
+        run: |
+          sudo apt update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev libappindicator3-dev librsvg2-dev
+
       - uses: Swatinem/rust-cache@v2
 
       - name: setup toolchain
@@ -26,18 +31,30 @@ jobs:
         uses: pnpm/action-setup@v4
         with:
           version: 10
-          cache: true
 
       - name: Install dependencies
         run: pnpm install
 
       - name: Build client
-        run: pnpm tauri build
+        run: NO_STRIP=true pnpm tauri build
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-deb
+          path: client/src-tauri/target/release/bundle/deb/*.deb
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-rpm
+          path: client/src-tauri/target/release/bundle/rpm/*.rpm
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-appimage
+          path: client/src-tauri/target/release/bundle/appimage/*.AppImage
   
       - name: rustfmt
         run: cargo fmt --all -- --check
-        working-directory: ./src-tauri
+        working-directory: ./client/src-tauri
 
       - name: clippy
         run: cargo clippy --all --all-features --tests -- -D warnings
-        working-directory: ./src-tauri
+        working-directory: ./client/src-tauri
