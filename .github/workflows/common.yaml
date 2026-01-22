@@ -7,7 +7,7 @@ env:
 
 jobs:
   build_and_test:
-    name: Common crate tests
+    name: Build and test common crate
     runs-on: ubuntu-latest
     defaults:
       run:

@@ -1,11 +1,11 @@
-use specta::Type;
 use serde::{Deserialize, Serialize};
+use specta::Type;
 
 #[cfg(target_os = "linux")]
 mod linux;
 
 mod default;
- 
+
 #[derive(Serialize, Deserialize, Type)]
 pub struct Color {
     red: u8,

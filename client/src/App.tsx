@@ -3,8 +3,8 @@ import "./styles/global.css";
 import { useState } from "react";
 
 function App() {
-  const [greetMsg, setGreetMsg] = useState("");
-  const [name, setName] = useState("");
+  const [greetMsg, _setGreetMsg] = useState("");
+  const [_name, setName] = useState("");
 
   async function greet() {
   }

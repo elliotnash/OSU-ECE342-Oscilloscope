@@ -11,7 +11,7 @@ impl TryInto<Color> for &cssparser_color::Color {
                 blue: color.blue,
                 alpha: (color.alpha * 255.0) as u8,
             }),
-            cssparser_color::Color::Hsl(color ) => {
+            cssparser_color::Color::Hsl(color) => {
                 let h = color.hue.unwrap_or(0.0);
                 let s = color.saturation.unwrap_or(0.0);
                 let l = color.lightness.unwrap_or(0.0);
@@ -25,7 +25,7 @@ impl TryInto<Color> for &cssparser_color::Color {
                     blue: (b * 255.0) as u8,
                     alpha: (alpha * 255.0) as u8,
                 })
-            },
+            }
             cssparser_color::Color::Hwb(color) => {
                 let h = color.hue.unwrap_or(0.0);
                 let w = color.whiteness.unwrap_or(0.0);
@@ -50,9 +50,21 @@ impl TryInto<Color> for &cssparser_color::Color {
 pub fn get_system_theme() -> OscopeTheme {
     let system_theme = linux_theme::gtk::current::current();
     OscopeTheme {
-        accent_bg: system_theme.0.get("accent_bg_color").map(|color| color.try_into().ok()).flatten(),
-        accent_fg: system_theme.0.get("accent_fg_color").map(|color| color.try_into().ok()).flatten(),
-        window_bg: system_theme.0.get("window_bg_color").map(|color| color.try_into().ok()).flatten(),
-        window_fg: system_theme.0.get("window_fg_color").map(|color| color.try_into().ok()).flatten(),
+        accent_bg: system_theme
+            .0
+            .get("accent_bg_color")
+            .and_then(|color| color.try_into().ok()),
+        accent_fg: system_theme
+            .0
+            .get("accent_fg_color")
+            .and_then(|color| color.try_into().ok()),
+        window_bg: system_theme
+            .0
+            .get("window_bg_color")
+            .and_then(|color| color.try_into().ok()),
+        window_fg: system_theme
+            .0
+            .get("window_fg_color")
+            .and_then(|color| color.try_into().ok()),
     }
 }

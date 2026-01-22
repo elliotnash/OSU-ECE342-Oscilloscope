@@ -1,0 +1,43 @@
+name: client
+
+on: [push]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    name: Build client
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./client
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: setup toolchain
+        uses: hecrj/setup-rust-action@v2
+        with:
+          rust-version: stable
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+          cache: true
+
+      - name: Install dependencies
+        run: pnpm install
+
+      - name: Build client
+        run: pnpm tauri build
+  
+      - name: rustfmt
+        run: cargo fmt --all -- --check
+        working-directory: ./src-tauri
+
+      - name: clippy
+        run: cargo clippy --all --all-features --tests -- -D warnings
+        working-directory: ./src-tauri
