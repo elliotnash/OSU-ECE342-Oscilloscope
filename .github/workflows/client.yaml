@@ -38,11 +38,24 @@ jobs:
 
       - name: Build client
         run: pnpm tauri build
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-deb
+          path: client/src-tauri/target/release/bundle/deb/*.deb
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-rpm
+          path: client/src-tauri/target/release/bundle/rpm/*.rpm
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-appimage
+          path: client/src-tauri/target/release/bundle/appimage/*.AppImage
   
       - name: rustfmt
         run: cargo fmt --all -- --check
-        working-directory: ./src-tauri
+        working-directory: ./client/src-tauri
 
       - name: clippy
         run: cargo clippy --all --all-features --tests -- -D warnings
-        working-directory: ./src-tauri
+        working-directory: ./client/src-tauri
