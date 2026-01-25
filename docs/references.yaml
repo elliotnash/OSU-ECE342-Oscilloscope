@@ -1,0 +1,124 @@
+usb_spec_1_0:
+  type: report
+  title: Universal Serial Bus Specification
+  author: USB Implementers Forum
+  date: 1996-01-15
+  number: Revision 1.0
+  location: Beaverton, OR
+  url: "https://ieeemilestones.ethw.org/w/images/4/44/USB_1.0_Specification.pdf"
+
+lipo_battery_803035:
+  type: web
+  title: "3.7V 850mAh 3.14Wh Li-Polymer Replacement Li Lipo Rechargeable JST 3Pin NTC Thermistor 3 Wires Battery 803035"
+  author: AliExpress
+  url: "https://www.aliexpress.us/item/3256806172045171.html"
+  date: 2025-11-20
+
+esp32_project_instructions:
+  type: report
+  title: ESP32 Project Instructions
+  author: Oregon State University
+  date: 2025-09
+  location: Corvallis, OR
+  note: "Fall 2025 Course Handout"
+  url: https://docs.google.com/document/d/1Sdspl4Gu7dgoBmf1SwSvTuE44lmSvAn9SJqMPzJTAw4
+
+ncp1117_datasheet:
+  type: report
+  title: NCP1117, NCP11171, NCV1117 Data Sheet
+  author: onsemi
+  date: 2021-08
+  number: Rev. 31
+  url: "https://www.onsemi.com/download/data-sheet/pdf/ncp1117-d.pdf"
+
+esp32_wroom_32_datasheet:
+  type: report
+  title: ESP32-C6 Datasheet
+  author: Espressif Systems
+  number: Version 1.4
+  url: https://documentation.espressif.com/esp32-c6_datasheet_en.pdf
+
+gy530_datasheet:
+  type: report
+  title: GY-530 Laser Ranging Sensor
+  date: 2022-10
+  organization: Jamtronic
+  url: https://jamtronic.com/wp-content/uploads/2022/10/product_303.pdf
+
+esp32_c6_sm:
+  type: web
+  title: "ESP32-C6 Super Mini Development Board Details, Pinout, Specs"
+  organization: ESPBoards
+  url: https://www.espboards.dev/esp32/esp32-c6-super-mini/
+  date: 2025
+
+multitasking_aurdino:
+  type: web
+  title: "Multi-tasking the Arduino - Part 1"
+  author: "Bill Earl"
+  organization: Adafruit Industries
+  url: https://learn.adafruit.com/multi-tasking-the-arduino-part-1
+  date: 2014-11-03
+
+gh_repo:
+  type: repository
+  title: "ECE 341 Junior Design 1 Final Project"
+  author: 
+    - Elliot Nash
+    - Oliver Siemens
+    - Yahir Raygoza Cortez
+  date: 2025-10
+  url: https://github.com/elliotnash/OSU-ECE-341-Project
+  organization: GitHub
+
+me6211_datasheet:
+  type: web
+  title: "ME6211 Series: High Speed LDO Regulators, High PSRR, Low noise"
+  organization: Microne
+  url: "https://stm32-base.org/assets/pdf/regulators/ME6211.pdf"
+  date: 2025-12-02
+
+ssd1306_datasheet:
+  type: web
+  title: "SSD1306 128 x 64 Dot Matrix OLED/PLED Segment/Common Driver with Controller"
+  organization: Solomon Systech Limited
+  url: "https://cdn-shop.adafruit.com/datasheets/SSD1306.pdf"
+  date: 2025-12-02
+
+ug2832_datasheet:
+  type: web
+  title: "Product Specification: OEL Display Module (Part ID: UG-2832HSWEG02)"
+  organization: Univision Technology Inc.
+  url: "https://cdn-shop.adafruit.com/datasheets/UG-2832HSWEG02.pdf"
+  date: 2010-07-20
+
+pololu_vl53l0x_lib:
+  type: web
+  title: "VL53L0X distance sensor library"
+  author: Pololu
+  organization: PlatformIO Registry
+  url: "https://registry.platformio.org/libraries/pololu/VL53L0X"
+  date: 2022-04-06 # Using the date of the latest release (v1.3.1)
+
+adafruit_ssd1306_lib:
+  type: web
+  title: "Adafruit SSD1306"
+  author: Adafruit
+  organization: PlatformIO Registry
+  url: "https://registry.platformio.org/libraries/adafruit/Adafruit%20SSD1306"
+  date: 2025-06-24
+
+esp_async_ws_wiki:
+  type: web
+  title: "ESPAsyncWebServer Wiki"
+  organization: ESP32Async
+  url: https://github.com/ESP32Async/ESPAsyncWebServer/wiki
+  date: 2025-04-24
+
+vl53l0x_datasheet:
+  type: report
+  title: "VL53L0X Time-of-Flight ranging sensor"
+  organization: STMicroelectronics
+  url: https://www.st.com/resource/en/datasheet/vl53l0x.pdf
+  date: 2024-06
+  issue: 6
