@@ -98,3 +98,24 @@ macro_rules! into_log_record {
 }
 
 pub use into_log_record;
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn log_serialization() {
+        let payload = SerializableLogRecord::new(
+            Level::Info,
+            "System initialized".to_string(),
+            "test_target".to_string(),
+            Some("test::module".to_string()),
+            Some("test.rs".to_string()),
+            Some(42),
+        );
+        let mut bytes = postcard::to_stdvec_cobs(&payload).expect("Serialization failed");
+        let deserialized =
+            postcard::from_bytes_cobs::<SerializableLogRecord>(&mut bytes).expect("Deserialization failed");
+        assert_eq!(payload, deserialized);
+    }
+}
