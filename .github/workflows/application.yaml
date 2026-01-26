@@ -30,7 +30,9 @@ jobs:
           version: 10
 
       - name: Install Tauri CLI
-        run: cargo binstall tauri-cli
+        uses: taiki-e/install-action@v2
+        with:
+          tool: tauri-cli
 
       - name: Install dependencies
         run: pnpm install
