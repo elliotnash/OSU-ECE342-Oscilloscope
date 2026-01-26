@@ -600,6 +600,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "common"
+version = "0.1.0"
+dependencies = [
+ "log",
+ "serde",
+]
+
+[[package]]
 name = "concurrent-queue"
 version = "2.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2757,10 +2765,12 @@ dependencies = [
 name = "oscope-tauri"
 version = "0.1.0"
 dependencies = [
+ "common",
  "cssparser-color",
  "linux_theme",
  "serde",
  "serde_json",
+ "serial2-tokio",
  "specta",
  "specta-typescript",
  "tauri",
@@ -3806,6 +3816,29 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn 2.0.114",
+]
+
+[[package]]
+name = "serial2"
+version = "0.2.33"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "8cc76fa68e25e771492ca1e3c53d447ef0be3093e05cd3b47f4b712ba10c6f3c"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "winapi",
+]
+
+[[package]]
+name = "serial2-tokio"
+version = "0.1.19"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a2d51f8dc77e6c088e2b424dba447250d5ce113ad464f8824a06636026817243"
+dependencies = [
+ "libc",
+ "serial2",
+ "tokio",
+ "winapi",
 ]
 
 [[package]]

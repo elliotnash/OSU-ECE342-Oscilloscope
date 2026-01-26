@@ -82,7 +82,7 @@ where
 {
     let mut bytes = Vec::new();
 
-    if data.len() == 0 {
+    if data.is_empty() {
         return bytes.serialize(serializer);
     }
 
@@ -106,7 +106,7 @@ where
     let mut i = 1;
     while i < data.len() {
         let delta = (data[i] as i16) - (data[i - 1] as i16);
-        if delta == delta & 0b0111_1111 {
+        if (-64..64).contains(&delta) {
             push_delta(&mut bytes, delta as u8);
         } else {
             push_absolute(&mut bytes, data[i]);
@@ -137,8 +137,10 @@ where
     fn push_delta(data: &mut Vec<u16>, value: u8) {
         // Since the most significant bit signifies absolute/delta, we need to sign extend the value
         // before we interpret it as a two's complement value (casting to i8).
-        let delta = ((value & 0b0111_1111) | ((value & 0b0100_000) << 1)) as i16;
-        let last = *data.last().expect("Delta value received without previous value") as i16;
+        let delta = ((value & 0b0111_1111) | ((value & 0b0100_0000) << 1)) as i16;
+        let last = *data
+            .last()
+            .expect("Delta value received without previous value") as i16;
         data.push((last + delta) as u16);
     }
 
@@ -151,7 +153,7 @@ where
             push_delta(&mut data, bytes[i]);
             i += 1;
         } else {
-            push_absolute(&mut data, &bytes[i..i+2]);
+            push_absolute(&mut data, &bytes[i..i + 2]);
             i += 2;
         }
     }
@@ -227,14 +229,17 @@ mod tests {
             data.push((2048.0 * (i as f32 / 1000.0).sin()) as u16);
         }
         let frame = FrameData {
-            data: data,
+            data,
             timescale: 1.0,
             voltagescale: 2.0,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
             postcard::from_bytes_cobs::<FrameData>(&mut bytes).expect("Deserialization failed");
-        println!("1000 sample sine wave serialized into {} bytes.", bytes.len());
+        println!(
+            "1000 sample sine wave serialized into {} bytes.",
+            bytes.len()
+        );
         assert_eq!(frame, deserialized);
     }
 }

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
-use crate::log::SerializableLogRecord;
 use crate::frame::FrameData;
+use crate::log::SerializableLogRecord;
 
 /// Message type enum
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

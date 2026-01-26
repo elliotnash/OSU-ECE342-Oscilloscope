@@ -114,8 +114,8 @@ mod tests {
             Some(42),
         );
         let mut bytes = postcard::to_stdvec_cobs(&payload).expect("Serialization failed");
-        let deserialized =
-            postcard::from_bytes_cobs::<SerializableLogRecord>(&mut bytes).expect("Deserialization failed");
+        let deserialized = postcard::from_bytes_cobs::<SerializableLogRecord>(&mut bytes)
+            .expect("Deserialization failed");
         assert_eq!(payload, deserialized);
     }
 }
