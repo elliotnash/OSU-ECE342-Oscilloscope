@@ -1,4 +1,4 @@
-name: client
+name: application
 
 on: [push]
 
@@ -7,11 +7,8 @@ env:
 
 jobs:
   build_and_test:
-    name: Build client
+    name: Build application
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./client
     steps:
       - uses: actions/checkout@v5
 
@@ -32,29 +29,33 @@ jobs:
         with:
           version: 10
 
+      - name: Install Tauri CLI
+        run: cargo binstall tauri-cli
+
       - name: Install dependencies
         run: pnpm install
+        working-directory: ./frontend
 
       - name: Build client
-        run: NO_STRIP=true pnpm tauri build
+        run: NO_STRIP=true cargo tauri build
 
       - uses: actions/upload-artifact@v6
         with:
           name: bundle-deb
-          path: client/src-tauri/target/release/bundle/deb/*.deb
+          path: backend/target/release/bundle/deb/*.deb
       - uses: actions/upload-artifact@v6
         with:
           name: bundle-rpm
-          path: client/src-tauri/target/release/bundle/rpm/*.rpm
+          path: backend/target/release/bundle/rpm/*.rpm
       - uses: actions/upload-artifact@v6
         with:
           name: bundle-appimage
-          path: client/src-tauri/target/release/bundle/appimage/*.AppImage
+          path: backend/target/release/bundle/appimage/*.AppImage
   
       - name: rustfmt
         run: cargo fmt --all -- --check
-        working-directory: ./client/src-tauri
+        working-directory: ./backend
 
       - name: clippy
         run: cargo clippy --all --all-features --tests -- -D warnings
-        working-directory: ./client/src-tauri
+        working-directory: ./backend
