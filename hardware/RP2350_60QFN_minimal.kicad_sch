@@ -10860,6 +10860,86 @@
 				(justify left top)
 			)
 		)
+		(pin "ASIG" input
+			(at 189.23 45.72 180)
+			(uuid "fb9078af-12ac-458e-9893-e32bcf7d39db")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ASIG2" input
+			(at 189.23 48.26 180)
+			(uuid "882939d9-d76e-4b28-844d-21e5387ce159")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SCL" input
+			(at 189.23 50.8 180)
+			(uuid "86c30e26-701a-4e24-a830-8da33cae7240")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "SDA" input
+			(at 189.23 53.34 180)
+			(uuid "d30b18ea-be62-4769-a22c-693a303ab942")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "TRIG" output
+			(at 217.17 52.07 0)
+			(uuid "981f9ea6-f068-4f52-8f13-b97539f0dc69")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "VREF" input
+			(at 189.23 55.88 180)
+			(uuid "e1a976a3-a408-465e-b583-a7e2508b91be")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "VSYS" input
+			(at 189.23 58.42 180)
+			(uuid "a611a2e6-1a07-437c-bb96-d3cbb0253a3e")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "TRIG2" output
+			(at 217.17 54.61 0)
+			(uuid "e7155a84-fd16-41cc-952d-57d16d03be59")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(instances
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
