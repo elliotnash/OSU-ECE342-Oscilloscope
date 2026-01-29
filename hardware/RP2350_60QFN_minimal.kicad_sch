@@ -10706,6 +10706,46 @@
 				(justify left top)
 			)
 		)
+		(pin "-1V65" output
+			(at 143.51 88.9 0)
+			(uuid "c28f5bc3-9d75-43c2-adf6-7f77766bf0a2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "1V65" output
+			(at 143.51 91.44 0)
+			(uuid "6fd1b105-3290-4fa0-bb7e-6ba3c1306e2b")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "VREF" output
+			(at 143.51 93.98 0)
+			(uuid "fd7693a7-785a-4c14-9817-629db82e3d41")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "VSYS" output
+			(at 143.51 96.52 0)
+			(uuid "3ab3e992-1ad5-41e2-8d0a-da89e3b2bfd7")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(instances
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
@@ -10782,6 +10822,48 @@
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
 					(page "2")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 189.23 44.45)
+		(size 27.94 15.24)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "865345ee-93ca-410b-9293-676d9f6f2ef0")
+		(property "Sheetname" "Trigger"
+			(at 189.23 43.7384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "Trigger.kicad_sch"
+			(at 189.23 60.2746 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
+					(page "4")
 				)
 			)
 		)

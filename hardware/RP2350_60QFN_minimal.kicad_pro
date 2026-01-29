@@ -828,6 +828,10 @@
     [
       "6296dfbc-bf5e-4649-b078-009c1ac21de6",
       "PSU"
+    ],
+    [
+      "865345ee-93ca-410b-9293-676d9f6f2ef0",
+      "Trigger"
     ]
   ],
   "text_variables": {}
