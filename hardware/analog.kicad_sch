@@ -3509,6 +3509,76 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 194.31 27.94 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "2b03387d-e769-410f-a694-870b0d148d38")
+		(property "Reference" "C5"
+			(at 198.12 26.6699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 198.12 29.2099 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 195.2752 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 194.31 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 194.31 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "ab4d5bd3-586b-437c-b68e-9a17506dbacb")
+		)
+		(pin "1"
+			(uuid "aecc134b-75b6-4c5a-8eb1-d27ccfbbf578")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "C5")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Simulation_SPICE:OPAMP")
 		(at 97.79 69.85 0)
 		(unit 1)
@@ -3638,6 +3708,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:VDC")
+		(at 212.09 91.44 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "30be4cfc-c837-4c27-9e92-c3dab7b46d7b")
+		(property "Reference" "#PWR027"
+			(at 212.09 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 212.09 96.52 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 212.09 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 212.09 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 212.09 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "732492a1-314e-4eee-9be5-758e395b5fe6")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR027")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Simulation_SPICE:OPAMP")
 		(at 127 72.39 0)
 		(unit 1)
@@ -3761,6 +3897,76 @@
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "U3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 212.09 87.63 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "36a16cfb-fe45-4c07-a8ba-bc9da1ba79bd")
+		(property "Reference" "C6"
+			(at 215.9 86.3599 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 215.9 88.8999 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 213.0552 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 212.09 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 212.09 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "c58b694b-3e5d-4ffe-bbe1-6ac1b62a8f15")
+		)
+		(pin "1"
+			(uuid "5eca37bd-993c-479b-993f-9f8eff4e4b17")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "C6")
 					(unit 1)
 				)
 			)
@@ -4145,6 +4351,73 @@
 		)
 	)
 	(symbol
+		(lib_id "power:VDC")
+		(at 100.33 95.25 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "59e23b8a-6707-4b05-b6a5-0eb785763d19")
+		(property "Reference" "#PWR020"
+			(at 100.33 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "1v65"
+			(at 102.87 93.9799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 100.33 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 100.33 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 100.33 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "32cad872-ac59-414c-b22d-f137933e1970")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR020")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R_US")
 		(at 66.04 29.21 90)
 		(unit 1)
@@ -4296,6 +4569,73 @@
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "R6")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 100.33 102.87 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "5f6a90da-c0d4-4557-96e9-8690ce401d77")
+		(property "Reference" "#PWR021"
+			(at 100.33 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "-1v65"
+			(at 102.87 104.1399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 100.33 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 100.33 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 100.33 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "4e907e86-38ac-463d-965c-5983285178fa")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR021")
 					(unit 1)
 				)
 			)
@@ -4470,6 +4810,146 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 118.11 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "6bdfc4ff-4fbb-41e3-a9f8-c75d89fe17c7")
+		(property "Reference" "C4"
+			(at 121.92 97.7899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 121.92 100.3299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 119.0752 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 118.11 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 118.11 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "2bc3cf44-9236-4563-b019-14860f2650ef")
+		)
+		(pin "1"
+			(uuid "70c07f74-78e8-4caf-ac7d-fe139fd618aa")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "C4")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:C")
+		(at 100.33 99.06 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "709b335e-379a-46b3-80d0-4a113bad56db")
+		(property "Reference" "C3"
+			(at 104.14 97.7899 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "0.1u"
+			(at 104.14 100.3299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 101.2952 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 100.33 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 100.33 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "353f2ae1-089e-4973-bca4-b0b55d7b4b86")
+		)
+		(pin "1"
+			(uuid "edda31ca-237e-4107-a251-abd4ffcc2fd6")
+		)
+		(instances
+			(project ""
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "C3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:VDC")
 		(at 124.46 80.01 180)
 		(unit 1)
@@ -4619,6 +5099,73 @@
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "R3")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 118.11 102.87 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "821822e8-2f09-4c08-a4d1-f14108af2957")
+		(property "Reference" "#PWR023"
+			(at 118.11 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "-1v65"
+			(at 120.65 104.1399 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" ""
+			(at 118.11 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 118.11 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 118.11 102.87 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "465ae040-fb66-4534-bc79-52c4d4f7981f")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR023")
 					(unit 1)
 				)
 			)
@@ -4933,6 +5480,72 @@
 			(project ""
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 194.31 24.13 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9bc4af3c-ecfd-43db-a783-d51072f2479a")
+		(property "Reference" "#PWR024"
+			(at 194.31 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3v3A"
+			(at 194.31 19.05 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 194.31 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 194.31 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 194.31 24.13 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "8cfaafd1-a3cb-4bee-96b0-111dcc67c739")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR024")
 					(unit 1)
 				)
 			)
@@ -5523,12 +6136,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3v3"
-			(at 193.04 57.15 0)
+		(property "Value" "3v3A"
+			(at 195.58 60.9599 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -5650,6 +6264,72 @@
 		)
 	)
 	(symbol
+		(lib_id "power:VDC")
+		(at 194.31 31.75 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dc72a87b-1ffb-4fdb-8da8-cf0794fda62c")
+		(property "Reference" "#PWR025"
+			(at 194.31 27.94 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GNDA"
+			(at 194.31 36.83 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 194.31 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 194.31 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 194.31 31.75 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "b2b54286-119d-40cd-a6a9-da4c7f009226")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR025")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "power:GND")
 		(at 39.37 69.85 0)
 		(unit 1)
@@ -5716,6 +6396,139 @@
 			(project ""
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR01")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 212.09 83.82 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dd21bb09-bcba-4d95-9cbe-f54c04c0c7bf")
+		(property "Reference" "#PWR026"
+			(at 212.09 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "3v3A"
+			(at 212.09 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 212.09 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 212.09 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 212.09 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "7d6b2908-2303-4b0d-a366-ae48444bb6bb")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR026")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 118.11 95.25 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "dd7490ad-ce16-489c-a3a4-d6fd5578f8e4")
+		(property "Reference" "#PWR022"
+			(at 118.11 99.06 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "1v65"
+			(at 120.65 93.9799 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" ""
+			(at 118.11 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 118.11 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 118.11 95.25 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "0659674b-fa14-40e0-962b-576e59186c65")
+		)
+		(instances
+			(project "analog"
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "#PWR022")
 					(unit 1)
 				)
 			)
@@ -5957,12 +6770,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 45.72 36.83 0)
+		(property "Value" "GNDA"
+			(at 48.26 33.0199 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -6029,12 +6843,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "3v3"
-			(at 184.15 22.86 0)
+		(property "Value" "3v3A"
+			(at 186.69 26.6699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
