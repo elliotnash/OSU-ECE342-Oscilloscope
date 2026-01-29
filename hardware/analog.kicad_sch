@@ -3518,7 +3518,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2b03387d-e769-410f-a694-870b0d148d38")
-		(property "Reference" "C5"
+		(property "Reference" "C?"
 			(at 198.12 26.6699 0)
 			(effects
 				(font
@@ -3570,6 +3570,12 @@
 			(uuid "aecc134b-75b6-4c5a-8eb1-d27ccfbbf578")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "C?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "C5")
@@ -3717,7 +3723,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "30be4cfc-c837-4c27-9e92-c3dab7b46d7b")
-		(property "Reference" "#PWR027"
+		(property "Reference" "#PWR?"
 			(at 212.09 87.63 0)
 			(effects
 				(font
@@ -3765,6 +3771,12 @@
 			(uuid "732492a1-314e-4eee-9be5-758e395b5fe6")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR027")
@@ -3912,7 +3924,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "36a16cfb-fe45-4c07-a8ba-bc9da1ba79bd")
-		(property "Reference" "C6"
+		(property "Reference" "C?"
 			(at 215.9 86.3599 0)
 			(effects
 				(font
@@ -3964,6 +3976,12 @@
 			(uuid "5eca37bd-993c-479b-993f-9f8eff4e4b17")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "C?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "C6")
@@ -4360,7 +4378,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "59e23b8a-6707-4b05-b6a5-0eb785763d19")
-		(property "Reference" "#PWR020"
+		(property "Reference" "#PWR?"
 			(at 100.33 99.06 0)
 			(effects
 				(font
@@ -4409,6 +4427,12 @@
 			(uuid "32cad872-ac59-414c-b22d-f137933e1970")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR020")
@@ -4584,7 +4608,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5f6a90da-c0d4-4557-96e9-8690ce401d77")
-		(property "Reference" "#PWR021"
+		(property "Reference" "#PWR?"
 			(at 100.33 99.06 0)
 			(effects
 				(font
@@ -4633,6 +4657,12 @@
 			(uuid "4e907e86-38ac-463d-965c-5983285178fa")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR021")
@@ -4819,7 +4849,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6bdfc4ff-4fbb-41e3-a9f8-c75d89fe17c7")
-		(property "Reference" "C4"
+		(property "Reference" "C?"
 			(at 121.92 97.7899 0)
 			(effects
 				(font
@@ -4871,6 +4901,12 @@
 			(uuid "70c07f74-78e8-4caf-ac7d-fe139fd618aa")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "C?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "C4")
@@ -4889,7 +4925,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "709b335e-379a-46b3-80d0-4a113bad56db")
-		(property "Reference" "C3"
+		(property "Reference" "C?"
 			(at 104.14 97.7899 0)
 			(effects
 				(font
@@ -4941,6 +4977,12 @@
 			(uuid "edda31ca-237e-4107-a251-abd4ffcc2fd6")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "C?")
+					(unit 1)
+				)
+			)
 			(project ""
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "C3")
@@ -5114,7 +5156,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "821822e8-2f09-4c08-a4d1-f14108af2957")
-		(property "Reference" "#PWR023"
+		(property "Reference" "#PWR?"
 			(at 118.11 99.06 0)
 			(effects
 				(font
@@ -5163,6 +5205,12 @@
 			(uuid "465ae040-fb66-4534-bc79-52c4d4f7981f")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR023")
@@ -5501,7 +5549,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "9bc4af3c-ecfd-43db-a783-d51072f2479a")
-		(property "Reference" "#PWR024"
+		(property "Reference" "#PWR?"
 			(at 194.31 27.94 0)
 			(effects
 				(font
@@ -5549,6 +5597,12 @@
 			(uuid "8cfaafd1-a3cb-4bee-96b0-111dcc67c739")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR024")
@@ -6279,7 +6333,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dc72a87b-1ffb-4fdb-8da8-cf0794fda62c")
-		(property "Reference" "#PWR025"
+		(property "Reference" "#PWR?"
 			(at 194.31 27.94 0)
 			(effects
 				(font
@@ -6327,6 +6381,12 @@
 			(uuid "b2b54286-119d-40cd-a6a9-da4c7f009226")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR025")
@@ -6417,7 +6477,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dd21bb09-bcba-4d95-9cbe-f54c04c0c7bf")
-		(property "Reference" "#PWR026"
+		(property "Reference" "#PWR?"
 			(at 212.09 87.63 0)
 			(effects
 				(font
@@ -6465,6 +6525,12 @@
 			(uuid "7d6b2908-2303-4b0d-a366-ae48444bb6bb")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR026")
@@ -6483,7 +6549,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dd7490ad-ce16-489c-a3a4-d6fd5578f8e4")
-		(property "Reference" "#PWR022"
+		(property "Reference" "#PWR?"
 			(at 118.11 99.06 0)
 			(effects
 				(font
@@ -6532,6 +6598,12 @@
 			(uuid "0659674b-fa14-40e0-962b-576e59186c65")
 		)
 		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "#PWR?")
+					(unit 1)
+				)
+			)
 			(project "analog"
 				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
 					(reference "#PWR022")
