@@ -4,4 +4,5 @@
   (lib (name "BAT54T1G")(type "KiCad")(uri "${KIPRJMOD}/libraries/BAT54T1G/KiCADv6/footprints.pretty")(options "")(descr ""))
   (lib (name "OPA320")(type "KiCad")(uri "${KIPRJMOD}/libraries/OPA320/KiCADv6/footprints.pretty")(options "")(descr ""))
   (lib (name "ADG621BRMZ")(type "KiCad")(uri "${KIPRJMOD}/libraries/switch/footprints.pretty")(options "")(descr ""))
+  (lib (name "BNC")(type "KiCad")(uri "${KIPRJMOD}/libraries/LIB_73101-0570/KiCad")(options "")(descr ""))
 )

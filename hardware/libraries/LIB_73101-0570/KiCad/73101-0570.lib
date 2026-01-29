@@ -1,0 +1,25 @@
+EESchema-LIBRARY Version 2.3
+#encoding utf-8
+#SamacSys ECAD Model 73101-0570
+#/1702686/1870090/2.50/4/4/Connector
+DEF 73101-0570 J 0 30 Y Y 1 F N
+F0 "J" 750 300 50 H V L CNN
+F1 "73101-0570" 750 200 50 H V L CNN
+F2 "731010570" 750 100 50 H I L CNN
+F3 "https://componentsearchengine.com/Datasheets/1/73101-0570.pdf" 750 0 50 H I L CNN
+F4 "RF Connectors / Coaxial Connectors RA BNC JACK 75 OHM PCB RCPT,DIE CAST" 750 -100 50 H I L CNN "Description"
+F5 "" 750 -200 50 H I L CNN "Height"
+F6 "538-73101-0570" 750 -300 50 H I L CNN "Mouser Part Number"
+F7 "https://www.mouser.com/Search/Refine.aspx?Keyword=538-73101-0570" 750 -400 50 H I L CNN "Mouser Price/Stock"
+F8 "Molex" 750 -500 50 H I L CNN "Manufacturer_Name"
+F9 "73101-0570" 750 -600 50 H I L CNN "Manufacturer_Part_Number"
+DRAW
+X 1 1 0 0 200 R 50 50 0 0 P
+X 2 2 0 -100 200 R 50 50 0 0 P
+X MH1 MH1 900 0 200 L 50 50 0 0 P
+X MH2 MH2 900 -100 200 L 50 50 0 0 P
+P 5 0 1 6 200 100 700 100 700 -200 200 -200 200 100 N
+ENDDRAW
+ENDDEF
+#
+#End Library

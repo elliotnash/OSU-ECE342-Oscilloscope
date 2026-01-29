@@ -319,31 +319,49 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Connector_Generic:Conn_01x02"
-			(pin_names
-				(offset 1.016)
-				(hide yes)
-			)
+		(symbol "BNC:73101-0570"
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
 			(property "Reference" "J"
-				(at 0 2.54 0)
+				(at 19.05 7.62 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 				)
 			)
-			(property "Value" "Conn_01x02"
-				(at 0 -5.08 0)
+			(property "Value" "73101-0570"
+				(at 19.05 5.08 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "731010570"
+				(at 19.05 -94.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://componentsearchengine.com/Datasheets/1/73101-0570.pdf"
+				(at 19.05 -194.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(property "Description" "RF Connectors / Coaxial Connectors RA BNC JACK 75 OHM PCB RCPT,DIE CAST"
 				(at 0 0 0)
 				(effects
 					(font
@@ -352,46 +370,60 @@
 					(hide yes)
 				)
 			)
-			(property "Datasheet" "~"
-				(at 0 0 0)
+			(property "Height" ""
+				(at 19.05 -394.92 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-				(at 0 0 0)
+			(property "Mouser Part Number" "538-73101-0570"
+				(at 19.05 -494.92 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 					(hide yes)
 				)
 			)
-			(property "ki_keywords" "connector"
-				(at 0 0 0)
+			(property "Mouser Price/Stock" "https://www.mouser.com/Search/Refine.aspx?Keyword=538-73101-0570"
+				(at 19.05 -594.92 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "Connector*:*_1x??_*"
-				(at 0 0 0)
+			(property "Manufacturer_Name" "Molex"
+				(at 19.05 -694.92 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
+					(justify left top)
 					(hide yes)
 				)
 			)
-			(symbol "Conn_01x02_1_1"
+			(property "Manufacturer_Part_Number" "73101-0570"
+				(at 19.05 -794.92 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(justify left top)
+					(hide yes)
+				)
+			)
+			(symbol "73101-0570_1_1"
 				(rectangle
-					(start -1.27 1.27)
-					(end 1.27 -3.81)
+					(start 5.08 2.54)
+					(end 17.78 -5.08)
 					(stroke
 						(width 0.254)
 						(type default)
@@ -400,32 +432,10 @@
 						(type background)
 					)
 				)
-				(rectangle
-					(start -1.27 0.127)
-					(end 0 -0.127)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(rectangle
-					(start -1.27 -2.413)
-					(end 0 -2.667)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
 				(pin passive line
-					(at -5.08 0 0)
-					(length 3.81)
-					(name "Pin_1"
+					(at 0 0 0)
+					(length 5.08)
+					(name "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -441,9 +451,9 @@
 					)
 				)
 				(pin passive line
-					(at -5.08 -2.54 0)
-					(length 3.81)
-					(name "Pin_2"
+					(at 0 -2.54 0)
+					(length 5.08)
+					(name "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -451,6 +461,42 @@
 						)
 					)
 					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 0 180)
+					(length 5.08)
+					(name "MH1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MH1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 22.86 -2.54 180)
+					(length 5.08)
+					(name "MH2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "MH2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2838,7 +2884,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "02c3512b-4136-4f7e-a4b2-bbc20204a467")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR014"
 			(at 124.46 68.58 0)
 			(effects
 				(font
@@ -2910,7 +2956,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "031c068d-a1c3-43a6-8cab-5dfc61e23abb")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR017"
 			(at 185.42 49.53 0)
 			(effects
 				(font
@@ -2982,7 +3028,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "04264674-b38f-4c99-b6da-7469216b7a6a")
-		(property "Reference" "D?"
+		(property "Reference" "D1"
 			(at 81.28 59.6899 90)
 			(effects
 				(font
@@ -3085,7 +3131,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0dc80a03-e495-4c55-8aa3-2d6387ea436d")
-		(property "Reference" "C?"
+		(property "Reference" "C2"
 			(at 227.33 73.6599 0)
 			(effects
 				(font
@@ -3170,7 +3216,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0e42a50c-6d5d-49d5-ae06-1b1bbf85a358")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR011"
 			(at 119.38 49.53 0)
 			(effects
 				(font
@@ -3242,7 +3288,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "0ea0ea9a-cb66-42e5-928e-be83e0dcaf65")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR02"
 			(at 66.04 81.28 0)
 			(effects
 				(font
@@ -3314,7 +3360,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "24b10562-29ce-4add-be32-2fdd8eb27764")
-		(property "Reference" "R?"
+		(property "Reference" "R7"
 			(at 107.95 35.5599 0)
 			(effects
 				(font
@@ -3399,7 +3445,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "290bc4e3-525e-4dfa-ab2b-1ec4d194ca71")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR03"
 			(at 78.74 60.96 0)
 			(effects
 				(font
@@ -3472,7 +3518,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "2e1ca7e0-5149-4868-9594-426b28092dfc")
-		(property "Reference" "U?"
+		(property "Reference" "U1"
 			(at 105.41 64.6998 0)
 			(effects
 				(font
@@ -3601,7 +3647,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "320b1977-ad6e-4002-a349-53489f7999e3")
-		(property "Reference" "U?"
+		(property "Reference" "U3"
 			(at 134.62 67.2398 0)
 			(effects
 				(font
@@ -3730,7 +3776,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3d730af4-2c5b-4e5f-8177-98318ee16547")
-		(property "Reference" "U?"
+		(property "Reference" "U2"
 			(at 203.2 64.6998 0)
 			(effects
 				(font
@@ -3859,7 +3905,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "3eba8705-c212-46a7-a114-721d9d3fce36")
-		(property "Reference" "U?"
+		(property "Reference" "U5"
 			(at 66.04 40.6399 90)
 			(effects
 				(font
@@ -3952,7 +3998,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "44654378-bfc2-480a-9c68-c68b9bbde880")
-		(property "Reference" "C?"
+		(property "Reference" "C1"
 			(at 58.42 59.69 90)
 			(effects
 				(font
@@ -4035,7 +4081,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "475378ee-6ca7-4505-99d7-a27341667e50")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR06"
 			(at 95.25 73.66 0)
 			(effects
 				(font
@@ -4108,7 +4154,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5a500089-ca22-4555-8f91-c880f8357697")
-		(property "Reference" "R?"
+		(property "Reference" "R9"
 			(at 66.04 22.86 90)
 			(effects
 				(font
@@ -4182,7 +4228,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5ea199de-b111-4dd4-b6ef-87b10109efcc")
-		(property "Reference" "R?"
+		(property "Reference" "R6"
 			(at 119.38 52.07 90)
 			(effects
 				(font
@@ -4265,7 +4311,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "5ffecc68-a3c2-4b84-abc1-1d0daa4f090e")
-		(property "Reference" "R?"
+		(property "Reference" "R2"
 			(at 187.96 58.4199 0)
 			(effects
 				(font
@@ -4350,7 +4396,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "6a1bedf0-d359-44fc-a6fa-506c94e3e950")
-		(property "Reference" "R?"
+		(property "Reference" "R4"
 			(at 199.39 73.66 90)
 			(effects
 				(font
@@ -4433,7 +4479,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "74dbc08e-ba96-46b7-b1d2-20f130593451")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR015"
 			(at 124.46 76.2 0)
 			(effects
 				(font
@@ -4505,7 +4551,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "7f27a165-1fc5-41d9-bd4e-1057f7ba7773")
-		(property "Reference" "R?"
+		(property "Reference" "R3"
 			(at 177.8 66.04 90)
 			(effects
 				(font
@@ -4588,7 +4634,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "92386bd2-c63d-4f3f-8077-b730a7449716")
-		(property "Reference" "D?"
+		(property "Reference" "D2"
 			(at 81.28 71.1199 90)
 			(effects
 				(font
@@ -4691,7 +4737,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "94daaace-a13e-45c5-8c47-39a067b0f8d2")
-		(property "Reference" "R?"
+		(property "Reference" "R1"
 			(at 68.58 69.8499 0)
 			(effects
 				(font
@@ -4767,6 +4813,132 @@
 		)
 	)
 	(symbol
+		(lib_id "BNC:73101-0570")
+		(at 39.37 69.85 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9618f7c4-ce32-4cbb-8e1d-977d55898494")
+		(property "Reference" "J2"
+			(at 27.94 59.69 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "73101-0570"
+			(at 27.94 62.23 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "731010570"
+			(at 20.32 -25.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://componentsearchengine.com/Datasheets/1/73101-0570.pdf"
+			(at 20.32 -125.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Description" "RF Connectors / Coaxial Connectors RA BNC JACK 75 OHM PCB RCPT,DIE CAST"
+			(at 39.37 69.85 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Height" ""
+			(at 20.32 -325.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Part Number" "538-73101-0570"
+			(at 20.32 -425.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Mouser Price/Stock" "https://www.mouser.com/Search/Refine.aspx?Keyword=538-73101-0570"
+			(at 20.32 -525.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Name" "Molex"
+			(at 20.32 -625.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(property "Manufacturer_Part_Number" "73101-0570"
+			(at 20.32 -725.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "09da6f66-3627-4273-b8da-4a18082c6b4b")
+		)
+		(pin "1"
+			(uuid "c939a8df-2546-41c5-99a8-bf9e481c0732")
+		)
+		(pin "MH1"
+			(uuid "52a1dae7-3d4c-44ea-8543-08b62d89db24")
+		)
+		(pin "MH2"
+			(uuid "1cec586d-dfc8-4471-a3e6-0bfc1623cfde")
+		)
+		(instances
+			(project ""
+				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
+					(reference "J2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "Device:R_US")
 		(at 185.42 36.83 180)
 		(unit 1)
@@ -4776,7 +4948,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a6469fc8-14b4-4ba7-85bc-e6ff943d70ea")
-		(property "Reference" "R?"
+		(property "Reference" "R8"
 			(at 187.96 35.5599 0)
 			(effects
 				(font
@@ -4861,7 +5033,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "a7fefc7d-468d-4e35-9b9c-d5e710155f22")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR08"
 			(at 185.42 59.69 0)
 			(effects
 				(font
@@ -4934,7 +5106,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "b63c4eeb-fced-4cce-a4a8-070e6084c5fe")
-		(property "Reference" "R?"
+		(property "Reference" "R5"
 			(at 214.63 63.5 90)
 			(effects
 				(font
@@ -5017,7 +5189,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c163cc10-fb62-4d78-be71-bfa154fdad86")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR010"
 			(at 193.04 83.82 0)
 			(effects
 				(font
@@ -5089,7 +5261,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "c48fe167-6e0f-4843-ae22-7a4327b629cd")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR016"
 			(at 105.41 46.99 0)
 			(effects
 				(font
@@ -5161,7 +5333,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "cc0edb82-b84c-4845-bcb2-53b404d3e912")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR018"
 			(at 223.52 85.09 0)
 			(effects
 				(font
@@ -5233,7 +5405,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d35db487-6c67-4577-b845-1776ab16522f")
-		(property "Reference" "U?"
+		(property "Reference" "U4"
 			(at 149.86 17.78 0)
 			(effects
 				(font
@@ -5342,7 +5514,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d4ab6e54-9c7a-4815-a5d9-1b92a25067ab")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR09"
 			(at 193.04 66.04 0)
 			(effects
 				(font
@@ -5414,7 +5586,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "d5c17bc1-caea-4fbd-854f-de498797d72a")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR04"
 			(at 78.74 72.39 0)
 			(effects
 				(font
@@ -5487,7 +5659,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "dca24827-e6cb-4384-b3d1-6f7153432098")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR01"
 			(at 39.37 76.2 0)
 			(effects
 				(font
@@ -5559,7 +5731,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "e6fd247c-3471-45af-bda1-184827517a7f")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR013"
 			(at 121.92 34.29 0)
 			(effects
 				(font
@@ -5622,89 +5794,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic:Conn_01x02")
-		(at 34.29 69.85 180)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "e7a1b62c-07b8-42ab-80f5-a30758c8f899")
-		(property "Reference" "J?"
-			(at 34.29 60.96 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "Conn_01x02"
-			(at 34.29 63.5 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" ""
-			(at 34.29 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 34.29 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Generic connector, single row, 01x02, script generated (kicad-library-utils/schlib/autogen/connector/)"
-			(at 34.29 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Purchase Link" ""
-			(at 34.29 69.85 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "1"
-			(uuid "5301c33d-4530-4611-aa4d-b25c84d8b7b0")
-		)
-		(pin "2"
-			(uuid "239d2787-5d2c-4a51-a836-bd33630df621")
-		)
-		(instances
-			(project "RP2350_60QFN_minimal"
-				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
-					(reference "J?")
-					(unit 1)
-				)
-			)
-			(project ""
-				(path "/cad06ff6-1510-49dc-9cf8-644755c75ad2"
-					(reference "J1")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "power:VDC")
 		(at 95.25 62.23 0)
 		(unit 1)
@@ -5714,7 +5803,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "ee886192-28a7-4928-8381-07b577fd9fd6")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR05"
 			(at 95.25 66.04 0)
 			(effects
 				(font
@@ -5787,7 +5876,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "f547d795-ca08-4185-99f5-f802a0e0829e")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR07"
 			(at 187.96 88.9 0)
 			(effects
 				(font
@@ -5859,7 +5948,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fc1f6432-b2aa-4fca-8c74-52f4839140e4")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR019"
 			(at 45.72 38.1 0)
 			(effects
 				(font
@@ -5931,7 +6020,7 @@
 		(dnp no)
 		(fields_autoplaced yes)
 		(uuid "fdef1311-350b-4241-b32e-0b13b1bec2ad")
-		(property "Reference" "#PWR?"
+		(property "Reference" "#PWR012"
 			(at 184.15 31.75 0)
 			(effects
 				(font
