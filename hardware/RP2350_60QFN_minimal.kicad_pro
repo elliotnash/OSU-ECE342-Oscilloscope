@@ -832,6 +832,10 @@
     [
       "865345ee-93ca-410b-9293-676d9f6f2ef0",
       "Trigger"
+    ],
+    [
+      "d3a5c44e-d3c2-4378-8b88-4736949f93fe",
+      "analog frontend1"
     ]
   ],
   "text_variables": {}

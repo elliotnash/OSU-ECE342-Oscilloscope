@@ -2592,7 +2592,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 82.55) (xy 226.06 82.55)
+			(xy 226.06 82.55) (xy 232.41 82.55)
 		)
 		(stroke
 			(width 0)
@@ -2962,7 +2962,7 @@
 	)
 	(wire
 		(pts
-			(xy 227.33 48.26) (xy 226.06 48.26)
+			(xy 226.06 48.26) (xy 231.14 48.26)
 		)
 		(stroke
 			(width 0)
@@ -3460,16 +3460,6 @@
 		)
 		(uuid "04c49c09-ca0c-42d1-af59-0872c130db05")
 	)
-	(label "USB_D-"
-		(at 92.71 60.96 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "17613806-a872-45a7-b106-beee76ceea85")
-	)
 	(label "Out+"
 		(at 208.28 41.91 0)
 		(effects
@@ -3540,26 +3530,6 @@
 		)
 		(uuid "50e87f4e-2d49-4a23-93a8-263706262b13")
 	)
-	(label "USB_D+"
-		(at 92.71 55.88 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "562cf6ed-9ba2-4be8-8987-e82e37ae3333")
-	)
-	(label "USB_D+"
-		(at 92.71 63.5 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "5a5f0a2b-69e8-4f70-aaa1-199d4ced5b96")
-	)
 	(label "FB+"
 		(at 187.96 58.42 180)
 		(effects
@@ -3600,26 +3570,27 @@
 		)
 		(uuid "ba277aa7-8087-4eb8-92fa-b6a58328fce8")
 	)
-	(label "USB_D-"
-		(at 92.71 53.34 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right bottom)
-		)
-		(uuid "f51f1bc0-8920-4bff-87e7-683198180eaa")
-	)
-	(hierarchical_label "-1V65"
+	(hierarchical_label "USB_D+"
 		(shape output)
-		(at 227.33 82.55 0)
+		(at 92.71 55.88 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "5bb0a391-aa76-4595-8968-f39a4d336c0f")
+		(uuid "22109bfd-0783-4ef9-8eaa-9c0e2360bfe0")
+	)
+	(hierarchical_label "USB_D+"
+		(shape output)
+		(at 92.71 63.5 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "550941a1-a3e8-4c65-806f-4f4b3867b836")
 	)
 	(hierarchical_label "VSYS"
 		(shape output)
@@ -3632,16 +3603,27 @@
 		)
 		(uuid "852529c4-deb8-4b4f-8f4a-b5079b7eca8f")
 	)
-	(hierarchical_label "1V65"
+	(hierarchical_label "USB_D-"
 		(shape output)
-		(at 227.33 48.26 0)
+		(at 92.71 60.96 0)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
 			(justify left)
 		)
-		(uuid "9023e3ef-7dfa-47d2-8e63-86566390c1ca")
+		(uuid "857fc5dc-ddd4-4af1-9c03-b22ab013bf1b")
+	)
+	(hierarchical_label "USB_D-"
+		(shape output)
+		(at 92.71 53.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "986ba499-437d-40a5-8a18-4147c7d6d4bb")
 	)
 	(hierarchical_label "VREF"
 		(shape output)
@@ -3747,6 +3729,71 @@
 			(project ""
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/6296dfbc-bf5e-4649-b078-009c1ac21de6"
 					(reference "U2")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 231.14 48.26 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "2acd745e-2b4f-4d36-9bc0-5ed7fd928636")
+		(property "Reference" "#PWR074"
+			(at 231.14 52.07 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "1v65"
+			(at 231.14 43.18 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 231.14 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 231.14 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 231.14 48.26 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "aaf28475-4a5f-41c9-83bb-f4b6288a6830")
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/6296dfbc-bf5e-4649-b078-009c1ac21de6"
+					(reference "#PWR074")
 					(unit 1)
 				)
 			)
@@ -3959,7 +4006,7 @@
 	)
 	(symbol
 		(lib_id "power:GND")
-		(at 231.14 64.77 90)
+		(at 231.14 64.77 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3968,7 +4015,7 @@
 		(fields_autoplaced yes)
 		(uuid "450eb4d8-fec3-4930-ae7f-7c40bc8ae347")
 		(property "Reference" "#PWR029"
-			(at 237.49 64.77 0)
+			(at 231.14 71.12 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3977,12 +4024,12 @@
 			)
 		)
 		(property "Value" "GND"
-			(at 234.95 64.7699 90)
+			(at 233.68 66.0399 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -4798,6 +4845,71 @@
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/6296dfbc-bf5e-4649-b078-009c1ac21de6"
 					(reference "#PWR044")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:VDC")
+		(at 232.41 82.55 180)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7c25918c-9c18-49f2-afce-c313b9c4f496")
+		(property "Reference" "#PWR073"
+			(at 232.41 78.74 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "-1v65"
+			(at 232.41 87.63 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 232.41 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 232.41 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"VDC\""
+			(at 232.41 82.55 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "a2212983-4c13-4241-b0cd-fc18a817fbf3")
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/6296dfbc-bf5e-4649-b078-009c1ac21de6"
+					(reference "#PWR073")
 					(unit 1)
 				)
 			)
@@ -5867,13 +5979,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "VSYS"
-			(at 161.29 121.9199 90)
+		(property "Value" "VBUS"
+			(at 163.83 119.38 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""

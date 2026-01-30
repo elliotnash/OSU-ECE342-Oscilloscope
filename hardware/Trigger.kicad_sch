@@ -1157,7 +1157,7 @@
 		)
 		(uuid "2e9efe90-fb0b-4ff1-9ace-7741217fe309")
 	)
-	(hierarchical_label "TRIG"
+	(hierarchical_label "TRIGA"
 		(shape output)
 		(at 173.99 46.99 0)
 		(effects
@@ -1168,7 +1168,7 @@
 		)
 		(uuid "4559e097-b995-4c61-93d2-885aa3525916")
 	)
-	(hierarchical_label "TRIG2"
+	(hierarchical_label "TRIGB"
 		(shape output)
 		(at 173.99 64.77 0)
 		(effects
@@ -1179,7 +1179,7 @@
 		)
 		(uuid "80862cfe-7bd9-44a8-8560-2177012d91b5")
 	)
-	(hierarchical_label "ASIG"
+	(hierarchical_label "ASIGA"
 		(shape input)
 		(at 125.73 44.45 180)
 		(effects
@@ -1223,7 +1223,7 @@
 		)
 		(uuid "dd7990df-1181-4e06-818a-f1e4ebf2464e")
 	)
-	(hierarchical_label "ASIG2"
+	(hierarchical_label "ASIGB"
 		(shape input)
 		(at 125.73 62.23 180)
 		(effects

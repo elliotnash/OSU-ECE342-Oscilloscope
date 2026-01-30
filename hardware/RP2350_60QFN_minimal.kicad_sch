@@ -4203,6 +4203,16 @@
 	)
 	(wire
 		(pts
+			(xy 397.51 82.55) (xy 421.64 82.55)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "274537e3-65a4-4846-8bc1-a6c60d95cee3")
+	)
+	(wire
+		(pts
 			(xy 161.29 307.34) (xy 161.29 309.88)
 		)
 		(stroke
@@ -4470,6 +4480,16 @@
 			(type default)
 		)
 		(uuid "4f3bfc19-a00c-44b3-9aad-bab1f9c268fb")
+	)
+	(wire
+		(pts
+			(xy 186.69 48.26) (xy 189.23 48.26)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "50ead15e-b3ad-41c3-af0b-06a47e3a816b")
 	)
 	(wire
 		(pts
@@ -5259,7 +5279,7 @@
 			(width 0)
 			(type default)
 		)
-		(uuid "cc89c282-39a2-4837-9849-22f4fcd5be4c")
+		(uuid "c92a82df-1197-4a98-b479-280559fe460c")
 	)
 	(wire
 		(pts
@@ -5303,6 +5323,16 @@
 	)
 	(wire
 		(pts
+			(xy 422.91 54.61) (xy 397.51 54.61)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d4f3ffa0-e52c-45a7-8bd9-aacf1d6b11ed")
+	)
+	(wire
+		(pts
 			(xy 182.88 212.09) (xy 182.88 213.36)
 		)
 		(stroke
@@ -5310,6 +5340,16 @@
 			(type default)
 		)
 		(uuid "d5ce116e-9e62-4d7e-ae7f-036b3add853a")
+	)
+	(wire
+		(pts
+			(xy 186.69 45.72) (xy 189.23 45.72)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "d6f136c6-296f-4333-b87c-2b0a0499a885")
 	)
 	(wire
 		(pts
@@ -5681,6 +5721,16 @@
 		)
 		(uuid "07c482d0-0350-4235-901a-7f510db8ba7b")
 	)
+	(label "SELBA"
+		(at 325.12 177.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "0f5c613f-27e9-4af4-b9fd-fc02edfb897a")
+	)
 	(label "XOUT"
 		(at 247.65 193.04 0)
 		(effects
@@ -5690,6 +5740,16 @@
 			(justify left bottom)
 		)
 		(uuid "19743f36-e9a6-4e99-a337-4623b7a936ee")
+	)
+	(label "ASIGA"
+		(at 405.13 82.55 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "22881bd3-9821-441d-a3dc-1b58db834d15")
 	)
 	(label "QSPI_SD2"
 		(at 198.12 177.8 180)
@@ -5701,6 +5761,26 @@
 		)
 		(uuid "3432428b-5a52-49d6-a521-e4db08ce88a0")
 	)
+	(label "SELCB"
+		(at 375.92 49.53 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "359e0bf5-b046-40f4-a370-40364ca22dd1")
+	)
+	(label "ASIGB"
+		(at 400.05 54.61 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "39255966-d85e-4fe7-aa22-499bbc32d59a")
+	)
 	(label "QSPI_SD3"
 		(at 199.39 236.22 180)
 		(effects
@@ -5710,6 +5790,16 @@
 			(justify right bottom)
 		)
 		(uuid "3ee45b27-5ab8-447b-936e-bcf39aa145be")
+	)
+	(label "SELCB"
+		(at 325.12 187.96 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "41ef2225-504d-43fc-83f1-c7dd26193905")
 	)
 	(label "QSPI_SCLK"
 		(at 199.39 238.76 180)
@@ -5741,6 +5831,16 @@
 		)
 		(uuid "45e602eb-e965-4a3e-98fb-02ef1f150d34")
 	)
+	(label "SELBB"
+		(at 397.51 50.8 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "4bce02c3-7648-4109-ac1f-cafaaaf65538")
+	)
 	(label "RUN"
 		(at 247.65 205.74 0)
 		(effects
@@ -5750,6 +5850,16 @@
 			(justify left bottom)
 		)
 		(uuid "4e3bbf3a-4a52-4e18-8c2f-1c553750609c")
+	)
+	(label "SELAA"
+		(at 325.12 175.26 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "50f04441-0798-48d1-b32e-710bf02e2259")
 	)
 	(label "QSPI_SD0"
 		(at 247.65 167.64 0)
@@ -5821,6 +5931,16 @@
 		)
 		(uuid "7e4a5e30-d0b7-4603-be7c-7048e91a3d2a")
 	)
+	(label "ASIGA"
+		(at 186.69 45.72 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "7f164954-283c-45bb-9c1c-0b0edc9683c0")
+	)
 	(label "QSPI_SD2"
 		(at 125.73 238.76 0)
 		(effects
@@ -5830,6 +5950,16 @@
 			(justify left bottom)
 		)
 		(uuid "8344621e-7c91-4d87-a4f8-691412499216")
+	)
+	(label "SELAB"
+		(at 397.51 46.99 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "8879bf67-425d-4a77-87de-e6c67c10a371")
 	)
 	(label "QSPI_SD2"
 		(at 247.65 172.72 0)
@@ -5881,6 +6011,36 @@
 		)
 		(uuid "a0f1566f-67e9-40ca-ad92-5b57e7ab8fa7")
 	)
+	(label "SELAA"
+		(at 397.51 74.93 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "a235ec26-c716-4e4a-a684-04c2e6e122bf")
+	)
+	(label "ASIGB"
+		(at 186.69 48.26 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "a79fdbdd-fa01-477b-9ede-e6dc9124fd4a")
+	)
+	(label "GPIO26_ADC0"
+		(at 422.91 54.61 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "b57fae41-c01f-4e5e-898c-2df1a091b6cc")
+	)
 	(label "~{PSRAM_CS}"
 		(at 125.73 233.68 0)
 		(effects
@@ -5921,6 +6081,16 @@
 		)
 		(uuid "c60412ef-94af-47a0-b29c-cb5687b1b1cb")
 	)
+	(label "SELCA"
+		(at 375.92 77.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "ca66b96a-ec04-4200-bbf2-fdbbcf9921b0")
+	)
 	(label "GPIO29_ADC3"
 		(at 340.36 228.6 180)
 		(effects
@@ -5951,6 +6121,16 @@
 		)
 		(uuid "d9241751-32b7-4bd5-8c64-a1bc7f35f29c")
 	)
+	(label "SELCA"
+		(at 325.12 180.34 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "daa53f33-55e1-455a-88ed-f5160f64f872")
+	)
 	(label "GPIO27_ADC1"
 		(at 340.36 223.52 180)
 		(effects
@@ -5960,6 +6140,26 @@
 			(justify right bottom)
 		)
 		(uuid "de116067-9f93-4340-a7dc-1e51083f4087")
+	)
+	(label "GPIO27_ADC1"
+		(at 421.64 82.55 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right bottom)
+		)
+		(uuid "e0eed23e-89b6-46db-a6c5-1de135632368")
+	)
+	(label "SELBA"
+		(at 397.51 78.74 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e37fd75f-b2bd-4d7f-b76a-6533c8281899")
 	)
 	(label "QSPI_SD1"
 		(at 198.12 172.72 180)
@@ -5980,6 +6180,16 @@
 			(justify left bottom)
 		)
 		(uuid "e7cb81b6-761a-4d6f-9d3c-7201e74d80e9")
+	)
+	(label "SELBB"
+		(at 325.12 185.42 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "e800e41c-2f5e-4d80-91dd-6a90ed1b5468")
 	)
 	(label "SWD"
 		(at 247.65 219.71 0)
@@ -6020,6 +6230,16 @@
 			(justify left bottom)
 		)
 		(uuid "faec73af-b588-436d-afc3-dcdb3d157de7")
+	)
+	(label "SELAB"
+		(at 325.12 182.88 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left bottom)
+		)
+		(uuid "fd400495-6efc-497a-b6bd-07ba87ae61e7")
 	)
 	(symbol
 		(lib_id "Memory_Flash:W25Q128JVS")
@@ -10706,26 +10926,6 @@
 				(justify left top)
 			)
 		)
-		(pin "-1V65" output
-			(at 143.51 88.9 0)
-			(uuid "c28f5bc3-9d75-43c2-adf6-7f77766bf0a2")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
-		(pin "1V65" output
-			(at 143.51 91.44 0)
-			(uuid "6fd1b105-3290-4fa0-bb7e-6ba3c1306e2b")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
-			)
-		)
 		(pin "VREF" output
 			(at 143.51 93.98 0)
 			(uuid "fd7693a7-785a-4c14-9817-629db82e3d41")
@@ -10746,6 +10946,26 @@
 				(justify right)
 			)
 		)
+		(pin "USB_D+" output
+			(at 143.51 88.9 0)
+			(uuid "7d954dcc-5770-4548-a740-e986d3b510d8")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "USB_D-" output
+			(at 143.51 91.44 0)
+			(uuid "c7724898-0136-4440-8934-a471b0f8c797")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
 		(instances
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
@@ -10755,7 +10975,7 @@
 		)
 	)
 	(sheet
-		(at 431.8 73.66)
+		(at 375.92 41.91)
 		(size 21.59 19.05)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -10771,7 +10991,7 @@
 		)
 		(uuid "73c3c5fb-df78-41b9-8072-c8773a39fe38")
 		(property "Sheetname" "analog frontend"
-			(at 431.8 72.9484 0)
+			(at 375.92 41.1984 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10780,7 +11000,7 @@
 			)
 		)
 		(property "Sheetfile" "analog.kicad_sch"
-			(at 431.8 93.2946 0)
+			(at 375.92 61.5446 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10789,7 +11009,7 @@
 			)
 		)
 		(pin "SELR1" input
-			(at 453.39 78.74 0)
+			(at 397.51 46.99 0)
 			(uuid "3c9ec631-33d7-44c2-b49a-c11f9ed1993c")
 			(effects
 				(font
@@ -10799,7 +11019,7 @@
 			)
 		)
 		(pin "ASIG" output
-			(at 453.39 86.36 0)
+			(at 397.51 54.61 0)
 			(uuid "ed04ea10-f6c8-4043-a0dc-08eac7908dcf")
 			(effects
 				(font
@@ -10809,13 +11029,23 @@
 			)
 		)
 		(pin "SELR2" input
-			(at 453.39 82.55 0)
+			(at 397.51 50.8 0)
 			(uuid "d4ccfac4-53ff-4b6d-9b84-0e8a932c4dc6")
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
 				(justify right)
+			)
+		)
+		(pin "SELC" input
+			(at 375.92 49.53 180)
+			(uuid "f8d3cf9b-6c18-427f-8ec8-cbcf016415f2")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
 			)
 		)
 		(instances
@@ -10860,26 +11090,6 @@
 				(justify left top)
 			)
 		)
-		(pin "ASIG" input
-			(at 189.23 45.72 180)
-			(uuid "fb9078af-12ac-458e-9893-e32bcf7d39db")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(pin "ASIG2" input
-			(at 189.23 48.26 180)
-			(uuid "882939d9-d76e-4b28-844d-21e5387ce159")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
 		(pin "SCL" input
 			(at 189.23 50.8 180)
 			(uuid "86c30e26-701a-4e24-a830-8da33cae7240")
@@ -10898,16 +11108,6 @@
 					(size 1.27 1.27)
 				)
 				(justify left)
-			)
-		)
-		(pin "TRIG" output
-			(at 217.17 52.07 0)
-			(uuid "981f9ea6-f068-4f52-8f13-b97539f0dc69")
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify right)
 			)
 		)
 		(pin "VREF" input
@@ -10930,9 +11130,39 @@
 				(justify left)
 			)
 		)
-		(pin "TRIG2" output
-			(at 217.17 54.61 0)
-			(uuid "e7155a84-fd16-41cc-952d-57d16d03be59")
+		(pin "ASIGB" input
+			(at 189.23 48.26 180)
+			(uuid "efb7c808-32bd-4494-ac01-9757c6b93b9d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "ASIGA" input
+			(at 189.23 45.72 180)
+			(uuid "4949a880-36f5-46e9-aff1-53f246213408")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(pin "TRIGA" output
+			(at 217.17 46.99 0)
+			(uuid "fa2182c7-83b8-49f4-9556-e55a9901d9b3")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "TRIGB" output
+			(at 217.17 49.53 0)
+			(uuid "10e357bd-848a-4131-acff-25d6f3968e4f")
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10944,6 +11174,88 @@
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
 					(page "4")
+				)
+			)
+		)
+	)
+	(sheet
+		(at 375.92 69.85)
+		(size 21.59 19.05)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(stroke
+			(width 0.1524)
+			(type solid)
+		)
+		(fill
+			(color 0 0 0 0.0000)
+		)
+		(uuid "d3a5c44e-d3c2-4378-8b88-4736949f93fe")
+		(property "Sheetname" "analog frontend1"
+			(at 375.92 69.1384 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left bottom)
+			)
+		)
+		(property "Sheetfile" "analog.kicad_sch"
+			(at 375.92 89.4846 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left top)
+			)
+		)
+		(pin "SELR1" input
+			(at 397.51 74.93 0)
+			(uuid "739b4d50-bb63-4d78-a097-80213b480f4d")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "ASIG" output
+			(at 397.51 82.55 0)
+			(uuid "6ca9fbcd-387a-4635-995c-a54bab53df6c")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SELR2" input
+			(at 397.51 78.74 0)
+			(uuid "9c681034-3da7-4120-b296-81d6a28d9a3a")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(pin "SELC" input
+			(at 375.92 77.47 180)
+			(uuid "7a776e0f-edbc-47c1-83e9-6669f4bbd719")
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8"
+					(page "5")
 				)
 			)
 		)
