@@ -4401,7 +4401,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
+		(property "Value" "+1V65"
 			(at 231.14 43.18 0)
 			(effects
 				(font
@@ -5787,7 +5787,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
+		(property "Value" "-1V65"
 			(at 232.41 87.63 0)
 			(effects
 				(font
@@ -6687,7 +6687,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
+		(property "Value" "+1V65"
 			(at 50.8 156.21 0)
 			(effects
 				(font
@@ -6892,7 +6892,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
+		(property "Value" "-1V65"
 			(at 72.39 156.21 0)
 			(effects
 				(font

@@ -3162,7 +3162,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "02c3512b-4136-4f7e-a4b2-bbc20204a467")
 		(property "Reference" "#PWR094"
 			(at 132.08 68.58 0)
@@ -3173,13 +3172,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
-			(at 134.62 63.4999 0)
+		(property "Value" "+1V65"
+			(at 131.572 60.96 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -3711,7 +3709,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "GNDA"
 			(at 223.52 127 0)
 			(effects
 				(font
@@ -3863,7 +3861,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
+		(property "Value" "+1V65"
 			(at 85.598 53.34 0)
 			(effects
 				(font
@@ -4702,13 +4700,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
-			(at 105.41 78.7399 0)
+		(property "Value" "-1V65"
+			(at 102.87 82.55 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" ""
@@ -4773,13 +4770,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
-			(at 105.41 100.3299 0)
+		(property "Value" "+1V65"
+			(at 102.87 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -4997,13 +4993,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
-			(at 105.41 110.4899 0)
+		(property "Value" "-1V65"
+			(at 102.87 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" ""
@@ -5420,7 +5415,6 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(fields_autoplaced yes)
 		(uuid "74dbc08e-ba96-46b7-b1d2-20f130593451")
 		(property "Reference" "#PWR095"
 			(at 132.08 76.2 0)
@@ -5431,8 +5425,8 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
-			(at 132.08 85.09 0)
+		(property "Value" "-1V65"
+			(at 131.826 84.074 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5501,13 +5495,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
-			(at 134.62 110.4899 0)
+		(property "Value" "-1V65"
+			(at 132.08 114.3 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify right)
 			)
 		)
 		(property "Footprint" ""
@@ -5572,7 +5565,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "GNDA"
 			(at 182.88 95.25 0)
 			(effects
 				(font
@@ -5955,7 +5948,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3v3A"
+		(property "Value" "+3V3A"
 			(at 212.852 24.384 0)
 			(effects
 				(font
@@ -6108,7 +6101,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3v3A"
+		(property "Value" "+3V3A"
 			(at 196.85 63.246 0)
 			(effects
 				(font
@@ -6577,7 +6570,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
+		(property "Value" "-1V65"
 			(at 85.344 80.01 0)
 			(effects
 				(font
@@ -6861,7 +6854,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3v3A"
+		(property "Value" "+3V3A"
 			(at 182.118 106.68 0)
 			(effects
 				(font
@@ -6932,13 +6925,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
-			(at 134.62 100.3299 0)
+		(property "Value" "+1V65"
+			(at 132.08 96.52 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -7002,7 +6994,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "-1v65"
+		(property "Value" "-1V65"
 			(at 129.286 42.164 0)
 			(effects
 				(font
@@ -7072,13 +7064,12 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+1v65"
-			(at 105.41 60.9599 0)
+		(property "Value" "+1V65"
+			(at 102.87 57.15 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -7284,7 +7275,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "+3v3A"
+		(property "Value" "+3V3A"
 			(at 188.468 23.876 0)
 			(effects
 				(font
