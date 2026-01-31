@@ -823,7 +823,7 @@
     ],
     [
       "73c3c5fb-df78-41b9-8072-c8773a39fe38",
-      "analog frontend"
+      "Analog Frontend Channel A"
     ],
     [
       "6296dfbc-bf5e-4649-b078-009c1ac21de6",
@@ -835,7 +835,7 @@
     ],
     [
       "d3a5c44e-d3c2-4378-8b88-4736949f93fe",
-      "analog frontend1"
+      "Analog Frontend Channel B"
     ]
   ],
   "text_variables": {}
