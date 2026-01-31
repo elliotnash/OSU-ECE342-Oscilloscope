@@ -646,7 +646,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Device:D"
+		(symbol "Device:D_Schottky"
 			(pin_numbers
 				(hide yes)
 			)
@@ -665,7 +665,7 @@
 					)
 				)
 			)
-			(property "Value" "D"
+			(property "Value" "D_Schottky"
 				(at 0 -2.54 0)
 				(effects
 					(font
@@ -691,7 +691,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Diode"
+			(property "Description" "Schottky diode"
 				(at 0 0 0)
 				(effects
 					(font
@@ -700,25 +700,7 @@
 					(hide yes)
 				)
 			)
-			(property "Sim.Device" "D"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "Sim.Pins" "1=K 2=A"
-				(at 0 0 0)
-				(effects
-					(font
-						(size 1.27 1.27)
-					)
-					(hide yes)
-				)
-			)
-			(property "ki_keywords" "diode"
+			(property "ki_keywords" "diode Schottky"
 				(at 0 0 0)
 				(effects
 					(font
@@ -736,10 +718,10 @@
 					(hide yes)
 				)
 			)
-			(symbol "D_0_1"
+			(symbol "D_Schottky_0_1"
 				(polyline
 					(pts
-						(xy -1.27 1.27) (xy -1.27 -1.27)
+						(xy -1.905 0.635) (xy -1.905 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -0.635 -1.27) (xy -0.635 -0.635)
 					)
 					(stroke
 						(width 0.254)
@@ -774,7 +756,7 @@
 					)
 				)
 			)
-			(symbol "D_1_1"
+			(symbol "D_Schottky_1_1"
 				(pin passive line
 					(at -3.81 0 0)
 					(length 2.54)
@@ -3314,7 +3296,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:D")
+		(lib_id "Device:D_Schottky")
 		(at 88.9 60.96 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -3324,7 +3306,7 @@
 		(fields_autoplaced yes)
 		(uuid "04264674-b38f-4c99-b6da-7469216b7a6a")
 		(property "Reference" "D3"
-			(at 91.44 59.6899 90)
+			(at 91.44 59.3724 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3333,7 +3315,7 @@
 			)
 		)
 		(property "Value" "D"
-			(at 91.44 62.2299 90)
+			(at 91.44 61.9124 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3359,7 +3341,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Diode"
+		(property "Description" "Schottky diode"
 			(at 88.9 60.96 0)
 			(effects
 				(font
@@ -5642,7 +5624,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Device:D")
+		(lib_id "Device:D_Schottky")
 		(at 88.9 72.39 270)
 		(unit 1)
 		(exclude_from_sim no)
@@ -5652,7 +5634,7 @@
 		(fields_autoplaced yes)
 		(uuid "92386bd2-c63d-4f3f-8077-b730a7449716")
 		(property "Reference" "D4"
-			(at 91.44 71.1199 90)
+			(at 91.44 70.8024 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5661,7 +5643,7 @@
 			)
 		)
 		(property "Value" "D"
-			(at 91.44 73.6599 90)
+			(at 91.44 73.3424 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -5687,7 +5669,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Diode"
+		(property "Description" "Schottky diode"
 			(at 88.9 72.39 0)
 			(effects
 				(font
