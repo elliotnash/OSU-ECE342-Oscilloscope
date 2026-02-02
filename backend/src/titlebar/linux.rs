@@ -1,7 +1,7 @@
-use gio::Settings;
 use gio::prelude::SettingsExt;
+use gio::Settings;
 
-use crate::titlebar::{TitlebarLayout, TitlebarButton};
+use crate::titlebar::{TitlebarButton, TitlebarLayout};
 
 /// Parse a dconf button string into a TitlebarButton
 fn parse_button(button: &str) -> Option<TitlebarButton> {
@@ -10,7 +10,7 @@ fn parse_button(button: &str) -> Option<TitlebarButton> {
         "minimize" => Some(TitlebarButton::Minimize),
         "maximize" => Some(TitlebarButton::Maximize),
         "close" => Some(TitlebarButton::Close),
-        _ => None
+        _ => None,
     }
 }
 
@@ -46,7 +46,9 @@ pub fn get_titlebar_layout() -> TitlebarLayout {
         }
 
         // Make sure there's a menu in the layout, default to the left
-        if !left_buttons.contains(&TitlebarButton::Menu) && !right_buttons.contains(&TitlebarButton::Menu) {
+        if !left_buttons.contains(&TitlebarButton::Menu)
+            && !right_buttons.contains(&TitlebarButton::Menu)
+        {
             left_buttons.push(TitlebarButton::Menu);
         }
 
@@ -57,7 +59,11 @@ pub fn get_titlebar_layout() -> TitlebarLayout {
     } else {
         TitlebarLayout {
             left: vec![TitlebarButton::Menu],
-            right: vec![TitlebarButton::Minimize, TitlebarButton::Maximize, TitlebarButton::Close],
+            right: vec![
+                TitlebarButton::Minimize,
+                TitlebarButton::Maximize,
+                TitlebarButton::Close,
+            ],
         }
     }
 }
