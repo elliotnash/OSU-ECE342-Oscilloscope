@@ -2,13 +2,15 @@
 use specta_typescript::Typescript;
 use tauri_specta::collect_commands;
 use theme::get_system_theme;
+use titlebar::get_titlebar_layout;
 
 pub mod theme;
+pub mod titlebar;
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder =
-        tauri_specta::Builder::<tauri::Wry>::new().commands(collect_commands![get_system_theme,]);
+        tauri_specta::Builder::<tauri::Wry>::new().commands(collect_commands![get_system_theme, get_titlebar_layout]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
     builder

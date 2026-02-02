@@ -7,6 +7,9 @@
 export const commands = {
 async getSystemTheme() : Promise<OscopeTheme> {
     return await TAURI_INVOKE("get_system_theme");
+},
+async getTitlebarLayout() : Promise<TitlebarLayout> {
+    return await TAURI_INVOKE("get_titlebar_layout");
 }
 }
 
@@ -22,6 +25,8 @@ async getSystemTheme() : Promise<OscopeTheme> {
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
 export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null }
+export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"
+export type TitlebarLayout = { left: TitlebarButton[]; right: TitlebarButton[] }
 
 /** tauri-specta globals **/
 

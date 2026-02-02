@@ -12,6 +12,8 @@ for (const [key, value] of Object.entries(systemTheme)) {
   }
 }
 
+export const titlebarLayout = await commands.getTitlebarLayout();
+
 await getCurrentWindow().show();
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

@@ -34,3 +34,5 @@ tauri-specta = { version = "2.0.0-rc.21", features = ["typescript", "derive"] }
 [target.'cfg(target_os = "linux")'.dependencies]
 linux_theme = "0.2.1"
 cssparser-color = "0.1.0"
+gio = "0.18"
+glib = "0.18"

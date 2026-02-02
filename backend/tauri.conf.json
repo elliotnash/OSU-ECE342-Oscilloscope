@@ -15,7 +15,7 @@
         "title": "oscope-tauri",
         "label": "main",
         "visible": false,
-        "decorations": true,
+        "decorations": false,
         "width": 800,
         "height": 600
       }

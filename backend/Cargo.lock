@@ -2767,6 +2767,8 @@ version = "0.1.0"
 dependencies = [
  "common",
  "cssparser-color",
+ "gio",
+ "glib",
  "linux_theme",
  "serde",
  "serde_json",
