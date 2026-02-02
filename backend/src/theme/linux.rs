@@ -50,21 +50,29 @@ impl TryInto<Color> for &cssparser_color::Color {
 pub fn get_system_theme() -> OscopeTheme {
     let system_theme = linux_theme::gtk::current::current();
     OscopeTheme {
-        accent_bg: system_theme
+        primary: system_theme
             .0
             .get("accent_bg_color")
             .and_then(|color| color.try_into().ok()),
-        accent_fg: system_theme
+        primary_fg: system_theme
             .0
             .get("accent_fg_color")
             .and_then(|color| color.try_into().ok()),
-        window_bg: system_theme
+        bg: system_theme
             .0
             .get("window_bg_color")
             .and_then(|color| color.try_into().ok()),
-        window_fg: system_theme
+        fg: system_theme
             .0
             .get("window_fg_color")
+            .and_then(|color| color.try_into().ok()),
+        secondary: system_theme
+            .0
+            .get("card_bg_color")
+            .and_then(|color| color.try_into().ok()),
+        secondary_fg: system_theme
+            .0
+            .get("card_fg_color")
             .and_then(|color| color.try_into().ok()),
     }
 }

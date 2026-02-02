@@ -1,5 +1,6 @@
 import tailwindcss from '@tailwindcss/vite'
 import react from "@vitejs/plugin-react";
+import tsconfigPaths from 'vite-tsconfig-paths';
 import { defineConfig } from "vite";
 
 // @ts-expect-error process is a nodejs global
@@ -10,6 +11,7 @@ export default defineConfig(async () => ({
   plugins: [
     react(),
     tailwindcss(),
+    tsconfigPaths(),
   ],
 
   // Vite options tailored for Tauri development and only applied in `tauri dev` or `tauri build`

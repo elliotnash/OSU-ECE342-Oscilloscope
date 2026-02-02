@@ -21,7 +21,7 @@ async getSystemTheme() : Promise<OscopeTheme> {
 /** user-defined types **/
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
-export type OscopeTheme = { accent_bg: Color | null; accent_fg: Color | null; window_bg: Color | null; window_fg: Color | null }
+export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null }
 
 /** tauri-specta globals **/
 
