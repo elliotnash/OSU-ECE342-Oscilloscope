@@ -4737,7 +4737,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "GNDA"
 			(at 233.68 66.0399 0)
 			(effects
 				(font
@@ -5722,12 +5722,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 143.51 71.12 0)
+		(property "Value" "GNDA"
+			(at 146.05 67.3099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -7212,12 +7213,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 168.91 86.36 0)
+		(property "Value" "GNDA"
+			(at 171.45 82.5499 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
@@ -7279,12 +7281,13 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
-			(at 182.88 88.9 0)
+		(property "Value" "GNDA"
+			(at 185.42 85.0899 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(justify left)
 			)
 		)
 		(property "Footprint" ""
