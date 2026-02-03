@@ -74,5 +74,9 @@ pub fn get_system_theme() -> OscopeTheme {
             .0
             .get("card_fg_color")
             .and_then(|color| color.try_into().ok()),
+        ring: system_theme
+            .0
+            .get("accent_bg_color")
+            .and_then(|color| color.try_into().ok().map(|c: Color| c.with_brightness(0.9))),
     }
 }

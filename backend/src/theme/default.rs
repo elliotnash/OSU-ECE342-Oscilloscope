@@ -8,5 +8,6 @@ pub fn get_system_theme() -> OscopeTheme {
         fg: None,
         secondary: None,
         secondary_fg: None,
+        ring: None,
     }
 }

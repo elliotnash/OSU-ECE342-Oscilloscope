@@ -14,6 +14,17 @@ pub struct Color {
     alpha: u8,
 }
 
+impl Color {
+    pub fn with_brightness(&self, amount: f32) -> Color {
+        Color {
+            red: (self.red as f32 * amount) as u8,
+            green: (self.green as f32 * amount) as u8,
+            blue: (self.blue as f32 * amount) as u8,
+            alpha: self.alpha,
+        }
+    }
+}
+
 #[derive(Deserialize, Serialize, Type)]
 pub struct OscopeTheme {
     pub primary: Option<Color>,
@@ -22,6 +33,7 @@ pub struct OscopeTheme {
     pub fg: Option<Color>,
     pub secondary: Option<Color>,
     pub secondary_fg: Option<Color>,
+    pub ring: Option<Color>,
 }
 
 #[tauri::command]

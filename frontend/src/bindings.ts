@@ -24,7 +24,7 @@ async getTitlebarLayout() : Promise<TitlebarLayout> {
 /** user-defined types **/
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
-export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null }
+export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null; ring: Color | null }
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"
 export type TitlebarLayout = { left: TitlebarButton[]; right: TitlebarButton[] }
 
