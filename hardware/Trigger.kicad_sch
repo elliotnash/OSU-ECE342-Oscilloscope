@@ -1565,7 +1565,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 43.4848 96.52 0)
 			(effects
 				(font
@@ -1821,7 +1821,7 @@
 				)
 			)
 		)
-		(property "Footprint" "TSSOP8_ST_MCH"
+		(property "Footprint" "MCP47FE:TSSOP8_ST_MCH"
 			(at 60.96 83.82 0)
 			(effects
 				(font
@@ -1909,7 +1909,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 141.9352 72.39 0)
 			(effects
 				(font

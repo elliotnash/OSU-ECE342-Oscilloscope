@@ -10913,7 +10913,7 @@
 				)
 			)
 		)
-		(property "Footprint" "SOIC127P600X175-8N"
+		(property "Footprint" "PSRAM_Adafruit_4677:SOIC127P600X175-8N"
 			(at 128.27 333.68 0)
 			(effects
 				(font
@@ -11625,7 +11625,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 87.122 229.87 90)
 			(effects
 				(font
@@ -11921,7 +11921,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 341.3252 88.9 0)
 			(effects
 				(font
@@ -12055,7 +12055,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 139.3952 227.33 0)
 			(effects
 				(font
