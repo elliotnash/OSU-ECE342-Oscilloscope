@@ -3331,7 +3331,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Diode_SMD:D_SOD-123"
 			(at 88.9 60.96 0)
 			(effects
 				(font
@@ -3432,7 +3432,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 225.7552 83.82 0)
 			(effects
 				(font
@@ -3645,7 +3645,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "20k"
+		(property "Value" "200k"
 			(at 226.06 115.5699 0)
 			(effects
 				(font
@@ -3654,7 +3654,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 221.742 114.3 90)
 			(effects
 				(font
@@ -3798,7 +3798,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 114.808 36.83 90)
 			(effects
 				(font
@@ -3951,7 +3951,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 216.8652 35.56 0)
 			(effects
 				(font
@@ -4022,7 +4022,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "OPA320:DBV5"
 			(at 105.41 69.85 0)
 			(effects
 				(font
@@ -4218,7 +4218,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "OPA320:DBV5"
 			(at 134.62 72.39 0)
 			(effects
 				(font
@@ -4347,7 +4347,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 186.3852 118.11 0)
 			(effects
 				(font
@@ -4421,7 +4421,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "VSON4_TOS"
+		(property "Footprint" "TLP3441:VSON4_TOS"
 			(at 64.77 34.29 0)
 			(effects
 				(font
@@ -4509,7 +4509,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "OPA320:DBV5"
 			(at 199.39 74.93 0)
 			(effects
 				(font
@@ -4636,7 +4636,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 62.23 66.3448 0)
 			(effects
 				(font
@@ -4857,7 +4857,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 66.04 30.988 90)
 			(effects
 				(font
@@ -4929,7 +4929,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 133.35 60.198 90)
 			(effects
 				(font
@@ -5073,7 +5073,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "20k"
+		(property "Value" "200k"
 			(at 226.06 105.4099 0)
 			(effects
 				(font
@@ -5082,7 +5082,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 221.742 104.14 90)
 			(effects
 				(font
@@ -5156,7 +5156,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 133.0452 109.22 0)
 			(effects
 				(font
@@ -5228,7 +5228,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 77.47 69.088 90)
 			(effects
 				(font
@@ -5302,7 +5302,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
 			(at 103.8352 109.22 0)
 			(effects
 				(font
@@ -5654,7 +5654,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Diode_SMD:D_SOD-123"
 			(at 88.9 72.39 0)
 			(effects
 				(font
@@ -5755,7 +5755,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 67.818 71.12 90)
 			(effects
 				(font
@@ -5836,7 +5836,7 @@
 				)
 			)
 		)
-		(property "Footprint" "731010570"
+		(property "Footprint" "BNC:731010570"
 			(at 20.32 -25.07 0)
 			(effects
 				(font
@@ -6038,7 +6038,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 194.818 36.83 90)
 			(effects
 				(font
@@ -6180,7 +6180,7 @@
 				)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "100k"
 			(at 180.34 68.58 90)
 			(effects
 				(font
@@ -6188,7 +6188,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 180.34 74.168 90)
 			(effects
 				(font
@@ -6260,7 +6260,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 215.9 76.708 90)
 			(effects
 				(font
@@ -6411,7 +6411,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 45.72 69.088 90)
 			(effects
 				(font
@@ -6553,7 +6553,7 @@
 				)
 			)
 		)
-		(property "Footprint" "RM_10_ADI"
+		(property "Footprint" "ADG621BRMZ:RM_10_ADI"
 			(at 129.54 27.94 0)
 			(effects
 				(font
@@ -6793,7 +6793,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "100k"
 			(at 185.42 85.0899 0)
 			(effects
 				(font
@@ -6802,7 +6802,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 181.102 83.82 90)
 			(effects
 				(font
@@ -7214,7 +7214,7 @@
 				)
 			)
 		)
-		(property "Value" "10k"
+		(property "Value" "100k"
 			(at 199.136 95.25 90)
 			(effects
 				(font
@@ -7222,7 +7222,7 @@
 				)
 			)
 		)
-		(property "Footprint" ""
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
 			(at 199.39 91.948 90)
 			(effects
 				(font

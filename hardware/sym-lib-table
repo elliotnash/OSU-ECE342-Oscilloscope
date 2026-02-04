@@ -5,7 +5,6 @@
   (lib (name "UJ20-C-H-G-SMT-1-P16-TR")(type "KiCad")(uri "${KIPRJMOD}/libraries/USBC_UJ20-C-H-G-SMT-1-P16-TR/UJ20-C-H-G-SMT-1-P16-TR.kicad_sym")(options "")(descr ""))
   (lib (name "ADG621BRMZ (switch)")(type "KiCad")(uri "${KIPRJMOD}/libraries/switch/ADG621.kicad_sym")(options "")(descr ""))
   (lib (name "TLP3441")(type "KiCad")(uri "${KIPRJMOD}/libraries/TLP3441_TP_F/KiCADv6/TLP3441.kicad_sym")(options "")(descr ""))
-  (lib (name "2026-01-29_20-30-20")(type "KiCad")(uri "${KIPRJMOD}/ul_MCP47FEB02A0T-E-ST/KiCADv6/2026-01-29_20-30-20.kicad_sym")(options "")(descr "")(disabled)(hidden))
-  (lib (name "MCP47FEB02A0T-E_ST")(type "KiCad")(uri "${KIPRJMOD}/ul_MCP47FEB02A0T-E-ST/KiCADv6/2026-01-29_20-30-20.kicad_sym")(options "")(descr ""))
+  (lib (name "MCP47FEB02A0T-E_ST")(type "KiCad")(uri "${KIPRJMOD}/libraries/ul_MCP47FEB02A0T-E-ST/KiCADv6/2026-01-29_20-30-20.kicad_sym")(options "")(descr ""))
   (lib (name "BNC")(type "KiCad")(uri "${KIPRJMOD}/libraries/LIB_73101-0570/KiCad/73101-0570.kicad_sym")(options "")(descr ""))
 )
