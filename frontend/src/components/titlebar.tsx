@@ -13,7 +13,7 @@ import WindowCloseSymbolic from "~/assets/adwaita/window-close-symbolic.svg?reac
 import { useIsMaximized } from "~/hooks/use-is-maximized";
 import { commands, type TitlebarButton } from "~/bindings";
 
-const osType = "macos";
+const osType = type();
 
 const layout = await commands.getTitlebarLayout();
 

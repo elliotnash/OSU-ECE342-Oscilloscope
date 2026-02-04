@@ -77,6 +77,6 @@ pub fn get_system_theme() -> OscopeTheme {
         ring: system_theme
             .0
             .get("accent_bg_color")
-            .and_then(|color| color.try_into().ok().map(|c: Color| c.with_brightness(0.9))),
+            .and_then(|color| color.try_into().ok().map(|c: Color| c.with_brightness(1.1))),
     }
 }
