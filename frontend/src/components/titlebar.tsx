@@ -11,9 +11,9 @@ import WindowMaximizeSymbolic from "~/assets/adwaita/window-maximize-symbolic.sv
 import WindowRestoreSymbolic from "~/assets/adwaita/window-restore-symbolic.svg?react";
 import WindowCloseSymbolic from "~/assets/adwaita/window-close-symbolic.svg?react";
 import { useIsMaximized } from "~/hooks/use-is-maximized";
-import { commands, TitlebarButton } from "~/bindings";
+import { commands, type TitlebarButton } from "~/bindings";
 
-const osType = type();
+const osType = "macos";
 
 const layout = await commands.getTitlebarLayout();
 
@@ -151,16 +151,105 @@ function LinuxClose() {
     );
 }
 
+type MacosControlColor = "red" | "yellow" | "green";
+
+const macosDotClasses: Record<MacosControlColor, string> = {
+    red: "bg-[#ff5f57] border-[#e0443e]",
+    yellow: "bg-[#febc2e] border-[#dea123]",
+    green: "bg-[#28c840] border-[#1aab29]",
+};
+
+function MacosControl({
+    "aria-label": ariaLabel,
+    onClick,
+    color,
+    children,
+}: {
+    "aria-label": string;
+    onClick: () => void;
+    color: MacosControlColor;
+    children: React.ReactNode;
+}) {
+    return (
+        <RACButton
+            aria-label={ariaLabel}
+            onClick={onClick}
+            className="group relative flex size-4 shrink-0 items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50 pressed:opacity-90"
+        >
+            <span
+                className={[
+                    "size-3 rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[filter] group-hover:brightness-105 pressed:brightness-95",
+                    macosDotClasses[color],
+                ].join(" ")}
+            />
+            <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-black/70 opacity-0 transition-opacity group-hover:opacity-100">
+                {children}
+            </span>
+        </RACButton>
+    );
+}
+
+function MacosGlyphMinus() {
+    return (
+        <span
+            aria-hidden="true"
+            className="h-[1.5px] w-2 rounded-full bg-black/70"
+        />
+    );
+}
+
+function MacosGlyphPlus() {
+    return (
+        <span aria-hidden="true" className="relative size-2">
+            <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 rounded-full bg-black/70" />
+            <span className="absolute inset-y-0 left-1/2 w-[1.5px] -translate-x-1/2 rounded-full bg-black/70" />
+        </span>
+    );
+}
+
+function MacosGlyphClose() {
+    return (
+        <span aria-hidden="true" className="relative size-2">
+            <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 rotate-45 rounded-full bg-black/70" />
+            <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 -rotate-45 rounded-full bg-black/70" />
+        </span>
+    );
+}
+
 function MacosMinimize() {
-    return <div>MacosMinimize</div>;
+    return (
+        <MacosControl
+            aria-label="Minimize"
+            color="yellow"
+            onClick={() => getCurrentWindow().minimize()}
+        >
+            <MacosGlyphMinus />
+        </MacosControl>
+    );
 }
 
 function MacosMaximize() {
-    return <div>MacosMaximize</div>;
+    return (
+        <MacosControl
+            aria-label="Maximize"
+            color="green"
+            onClick={() => getCurrentWindow().toggleMaximize()}
+        >
+            <MacosGlyphPlus />
+        </MacosControl>
+    );
 }
 
 function MacosClose() {
-    return <div>MacosClose</div>;
+    return (
+        <MacosControl
+            aria-label="Close"
+            color="red"
+            onClick={() => getCurrentWindow().close()}
+        >
+            <MacosGlyphClose />
+        </MacosControl>
+    );
 }
 
 function WindowsMinimize() {
