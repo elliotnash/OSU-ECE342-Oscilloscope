@@ -1831,7 +1831,7 @@
 				(hide yes)
 			)
 		)
-		(property "Datasheet" "MCP47FEB02A0T-E/ST"
+		(property "Datasheet" "https://ww1.microchip.com/downloads/aemDocuments/documents/OTH/ProductDocuments/DataSheets/20005375A.pdf"
 			(at 60.96 83.82 0)
 			(effects
 				(font
