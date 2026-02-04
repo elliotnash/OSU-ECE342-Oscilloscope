@@ -14,10 +14,12 @@ function App() {
   })
 
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center gap-6">
-      <Titlebar/>
-      <h1 className="text-4xl font-semibold text-white">Oscope Client</h1>
-      <Button intent="plain">Test</Button>
+    <main className="h-screen flex flex-col overflow-hidden">
+      <Titlebar />
+      <div className="flex-1 min-h-0 overflow-auto flex flex-col items-center justify-center gap-6">
+        <h1 className="text-4xl font-semibold text-white">Oscope Client</h1>
+        <Button intent="outline">Test</Button>
+      </div>
     </main>
   );
 }

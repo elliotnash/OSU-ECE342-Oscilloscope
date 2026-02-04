@@ -16,6 +16,7 @@
         "label": "main",
         "visible": false,
         "decorations": false,
+        "closable": true,
         "width": 800,
         "height": 600
       }
