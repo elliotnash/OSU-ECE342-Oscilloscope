@@ -7,4 +7,5 @@
   (lib (name "TLP3441")(type "KiCad")(uri "${KIPRJMOD}/libraries/TLP3441_TP_F/KiCADv6/TLP3441.kicad_sym")(options "")(descr ""))
   (lib (name "MCP47FEB02A0T-E_ST")(type "KiCad")(uri "${KIPRJMOD}/libraries/ul_MCP47FEB02A0T-E-ST/KiCADv6/2026-01-29_20-30-20.kicad_sym")(options "")(descr ""))
   (lib (name "BNC")(type "KiCad")(uri "${KIPRJMOD}/libraries/LIB_73101-0570/KiCad/73101-0570.kicad_sym")(options "")(descr ""))
+  (lib (name "MCP6272-E_SN")(type "KiCad")(uri "${KIPRJMOD}/libraries/MCP6572T_E_SN/MCP6272-E_SN.kicad_sym")(options "")(descr ""))
 )

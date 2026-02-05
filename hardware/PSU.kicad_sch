@@ -4979,6 +4979,24 @@
 				(hide yes)
 			)
 		)
+		(property "Price" "$0.30"
+			(at 71.12 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/vishay-sprague/TMCHA1A106MTRF/10107267"
+			(at 71.12 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "2"
 			(uuid "7711b547-702c-4822-8c41-4b5a9f1d2088")
 		)
@@ -5510,7 +5528,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GNDA"
+		(property "Value" "GND"
 			(at 233.68 66.0399 0)
 			(effects
 				(font
@@ -6019,7 +6037,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "020b2003-5e58-4979-bf89-0978f26fe729")
+			(uuid "020b2003-5e58-4979-bf89-0978f26fe72a")
 		)
 		(instances
 			(project ""
@@ -6695,7 +6713,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GNDA"
+		(property "Value" "GND"
 			(at 140.97 67.3099 0)
 			(effects
 				(font
@@ -7540,7 +7558,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "020b2003-5e58-4979-bf89-0978f26fe729")
+			(uuid "020b2003-5e58-4979-bf89-0978f26fe72b")
 		)
 		(instances
 			(project ""
@@ -8752,7 +8770,7 @@
 			)
 		)
 		(pin "1"
-			(uuid "020b2003-5e58-4979-bf89-0978f26fe729")
+			(uuid "020b2003-5e58-4979-bf89-0978f26fe72c")
 		)
 		(instances
 			(project ""
@@ -8783,7 +8801,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GNDA"
+		(property "Value" "GND"
 			(at 171.45 82.5499 0)
 			(effects
 				(font
@@ -8917,7 +8935,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GNDA"
+		(property "Value" "GND"
 			(at 185.42 85.0899 0)
 			(effects
 				(font
@@ -9078,6 +9096,24 @@
 			)
 		)
 		(property "Description" "Polarized capacitor, US symbol"
+			(at 99.06 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Price" "$0.30"
+			(at 99.06 119.38 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/vishay-sprague/TMCHA1A106MTRF/10107267"
 			(at 99.06 119.38 0)
 			(effects
 				(font

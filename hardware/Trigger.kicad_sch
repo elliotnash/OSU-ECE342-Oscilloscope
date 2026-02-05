@@ -1546,7 +1546,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Package_DIP:DIP-8_W7.62mm_Socket_LongPads"
+		(property "Footprint" "MCP6572T_E_SN:SOIC127P600X175-8N"
 			(at 157.48 69.85 0)
 			(effects
 				(font
@@ -1871,7 +1871,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_DIP:DIP-8_W7.62mm_Socket_LongPads"
+		(property "Footprint" "MCP6572T_E_SN:SOIC127P600X175-8N"
 			(at 85.09 26.67 0)
 			(effects
 				(font
@@ -2546,7 +2546,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Package_DIP:DIP-8_W7.62mm_Socket_LongPads"
+		(property "Footprint" "MCP6572T_E_SN:SOIC127P600X175-8N"
 			(at 85.09 44.45 0)
 			(effects
 				(font
