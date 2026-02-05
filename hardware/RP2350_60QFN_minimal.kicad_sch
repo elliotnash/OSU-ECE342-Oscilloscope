@@ -521,7 +521,7 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Connector_Generic_MountingPin:Conn_01x03_MountingPin"
+		(symbol "Connector_Generic:Conn_01x03"
 			(pin_names
 				(offset 1.016)
 				(hide yes)
@@ -537,13 +537,12 @@
 					)
 				)
 			)
-			(property "Value" "Conn_01x03_MountingPin"
-				(at 1.27 -5.08 0)
+			(property "Value" "Conn_01x03"
+				(at 0 -5.08 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left)
 				)
 			)
 			(property "Footprint" ""
@@ -564,7 +563,7 @@
 					(hide yes)
 				)
 			)
-			(property "Description" "Generic connectable mounting pin connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
+			(property "Description" "Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
 				(at 0 0 0)
 				(effects
 					(font
@@ -582,7 +581,7 @@
 					(hide yes)
 				)
 			)
-			(property "ki_fp_filters" "Connector*:*_1x??-1MP*"
+			(property "ki_fp_filters" "Connector*:*_1x??_*"
 				(at 0 0 0)
 				(effects
 					(font
@@ -591,7 +590,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "Conn_01x03_MountingPin_1_1"
+			(symbol "Conn_01x03_1_1"
 				(rectangle
 					(start -1.27 3.81)
 					(end 1.27 -3.81)
@@ -634,26 +633,6 @@
 					)
 					(fill
 						(type none)
-					)
-				)
-				(polyline
-					(pts
-						(xy -1.016 -4.572) (xy 1.016 -4.572)
-					)
-					(stroke
-						(width 0.1524)
-						(type default)
-					)
-					(fill
-						(type none)
-					)
-				)
-				(text "Mounting"
-					(at 0 -4.191 0)
-					(effects
-						(font
-							(size 0.381 0.381)
-						)
 					)
 				)
 				(pin passive line
@@ -703,24 +682,6 @@
 						)
 					)
 					(number "3"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-				)
-				(pin passive line
-					(at 0 -7.62 90)
-					(length 3.048)
-					(name "MountPin"
-						(effects
-							(font
-								(size 1.27 1.27)
-							)
-						)
-					)
-					(number "MP"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -4252,12 +4213,6 @@
 		(uuid "da45ca64-15dc-4799-8e74-195a9ac9d56f")
 	)
 	(junction
-		(at 354.965 176.53)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "0526969f-f8b4-4610-a2aa-60502b3827fc")
-	)
-	(junction
 		(at 292.1 80.01)
 		(diameter 0)
 		(color 0 0 0 0)
@@ -4587,7 +4542,7 @@
 	)
 	(wire
 		(pts
-			(xy 354.965 167.64) (xy 354.965 176.53)
+			(xy 354.965 167.64) (xy 354.965 178.435)
 		)
 		(stroke
 			(width 0)
@@ -5274,16 +5229,6 @@
 			(type default)
 		)
 		(uuid "56ad0844-a9ad-4abb-a02c-75f851c7b23a")
-	)
-	(wire
-		(pts
-			(xy 361.95 175.26) (xy 361.95 176.53)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "5a7c09be-bec6-4c01-8322-2450ad0a97de")
 	)
 	(wire
 		(pts
@@ -6057,16 +6002,6 @@
 	)
 	(wire
 		(pts
-			(xy 354.965 176.53) (xy 361.95 176.53)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b4bc1aec-b583-4d72-b577-67a3d3c6a702")
-	)
-	(wire
-		(pts
 			(xy 287.02 114.3) (xy 300.99 114.3)
 		)
 		(stroke
@@ -6504,16 +6439,6 @@
 			(type default)
 		)
 		(uuid "f1f5e987-b23d-4229-92a6-4c18b8019751")
-	)
-	(wire
-		(pts
-			(xy 354.965 176.53) (xy 354.965 178.435)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "f2e5faca-52fc-4478-9bbd-08eaf92242d3")
 	)
 	(wire
 		(pts
@@ -10585,7 +10510,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector_Generic_MountingPin:Conn_01x03_MountingPin")
+		(lib_id "Connector_Generic:Conn_01x03")
 		(at 361.95 167.64 0)
 		(unit 1)
 		(exclude_from_sim no)
@@ -10595,7 +10520,7 @@
 		(fields_autoplaced yes)
 		(uuid "884ae3bc-99eb-4fdb-b3f2-64a63d4d0125")
 		(property "Reference" "J4"
-			(at 364.49 166.37 0)
+			(at 364.49 166.3699 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10603,8 +10528,8 @@
 				(justify left)
 			)
 		)
-		(property "Value" "SM03B-SRSS-TB"
-			(at 364.49 168.91 0)
+		(property "Value" "PinHeader_1x03"
+			(at 364.49 168.9099 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -10612,7 +10537,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "Connector_JST:JST_SH_SM03B-SRSS-TB_1x03-1MP_P1.00mm_Horizontal"
+		(property "Footprint" "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical"
 			(at 361.95 167.64 0)
 			(effects
 				(font
@@ -10630,12 +10555,13 @@
 				(hide yes)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Generic connector, single row, 01x03, script generated (kicad-library-utils/schlib/autogen/connector/)"
 			(at 361.95 167.64 0)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
+				(hide yes)
 			)
 		)
 		(property "Purchase Link" ""
@@ -10655,9 +10581,6 @@
 		)
 		(pin "3"
 			(uuid "8fa2ef0b-0b56-4d03-823b-80b35ad5ed67")
-		)
-		(pin "MP"
-			(uuid "f06b4a8d-0692-4752-acaf-9ea8373ce3c9")
 		)
 		(instances
 			(project "RP2350_60QFN_minimal"
