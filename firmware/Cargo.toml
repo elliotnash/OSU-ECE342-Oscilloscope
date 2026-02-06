@@ -3,8 +3,7 @@ edition = "2024"
 rust-version = "1.85.0"
 name = "firmware"
 version = "0.1.0"
-authors = ["Elliot Nash <elliotnash@gmail.com>"]
-resolver = "2"
+authors = ["Elliot Nash", "Yahir Raygoza Cortez", "Oliver Siemens"]
 
 [dependencies]
 embassy-embedded-hal = { version = "0.5.0", features = ["defmt"] }
