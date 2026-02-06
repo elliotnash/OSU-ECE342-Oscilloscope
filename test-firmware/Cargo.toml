@@ -1,12 +1,11 @@
 [package]
 edition = "2024"
-rust-version = "1.85.0"
 name = "test-firmware"
 version = "0.1.0"
 authors = ["Elliot Nash", "Yahir Raygoza Cortez", "Oliver Siemens"]
 
 [dependencies]
-common = { path = "../common" }
+common = { path = "../common", default-features = false, features = ["alloc"] }
 
 embassy-embedded-hal = { version = "0.5.0", features = ["defmt"] }
 embassy-sync = { version = "0.7.2", features = ["defmt"] }
@@ -20,7 +19,7 @@ usbd-hid = "0.9.0"
 
 defmt = "1.0.1"
 defmt-rtt = "1.1.0"
-fixed = "1.29.0"
+fixed = "1.30.0"
 fixed-macro = "1.2.0"
 
 cortex-m = { version = "0.7.7", features = ["inline-asm"] }

@@ -1,48 +1,3 @@
-// #![no_std]
-// #![no_main]
-
-// extern crate alloc;
-
-// use embedded_alloc::TlsfHeap as Heap;
-
-// use embassy_executor::Spawner;
-// use embassy_rp::bind_interrupts;
-// use embassy_rp::peripherals::USB;
-// use embassy_rp::usb::{Driver, InterruptHandler};
-// use embassy_time::Timer;
-// use {defmt_rtt as _, panic_probe as _};
-
-// #[global_allocator]
-// static HEAP: Heap = Heap::empty();
-
-// bind_interrupts!(struct Irqs {
-//     USBCTRL_IRQ => InterruptHandler<USB>;
-// });
-
-// #[embassy_executor::task]
-// async fn logger_task(driver: Driver<'static, USB>) {
-//     embassy_usb_logger::run!(1024, log::LevelFilter::Info, driver);
-// }
-
-// #[embassy_executor::main]
-// async fn main(spawner: Spawner) {
-//     // Initialize the heap allocator
-//     unsafe {
-//         embedded_alloc::init!(HEAP, 1024);
-//     }
-
-//     let p = embassy_rp::init(Default::default());
-//     let driver = Driver::new(p.USB, Irqs);
-//     spawner.spawn(logger_task(driver));
-
-//     let mut counter = 0;
-//     loop {
-//         counter += 1;
-//         log::info!("Tick {}", counter);
-//         Timer::after_secs(1).await;
-//     }
-// }
-
 #![no_std]
 #![no_main]
 
@@ -60,6 +15,8 @@ use embassy_usb::class::cdc_acm::{CdcAcmClass, State};
 use embassy_usb::driver::EndpointError;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
+
+use common::usb::{OSCOPE_VID, OSCOPE_PID};
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -82,9 +39,9 @@ async fn main(spawner: Spawner) {
 
     // Create embassy-usb Config
     let config = {
-        let mut config = embassy_usb::Config::new(0x8585, 0xC09E);
+        let mut config = embassy_usb::Config::new(OSCOPE_VID, OSCOPE_PID);
         config.manufacturer = Some("ECE342");
-        config.product = Some("USB Oscilliscope");
+        config.product = Some("USB Oscilloscope");
         config.serial_number = Some("12345678");
         config.max_power = 100;
         config.max_packet_size_0 = 64;

@@ -19,7 +19,12 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 common = { path = "../common" }
-serial2-tokio = "0.1.19"
+
+tokio = { version = "1", features = ["full"] }
+# Used for serial communication
+serial2-tokio = "0.1"
+# Used just for device discovery
+serialport = "4"
 
 tauri = { version = "2", features = [] }
 tauri-plugin-opener = "2"

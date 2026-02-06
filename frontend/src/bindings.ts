@@ -16,6 +16,11 @@ async getTitlebarLayout() : Promise<TitlebarLayout> {
 /** user-defined events **/
 
 
+export const events = __makeEvents__<{
+serialStatus: SerialStatus
+}>({
+serialStatus: "serial-status"
+})
 
 /** user-defined constants **/
 
@@ -25,6 +30,7 @@ async getTitlebarLayout() : Promise<TitlebarLayout> {
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
 export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null; ring: Color | null }
+export type SerialStatus = "Connected" | "Disconnected"
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"
 export type TitlebarLayout = { left: TitlebarButton[]; right: TitlebarButton[] }
 
