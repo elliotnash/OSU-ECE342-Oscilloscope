@@ -4,8 +4,8 @@ use serial2_tokio::SerialPort;
 use specta::{ Type };
 use tauri::{ AppHandle, Emitter };
 use tauri_specta::Event;
-use std::time::Duration;
-use tokio::time::sleep;
+use std::{sync::OnceLock, time::Duration};
+use tokio::{sync::RwLock, time::sleep};
 use common::usb::{OSCOPE_VID, OSCOPE_PID};
 
 
@@ -13,6 +13,14 @@ use common::usb::{OSCOPE_VID, OSCOPE_PID};
 pub enum SerialStatus {
     Connected,
     Disconnected,
+}
+
+static SERIAL_STATUS: OnceLock<RwLock<SerialStatus>> = OnceLock::new();
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn get_serial_status() -> SerialStatus {
+    SERIAL_STATUS.get_or_init(|| RwLock::new(SerialStatus::Disconnected)).read().await.clone()
 }
 
 /// Finds the port path of the oscilloscope USB-CDC device.
@@ -31,8 +39,13 @@ fn find_port_path() -> Option<String> {
 
 /// Task that manages the serial connections.
 pub async fn serial_task(app: AppHandle) {
-    app.emit("serial-status", SerialStatus::Disconnected).unwrap();
     loop {
+        {
+            let mut data = SERIAL_STATUS.get_or_init(|| RwLock::new(SerialStatus::Disconnected)).write().await;
+            *data = SerialStatus::Disconnected; 
+        }
+        app.emit("serial-status", SerialStatus::Disconnected).unwrap();
+        
         // Poll for device connections
         let port_path = loop {
             if let Some(path) = find_port_path() {
@@ -42,7 +55,7 @@ pub async fn serial_task(app: AppHandle) {
             sleep(Duration::from_secs(1)).await;
         };
 
-        println!("Status: Device found at {}! Connecting...", port_path);
+        println!("Device found at {}! Connecting...", port_path);
 
         // Attempt to open port. If it fails we go back to searching.
         let mut serial = match SerialPort::open(&port_path, 115200) {
@@ -55,15 +68,16 @@ pub async fn serial_task(app: AppHandle) {
         };
 
         // Notify frontend that we are connected
+        {
+            let mut data = SERIAL_STATUS.get_or_init(|| RwLock::new(SerialStatus::Disconnected)).write().await;
+            *data = SerialStatus::Connected; 
+        }
         app.emit("serial-status", SerialStatus::Connected).unwrap();
 
         // Spawn the connection handler. If this returns, it means the connection died.
         if let Err(e) = handle_connection(&mut serial).await {
             eprintln!("Connection lost: {}. returning to search mode...", e);
-        }
-
-        app.emit("serial-status", SerialStatus::Disconnected).unwrap();
-        
+        }        
         // Loop triggers again immediately to search for the device
     }
 }

@@ -4,7 +4,7 @@ use tauri_specta::{collect_commands, collect_events};
 use theme::get_system_theme;
 use titlebar::get_titlebar_layout;
 
-use crate::serial::SerialStatus;
+use crate::serial::{get_serial_status, SerialStatus, serial_task};
 
 pub mod theme;
 pub mod titlebar;
@@ -13,7 +13,7 @@ pub mod serial;
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     let builder = tauri_specta::Builder::<tauri::Wry>::new()
-        .commands(collect_commands![get_system_theme, get_titlebar_layout])
+        .commands(collect_commands![get_system_theme, get_titlebar_layout, get_serial_status])
         .events(collect_events![SerialStatus]);
 
     #[cfg(debug_assertions)] // <- Only export on non-release builds
@@ -28,6 +28,10 @@ pub fn run() {
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             builder.mount_events(app);
+            let app_handle = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                serial_task(app_handle).await;
+            });
             Ok(())
         })
         .run(tauri::generate_context!())

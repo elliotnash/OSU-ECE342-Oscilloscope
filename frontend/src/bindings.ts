@@ -10,6 +10,9 @@ async getSystemTheme() : Promise<OscopeTheme> {
 },
 async getTitlebarLayout() : Promise<TitlebarLayout> {
     return await TAURI_INVOKE("get_titlebar_layout");
+},
+async getSerialStatus() : Promise<SerialStatus> {
+    return await TAURI_INVOKE("get_serial_status");
 }
 }
 
