@@ -13,6 +13,9 @@ async getTitlebarLayout() : Promise<TitlebarLayout> {
 },
 async getSerialStatus() : Promise<SerialStatus> {
     return await TAURI_INVOKE("get_serial_status");
+},
+async receiveFrames(onEvent: TAURI_CHANNEL<FrameData>) : Promise<void> {
+    await TAURI_INVOKE("receive_frames", { onEvent });
 }
 }
 
@@ -32,6 +35,7 @@ serialStatus: "serial-status"
 /** user-defined types **/
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
+export type FrameData = { data: number[]; timescale: number; voltagescale: number }
 export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null; ring: Color | null }
 export type SerialStatus = "Connected" | "Disconnected"
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"

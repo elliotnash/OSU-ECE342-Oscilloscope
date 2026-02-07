@@ -165,7 +165,7 @@ where
 }
 
 // Also derive Type if std feature is enabled
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "std", derive(Type))]
 pub struct FrameData {
     #[serde(

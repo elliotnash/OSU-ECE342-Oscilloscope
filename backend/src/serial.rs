@@ -5,11 +5,11 @@ use specta::{ Type };
 use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
-use tokio::{sync::watch, time::sleep};
+use tokio::{sync::{watch, broadcast}, time::sleep};
 use common::{frame::FrameData, message::Message, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
-#[derive(Debug, Clone, Serialize, Deserialize, Type, Event)]
+#[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
 pub enum SerialStatus {
     Connected,
     Disconnected,
@@ -21,6 +21,15 @@ fn get_serial_status_watch() -> watch::Sender<SerialStatus> {
     SERIAL_STATUS_WATCH.get_or_init(|| {
         // Create the channel. Initial value is "init"
         let (tx, _rx) = watch::channel(SerialStatus::Disconnected);
+        tx
+    }).clone()
+}
+
+static FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
+
+fn get_frame_watch() -> watch::Sender<FrameData> {
+    FRAME_WATCH.get_or_init(|| {
+        let (tx, _rx) = watch::channel(FrameData::default());
         tx
     }).clone()
 }
@@ -97,13 +106,27 @@ async fn handle_connection(serial: &mut SerialPort) -> std::io::Result<()> {
             // Process your oscilloscope data here
             let message = postcard::from_bytes_cobs::<Message>(&mut buffer[..read_len]).expect("Deserialization failed");
             println!("Received message over USB-CDC: {:?}", message);
+            match message {
+                Message::Frame(frame) => {
+                    get_frame_watch().send(frame).ok();
+                }
+                _ => {
+                    println!("Message type not implemented yet: {:?}", message);
+                }
+            }
         }
     }
 }
 
 #[tauri::command(async)]
-fn receive_frames(app: AppHandle, on_event: Channel<FrameData>) {
-    loop {
-
+#[specta::specta]
+pub async fn receive_frames(app: AppHandle, on_event: Channel<FrameData>) {
+    let mut frame_watch = get_frame_watch().subscribe();
+    let serial_status_watch = get_serial_status_watch().subscribe();
+    while serial_status_watch.borrow().clone() == SerialStatus::Connected {
+        let frame = frame_watch.changed().await;
+        if frame.is_ok() {
+            on_event.send(frame_watch.borrow_and_update().clone()).ok();
+        }
     }
 }
