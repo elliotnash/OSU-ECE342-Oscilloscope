@@ -2762,7 +2762,7 @@
 				(hide yes)
 			)
 		)
-		(property "Value" "GND"
+		(property "Value" "GNDA"
 			(at 142.748 82.804 0)
 			(effects
 				(font
