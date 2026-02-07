@@ -11,4 +11,5 @@
   (lib (name "USBC_UJ20-C-H-G-SMT-1-P16-TR")(type "KiCad")(uri "${KIPRJMOD}/libraries/USBC_UJ20-C-H-G-SMT-1-P16-TR")(options "")(descr ""))
   (lib (name "CustomTestPoints")(type "KiCad")(uri "${KIPRJMOD}/libraries/CustomTestPoints.pretty")(options "")(descr ""))
   (lib (name "MCP6572T_E_SN")(type "KiCad")(uri "${KIPRJMOD}/libraries/MCP6572T_E_SN")(options "")(descr ""))
+  (lib (name "TL3365AF180QG")(type "KiCad")(uri "${KIPRJMOD}/libraries/TL3365AF180QG")(options "")(descr ""))
 )

@@ -9597,7 +9597,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Button_Switch_SMD:SW_Push_1P1T_NO_Vertical_Wuerth_434133025816"
+		(property "Footprint" "TL3365AF180QG:SW_TL3365AF180QG"
 			(at 171.45 179.07 0)
 			(effects
 				(font
@@ -9623,7 +9623,7 @@
 				)
 			)
 		)
-		(property "Purchase Link" ""
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/e-switch/TL3365AF180QG/5964411"
 			(at 171.45 184.15 0)
 			(effects
 				(font
@@ -10985,7 +10985,7 @@
 				(justify right)
 			)
 		)
-		(property "Footprint" "Button_Switch_SMD:SW_Push_1P1T_NO_Vertical_Wuerth_434133025816"
+		(property "Footprint" "TL3365AF180QG:SW_TL3365AF180QG"
 			(at 160.655 149.86 0)
 			(effects
 				(font
@@ -11011,7 +11011,7 @@
 				)
 			)
 		)
-		(property "Purchase Link" ""
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/e-switch/TL3365AF180QG/5964411"
 			(at 165.735 149.86 90)
 			(effects
 				(font

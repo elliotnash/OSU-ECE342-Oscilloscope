@@ -1763,6 +1763,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
+			(at 96.52 44.45 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "a885489b-2635-40b1-893c-7998b0b327a4")
 		)
@@ -2176,6 +2185,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
+			(at 96.52 26.67 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "c0cfa67e-421f-4572-9623-49619a26aab1")
 		)
@@ -2368,6 +2386,15 @@
 			)
 		)
 		(property "Description" "test point"
+			(at 113.03 83.82 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
 			(at 113.03 83.82 0)
 			(effects
 				(font
@@ -2688,6 +2715,15 @@
 			)
 		)
 		(property "Description" "test point"
+			(at 124.46 86.36 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
 			(at 124.46 86.36 0)
 			(effects
 				(font

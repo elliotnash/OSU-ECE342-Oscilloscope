@@ -3663,6 +3663,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
+			(at 119.38 33.02 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "fc9c1092-72b2-46a9-8c09-4f878b3a1628")
 		)
@@ -4022,6 +4031,15 @@
 			)
 		)
 		(property "Description" "test point"
+			(at 196.85 30.48 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
 			(at 196.85 30.48 0)
 			(effects
 				(font
@@ -6757,7 +6775,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+		(property "Footprint" "Resistor_SMD:R_0603_1608Metric"
 			(at 45.72 69.088 90)
 			(effects
 				(font
@@ -7459,6 +7477,15 @@
 				(hide yes)
 			)
 		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
+			(at 234.95 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
 		(pin "1"
 			(uuid "f590fc34-caf0-465d-92fb-d4720f6abcad")
 		)
@@ -7661,6 +7688,15 @@
 			)
 		)
 		(property "Description" "test point"
+			(at 73.66 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
 			(at 73.66 29.21 0)
 			(effects
 				(font
