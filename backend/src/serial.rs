@@ -5,7 +5,7 @@ use specta::{ Type };
 use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
-use tokio::{sync::{RwLock, watch}, time::sleep};
+use tokio::{sync::watch, time::sleep};
 use common::{frame::FrameData, message::Message, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
@@ -15,26 +15,20 @@ pub enum SerialStatus {
     Disconnected,
 }
 
-static SERIAL_STATUS: OnceLock<RwLock<SerialStatus>> = OnceLock::new();
-// static SERIAL_STATUS_WATCH: OnceLock<watch::Sender<SerialStatus>> = OnceLock::new();
+static SERIAL_STATUS_WATCH: OnceLock<watch::Sender<SerialStatus>> = OnceLock::new();
 
-// fn get_serial_status_watch() -> watch::Sender<SerialStatus> {
-//     SERIAL_STATUS_WATCH.get_or_init(|| {
-//         // Create the channel. Initial value is "init"
-//         let (tx, _rx) = watch::channel(SerialStatus::Disconnected);
-//         tx
-//     }).clone()
-// }
+fn get_serial_status_watch() -> watch::Sender<SerialStatus> {
+    SERIAL_STATUS_WATCH.get_or_init(|| {
+        // Create the channel. Initial value is "init"
+        let (tx, _rx) = watch::channel(SerialStatus::Disconnected);
+        tx
+    }).clone()
+}
 
 #[tauri::command(async)]
 #[specta::specta]
 pub async fn get_serial_status() -> SerialStatus {
-    // let status = get_serial_status_watch().subscribe().borrow().clone();
-
-    // println!("Getting serial status: {:?}", status);
-
-    // status
-    SERIAL_STATUS.get_or_init(|| RwLock::new(SerialStatus::Disconnected)).read().await.clone()
+    get_serial_status_watch().subscribe().borrow().clone()
 }
 
 /// Finds the port path of the oscilloscope USB-CDC device.
@@ -54,11 +48,7 @@ fn find_port_path() -> Option<String> {
 /// Task that manages the serial connections.
 pub async fn serial_task(app: AppHandle) {
     loop {
-        {
-            let mut data = SERIAL_STATUS.get_or_init(|| RwLock::new(SerialStatus::Disconnected)).write().await;
-            *data = SerialStatus::Disconnected; 
-        }
-        // get_serial_status_watch().send_replace(SerialStatus::Disconnected);
+        get_serial_status_watch().send_replace(SerialStatus::Disconnected);
         app.emit("serial-status", SerialStatus::Disconnected).unwrap();
 
         // Poll for device connections
@@ -82,14 +72,8 @@ pub async fn serial_task(app: AppHandle) {
             }
         };
 
-        println!("Connected to device");
-
         // Notify frontend that we are connected
-        // get_serial_status_watch().send_replace(SerialStatus::Connected);
-        {
-            let mut data = SERIAL_STATUS.get_or_init(|| RwLock::new(SerialStatus::Disconnected)).write().await;
-            *data = SerialStatus::Connected; 
-        }
+        get_serial_status_watch().send_replace(SerialStatus::Connected);
         app.emit("serial-status", SerialStatus::Connected).unwrap();
 
         // Spawn the connection handler. If this returns, it means the connection died.
