@@ -3,9 +3,10 @@
 
 extern crate alloc;
 
+use embassy_time::Timer;
 use embedded_alloc::TlsfHeap as Heap;
 
-use defmt::{info, panic, unwrap};
+use defmt::{info, panic};
 use embassy_executor::Spawner;
 use embassy_rp::bind_interrupts;
 use embassy_rp::peripherals::USB;
@@ -13,8 +14,13 @@ use embassy_rp::usb::{Driver, Instance, InterruptHandler};
 use embassy_usb::UsbDevice;
 use embassy_usb::class::cdc_acm::{CdcAcmClass, State};
 use embassy_usb::driver::EndpointError;
+use libm::sinf;
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
+use alloc::vec::Vec;
+use alloc::string::{String, ToString};
+use common::message::Message;
+use common::frame::FrameData;
 
 use common::usb::{OSCOPE_VID, OSCOPE_PID};
 
@@ -29,7 +35,7 @@ bind_interrupts!(struct Irqs {
 async fn main(spawner: Spawner) {
     // Initialize the heap allocator
     unsafe {
-        embedded_alloc::init!(HEAP, 1024);
+        embedded_alloc::init!(HEAP, 1024*16);
     }
 
     let p = embassy_rp::init(Default::default());
@@ -83,7 +89,7 @@ async fn main(spawner: Spawner) {
     loop {
         class.wait_connection().await;
         info!("Connected");
-        let _ = echo(&mut class).await;
+        let _ = send_frames(&mut class).await;
         info!("Disconnected");
     }
 }
@@ -107,12 +113,29 @@ impl From<EndpointError> for Disconnected {
     }
 }
 
-async fn echo<'d, T: Instance + 'd>(class: &mut CdcAcmClass<'d, Driver<'d, T>>) -> Result<(), Disconnected> {
+async fn send_frames<'d, T: Instance + 'd>(class: &mut CdcAcmClass<'d, Driver<'d, T>>) -> Result<(), Disconnected> {
     let mut buf = [0; 64];
     loop {
-        let n = class.read_packet(&mut buf).await?;
-        let data = &buf[..n];
-        info!("data: {:x}", data);
-        class.write_packet(data).await?;
+        // let n = class.read_packet(&mut buf).await?;
+        // let data = &buf[..n];
+        // info!("data: {:x}", data);
+        // class.write_packet(data).await?;
+        
+        let mut data = Vec::new();
+        for i in 0..10 {
+            data.push((2048.0 * sinf(i as f32 / 100.0)) as u16);
+        }
+        let message = Message::Frame(FrameData {
+            data,
+            timescale: 1.0,
+            voltagescale: 2.0,
+        });
+        let mut bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
+
+        let length = bytes.len().to_string() + "\n";
+
+        class.write_packet(&bytes).await?;
+
+        Timer::after_secs(1).await;
     }
 }

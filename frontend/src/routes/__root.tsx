@@ -13,6 +13,7 @@ function RootLayout() {
   // biome-ignore lint/correctness/useExhaustiveDependencies: listen
   useEffect(() => {
     function updateRoute(status: SerialStatus) {
+      info(`Serial status changed here: ${status}`);
       if (status === "Connected") {
         navigate({ to: "/home" });
       } else {
@@ -22,6 +23,7 @@ function RootLayout() {
 
     commands.getSerialStatus().then(updateRoute);
     unlisten = events.serialStatus.listen((status) => {
+      info(`Serial status changed: ${status.payload}`);
       updateRoute(status.payload);
     });
 

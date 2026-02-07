@@ -5,12 +5,16 @@ edition = "2024"
 
 [features]
 default = ["std"]
-std = ["serde/std"]
+std = ["serde/std", "specta", "tauri-specta"]
 alloc = ["serde/alloc"]
 
 [dependencies]
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 log = "0.4"
+
+# Dependencies only for specta (under std feature)
+tauri-specta = { version = "2.0.0-rc.21", features = ["typescript", "derive"], optional = true }
+specta = { version = "2.0.0-rc.22", features = ["serde"], optional = true }
 
 [dev-dependencies]
 postcard = { version = "1.1", features = ["postcard-derive", "use-std"]}

@@ -19,6 +19,7 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 common = { path = "../common" }
+postcard = { version = "1.1", features = ["postcard-derive", "use-std"] }
 
 tokio = { version = "1", features = ["full"] }
 # Used for serial communication

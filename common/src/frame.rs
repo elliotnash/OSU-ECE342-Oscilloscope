@@ -1,5 +1,8 @@
 use alloc::vec::Vec;
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
+#[cfg(feature = "std")]
+use specta::Type;
+
 
 /// Serialize a Vec<u16> of 12-bit values by packing two values into 3 bytes.
 /// Each u16 value is clamped to 12 bits (0-4095).
@@ -161,8 +164,9 @@ where
     Ok(data)
 }
 
+// Also derive Type if std feature is enabled
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-#[non_exhaustive]
+#[cfg_attr(feature = "std", derive(Type))]
 pub struct FrameData {
     #[serde(
         serialize_with = "serialize_12bit_data_delta_packed",

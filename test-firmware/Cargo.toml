@@ -7,6 +7,8 @@ authors = ["Elliot Nash", "Yahir Raygoza Cortez", "Oliver Siemens"]
 [dependencies]
 common = { path = "../common", default-features = false, features = ["alloc"] }
 
+libm = "0.2"
+
 embassy-embedded-hal = { version = "0.5.0", features = ["defmt"] }
 embassy-sync = { version = "0.7.2", features = ["defmt"] }
 embassy-executor = {  version = "0.9.1", features = ["arch-cortex-m", "executor-thread", "executor-interrupt", "defmt"] }
