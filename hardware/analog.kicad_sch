@@ -2491,6 +2491,14 @@
 		(at 185.42 38.1)
 		(uuid "03b485de-bbfb-432c-bd82-725916d5ea30")
 	)
+	(no_connect
+		(at 16.51 67.31)
+		(uuid "0c9b3496-fe26-4a04-b5de-c968d6a76b3f")
+	)
+	(no_connect
+		(at 16.51 69.85)
+		(uuid "f95a1269-bb9c-486d-b7d4-41d40d42f95c")
+	)
 	(wire
 		(pts
 			(xy 185.42 35.56) (xy 186.69 35.56)

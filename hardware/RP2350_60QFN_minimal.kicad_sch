@@ -6229,7 +6229,7 @@
 		)
 		(uuid "22e759ab-0741-4da3-998d-e23638971f32")
 	)
-	(label "CHB_TRIG"
+	(label "CHA_TRIG"
 		(at 283.21 184.15 180)
 		(effects
 			(font
@@ -6249,7 +6249,7 @@
 		)
 		(uuid "2b1a7604-d47d-4f6c-aa7a-96bccefb7816")
 	)
-	(label "CHA_TRIG"
+	(label "CHB_TRIG"
 		(at 283.21 181.61 180)
 		(effects
 			(font
