@@ -14,7 +14,7 @@
 		(company "Oregon State University")
 		(comment 1 "Oliver Siemens")
 		(comment 2 "Elliot Nash")
-		(comment 3 "Yahir Cortez-Raygoza")
+		(comment 3 "Yahir Raygoza-Cortez")
 	)
 	(layers
 		(0 "F.Cu" signal)
@@ -35171,14 +35171,6 @@
 		(uuid "52817725-9a98-4e7a-812c-c19925502469")
 	)
 	(segment
-		(start 128.03 135.61)
-		(end 129.055001 135.61)
-		(width 0.4)
-		(layer "F.Cu")
-		(net 1)
-		(uuid "54a44edc-0104-4976-b659-0517239f095e")
-	)
-	(segment
 		(start 132.09 108.325001)
 		(end 132.935001 108.325001)
 		(width 0.4)
@@ -35225,14 +35217,6 @@
 		(layer "F.Cu")
 		(net 1)
 		(uuid "6b260e0c-9d29-411b-b5c2-538eb7e70666")
-	)
-	(segment
-		(start 129.055001 135.61)
-		(end 129.13 135.684999)
-		(width 0.4)
-		(layer "F.Cu")
-		(net 1)
-		(uuid "6b9a8fac-b7b9-4301-866f-15577bc0ec05")
 	)
 	(segment
 		(start 139.9674 120.2226)
@@ -35385,6 +35369,14 @@
 		(layer "F.Cu")
 		(net 1)
 		(uuid "a5391f06-ad43-4484-a804-55fd2cf4d3cf")
+	)
+	(segment
+		(start 128.03 135.61)
+		(end 129.15 135.61)
+		(width 0.8)
+		(layer "F.Cu")
+		(net 1)
+		(uuid "a79b6842-aaa5-427e-8632-d60241e40fac")
 	)
 	(segment
 		(start 112.6 102.570001)
@@ -35756,14 +35748,6 @@
 		(uuid "368bf4c0-6185-4090-8677-19602c466830")
 	)
 	(via
-		(at 129.13 135.684999)
-		(size 0.5)
-		(drill 0.3)
-		(layers "F.Cu" "B.Cu")
-		(net 1)
-		(uuid "38985c5e-b407-452c-aa35-5e43814f4be0")
-	)
-	(via
 		(at 143.5 129.1)
 		(size 0.6)
 		(drill 0.35)
@@ -35867,6 +35851,14 @@
 		(layers "F.Cu" "B.Cu")
 		(net 1)
 		(uuid "8015bcf6-950a-4d68-8134-2166a5ed8d6f")
+	)
+	(via
+		(at 129.15 135.61)
+		(size 0.6)
+		(drill 0.35)
+		(layers "F.Cu" "B.Cu")
+		(net 1)
+		(uuid "869ceff9-430b-421b-b998-9c430a3a25d2")
 	)
 	(via
 		(at 137.4 135)
@@ -36550,14 +36542,6 @@
 		(uuid "36cff522-547c-4829-ab32-bce5fa59d5d6")
 	)
 	(segment
-		(start 124.955001 135.61)
-		(end 124.93 135.584999)
-		(width 0.4)
-		(layer "F.Cu")
-		(net 5)
-		(uuid "37522540-4bb4-45cb-abd1-a2567cee2cdb")
-	)
-	(segment
 		(start 141.985835 129.655835)
 		(end 141.5674 129.2374)
 		(width 0.2)
@@ -36604,14 +36588,6 @@
 		(layer "F.Cu")
 		(net 5)
 		(uuid "468b6c67-94a7-462b-99cb-5a80115a2333")
-	)
-	(segment
-		(start 126.13 135.61)
-		(end 124.955001 135.61)
-		(width 0.4)
-		(layer "F.Cu")
-		(net 5)
-		(uuid "4b3d2db5-ede0-40f7-be5a-cfd0c4f37d11")
 	)
 	(segment
 		(start 127.770001 123.100001)
@@ -36886,6 +36862,14 @@
 		(uuid "d99f7e87-6428-476b-950b-7d7f0cc49b4f")
 	)
 	(segment
+		(start 126.13 135.61)
+		(end 124.87 135.61)
+		(width 0.8)
+		(layer "F.Cu")
+		(net 5)
+		(uuid "da10d439-e683-4f77-a684-febfc2ca9c08")
+	)
+	(segment
 		(start 99.5 121.410001)
 		(end 99.5 122.710001)
 		(width 1)
@@ -36932,14 +36916,6 @@
 		(layer "F.Cu")
 		(net 5)
 		(uuid "fff3f783-1789-45c1-b0a6-f6ac1d07e75e")
-	)
-	(via
-		(at 124.93 135.584999)
-		(size 0.5)
-		(drill 0.3)
-		(layers "F.Cu" "B.Cu")
-		(net 5)
-		(uuid "0e727ccd-0f71-4901-a433-b2b905dd47ae")
 	)
 	(via
 		(at 103.2 124.510001)
@@ -37044,6 +37020,14 @@
 		(layers "F.Cu" "B.Cu")
 		(net 5)
 		(uuid "f31afff7-8fc5-47c5-a5b7-80fa433c4f46")
+	)
+	(via
+		(at 124.87 135.61)
+		(size 0.6)
+		(drill 0.35)
+		(layers "F.Cu" "B.Cu")
+		(net 5)
+		(uuid "f682e844-d530-4571-8d10-19c90f8f1982")
 	)
 	(segment
 		(start 131.13 126.41)
