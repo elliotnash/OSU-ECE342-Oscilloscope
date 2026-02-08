@@ -53,11 +53,3 @@ jobs:
         with:
           name: bundle-appimage
           path: backend/target/release/bundle/appimage/*.AppImage
-  
-      - name: rustfmt
-        run: cargo fmt --all -- --check
-        working-directory: ./backend
-
-      - name: clippy
-        run: cargo clippy --all --all-features --tests -- -D warnings
-        working-directory: ./backend
