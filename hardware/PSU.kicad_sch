@@ -3806,7 +3806,7 @@
 		)
 		(uuid "3a3f8eaf-e5d4-4683-8e3d-980151dc43b8")
 	)
-	(label "UCB_CC1"
+	(label "USB_CC1"
 		(at 102.87 74.93 0)
 		(effects
 			(font
