@@ -34936,6 +34936,104 @@
 			)
 		)
 	)
+	(gr_text "Channel A"
+		(at 197.65 133.06 270)
+		(layer "B.SilkS")
+		(uuid "06a96636-580f-4e70-97ad-3607e24fdde8")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.1875)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "Yahir Raygoza-Cortez\nElliot Nash\nOliver Siemens"
+		(at 149.49 121.88 0)
+		(layer "B.SilkS")
+		(uuid "14201c54-0ca1-46c3-a266-fd00967f3dc4")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.1875)
+				(italic yes)
+			)
+			(justify bottom mirror)
+		)
+	)
+	(gr_text "GND"
+		(at 144.52 135 270)
+		(layer "B.SilkS")
+		(uuid "1469df91-2dc9-4836-9c14-80deaa3301c4")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "Designed by"
+		(at 156.18 113.81 0)
+		(layer "B.SilkS")
+		(uuid "4d2b424f-6bbc-4e0b-8c1a-15b812fd1cca")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.1875)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "SWCLK"
+		(at 142.01 135.01 270)
+		(layer "B.SilkS")
+		(uuid "5f7e4067-a300-4763-a418-defcc3a1328c")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "Channel B"
+		(at 197.6 111.34 270)
+		(layer "B.SilkS")
+		(uuid "93795c24-85e6-43a2-a281-c675df1b3934")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.1875)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "USB Oscilloscope"
+		(at 159.45 110.4 0)
+		(layer "B.SilkS")
+		(uuid "9435dfff-c02d-4101-bbbf-ca4da70b6ed8")
+		(effects
+			(font
+				(size 1.5 1.5)
+				(thickness 0.3)
+				(bold yes)
+			)
+			(justify left bottom mirror)
+		)
+	)
+	(gr_text "SWD"
+		(at 147.05 134.9 270)
+		(layer "B.SilkS")
+		(uuid "fdf3a9fd-4810-4f55-9794-3ced65f6fa61")
+		(effects
+			(font
+				(size 1 1)
+				(thickness 0.15)
+			)
+			(justify left bottom mirror)
+		)
+	)
 	(segment
 		(start 132.935001 108.325001)
 		(end 132.94 108.33)
