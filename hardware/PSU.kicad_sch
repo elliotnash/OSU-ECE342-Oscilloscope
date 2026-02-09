@@ -4158,7 +4158,7 @@
 				(justify right)
 			)
 		)
-		(property "Value" "2.4V"
+		(property "Value" "2.7V"
 			(at 69.85 166.3699 90)
 			(effects
 				(font
@@ -8341,7 +8341,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "2.4V"
+		(property "Value" "2.7V"
 			(at 48.26 166.3699 90)
 			(effects
 				(font

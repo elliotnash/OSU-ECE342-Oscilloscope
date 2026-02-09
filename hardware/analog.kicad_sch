@@ -3861,7 +3861,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "0.1% Resistor"
 			(at 223.52 114.3 0)
 			(effects
 				(font
@@ -5369,7 +5369,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "0.1% Resistor"
 			(at 223.52 104.14 0)
 			(effects
 				(font
@@ -6475,7 +6475,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "0.1% Resistor"
 			(at 180.34 72.39 0)
 			(effects
 				(font
@@ -7089,7 +7089,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "0.1% Resistor"
 			(at 182.88 83.82 0)
 			(effects
 				(font
@@ -7669,7 +7669,7 @@
 				(hide yes)
 			)
 		)
-		(property "Description" "Resistor"
+		(property "Description" "0.1% Resistor"
 			(at 199.39 90.17 0)
 			(effects
 				(font
