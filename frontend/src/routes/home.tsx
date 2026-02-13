@@ -1,6 +1,7 @@
 import { Button } from "~/components/button";
 import "~/styles/global.css";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useRef, useState, useLayoutEffect } from "react";
 
 import { extent } from '@visx/vendor/d3-array';
 import * as allCurves from '@visx/curve';
@@ -14,10 +15,29 @@ export const Route = createFileRoute('/home')({
 })
 
 function Index() {
+  const plotContainerRef = useRef<HTMLDivElement>(null);
+  const [plotSize, setPlotSize] = useState({ width: 0, height: 0 });
+
+  useLayoutEffect(() => {
+    const el = plotContainerRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver((entries) => {
+      const { width, height } = entries[0]?.contentRect ?? { width: 0, height: 0 };
+      setPlotSize({ width: Math.round(width), height: Math.round(height) });
+    });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
   return (
     <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
-      <div className="flex-1 min-w-0 min-h-[400px] landscape:min-h-0 flex items-center justify-center">
-        <Plot width={600} height={500} />
+      <div className="flex-1 flex flex-col">
+        <div ref={plotContainerRef} className="flex-1 min-w-0 min-h-0 w-full h-full flex overflow-hidden">
+          {plotSize.width > 0 && plotSize.height > 0 && (
+            <Plot width={plotSize.width} height={plotSize.height} />
+          )}
+        </div>
+        <div className="bg-secondary/25 border rounded-xl p-4"></div>
       </div>
       <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-center justify-center gap-4 shrink-0">
         <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
@@ -63,7 +83,8 @@ export type CurveProps = {
 };
 
 export default function Plot({ width, height }: CurveProps) {
-  const axisPadding = { top: 20, right: 50, bottom: 50, left: 60 };
+  // const axisPadding = { top: 20, right: 50, bottom: 50, left: 60 };
+  const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
   const chartWidth = width - axisPadding.left - axisPadding.right;
   const chartHeight = height - axisPadding.top - axisPadding.bottom;
 
@@ -116,100 +137,11 @@ export default function Plot({ width, height }: CurveProps) {
             data={plotData}
             x={(d) => xScale(getX(d)) ?? 0}
             y={(d) => yScale(getY(d)) ?? 0}
-            stroke="aqua"
+            stroke="var(--primary)"
             strokeWidth={2}
             shapeRendering="geometricPrecision"
           />
         )}
-      </Group>
-
-      {/* X-axis */}
-      <Group left={axisPadding.left} top={axisPadding.top + chartHeight}>
-        <line
-          x1={0}
-          x2={chartWidth}
-          y1={0}
-          y2={0}
-          stroke="white"
-          strokeWidth={2}
-        />
-        {xTicks.map((tick) => (
-          <g key={`x-tick-${tick}`}>
-            <line
-              x1={xScale(tick)}
-              x2={xScale(tick)}
-              y1={0}
-              y2={5}
-              stroke="white"
-              strokeWidth={1}
-            />
-            <text
-              x={xScale(tick)}
-              y={20}
-              fill="white"
-              fontSize={12}
-              textAnchor="middle"
-            >
-              {tick.toFixed(1)}
-            </text>
-          </g>
-        ))}
-        <text
-          x={chartWidth / 2}
-          y={40}
-          fill="white"
-          fontSize={14}
-          textAnchor="middle"
-          fontWeight="bold"
-        >
-          Time (ms)
-        </text>
-      </Group>
-
-      {/* Y-axis */}
-      <Group left={axisPadding.left} top={axisPadding.top}>
-        <line
-          x1={0}
-          x2={0}
-          y1={0}
-          y2={chartHeight}
-          stroke="white"
-          strokeWidth={2}
-        />
-        {yTicks.map((tick) => (
-          <g key={`y-tick-${tick}`}>
-            <line
-              x1={-5}
-              x2={0}
-              y1={yScale(tick)}
-              y2={yScale(tick)}
-              stroke="white"
-              strokeWidth={1}
-            />
-            <text
-              x={-10}
-              y={yScale(tick)}
-              fill="white"
-              fontSize={12}
-              textAnchor="end"
-              dominantBaseline="middle"
-            >
-              {tick.toFixed(2)}
-            </text>
-          </g>
-        ))}
-        <g transform={`translate(-50, ${chartHeight / 2}) rotate(-90)`}>
-          <text
-            x={0}
-            y={0}
-            fill="white"
-            fontSize={14}
-            textAnchor="middle"
-            fontWeight="bold"
-          >
-            Voltage (V)
-          </text>
-        </g>
       </Group>
     </svg>
   );
