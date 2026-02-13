@@ -35,7 +35,7 @@ serialStatus: "serial-status"
 /** user-defined types **/
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
-export type FrameData = { data: number[]; timescale: number; voltagescale: number }
+export type FrameData = { data: number[]; center: number; timestep_ms: number; voltage_scale: number }
 export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null; ring: Color | null }
 export type SerialStatus = "Connected" | "Disconnected"
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"

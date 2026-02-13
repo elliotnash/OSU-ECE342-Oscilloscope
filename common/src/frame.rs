@@ -173,8 +173,9 @@ pub struct FrameData {
         deserialize_with = "deserialize_12bit_data_delta_packed"
     )]
     pub data: Vec<u16>,
-    pub timescale: f32,
-    pub voltagescale: f32,
+    pub center: u16,
+    pub timestep_ms: f32,
+    pub voltage_scale: f32,
 }
 
 #[cfg(test)]
@@ -186,8 +187,9 @@ mod tests {
         // Test with even number of values
         let frame = FrameData {
             data: vec![0x000, 0xFFF, 0x123, 0x456],
-            timescale: 1.0,
-            voltagescale: 2.0,
+            center: 2048,
+            timestep_ms: 1.0,
+            voltage_scale: 2.0,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
@@ -200,8 +202,9 @@ mod tests {
         // Test with odd number of values (should pad with 0)
         let frame = FrameData {
             data: vec![0x123, 0x456, 0x789],
-            timescale: 1.0,
-            voltagescale: 2.0,
+            center: 2048,
+            timestep_ms: 1.0,
+            voltage_scale: 2.0,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
@@ -215,8 +218,9 @@ mod tests {
         // Test that values > 12 bits are clamped
         let frame = FrameData {
             data: vec![0x1234, 0x5678], // Values > 12 bits
-            timescale: 1.0,
-            voltagescale: 2.0,
+            center: 2048,
+            timestep_ms: 1.0,
+            voltage_scale: 2.0,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
@@ -234,8 +238,9 @@ mod tests {
         }
         let frame = FrameData {
             data,
-            timescale: 1.0,
-            voltagescale: 2.0,
+            center: 2048,
+            timestep_ms: 1.0,
+            voltage_scale: 2.0,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
