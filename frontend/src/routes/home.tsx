@@ -15,10 +15,14 @@ export const Route = createFileRoute('/home')({
 
 function Index() {
   return (
-    <div className="flex-1 min-h-0 overflow-auto flex flex-col items-center justify-center gap-6">
-      <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
-      <Button intent="outline"><Link to="/test">Test Panel</Link></Button>
-      <Plot width={600} height={500} />
+    <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
+      <div className="flex-1 min-w-0 min-h-[400px] landscape:min-h-0 flex items-center justify-center">
+        <Plot width={600} height={500} />
+      </div>
+      <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-center justify-center gap-4 shrink-0">
+        <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
+        <Button intent="outline"><Link to="/test">Test Panel</Link></Button>
+      </div>
     </div>
   );
 }

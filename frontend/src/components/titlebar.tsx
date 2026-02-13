@@ -23,7 +23,7 @@ export function Titlebar() {
     }, []);
 
     return (
-        <div className="relative flex items-center w-full h-12">
+        <div className="relative flex items-center w-full h-12 border-b">
             {/* Left buttons */}
         
             <div className="flex items-center gap-2 flex-1 min-w-0 justify-start pl-2">
