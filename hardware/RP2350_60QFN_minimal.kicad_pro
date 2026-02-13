@@ -556,7 +556,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "RP2350_60QFN_minimal.step",
       "svg": "",
       "vrml": ""
     },
