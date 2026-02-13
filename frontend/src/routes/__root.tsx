@@ -14,11 +14,11 @@ function RootLayout() {
   useEffect(() => {
     function updateRoute(status: SerialStatus) {
       info(`Serial status changed here: ${status}`);
-      if (status === "Connected") {
+      // if (status === "Connected") {
         navigate({ to: "/home" });
-      } else {
-          navigate({ to: "/" });
-      }
+      // } else {
+      //   navigate({ to: "/" });
+      // }
     }
 
     commands.getSerialStatus().then(updateRoute);
@@ -42,9 +42,9 @@ function RootLayout() {
 
   return (
     <main className="h-screen flex flex-col overflow-hidden">
-        <Titlebar />
-        <Outlet />
-        <TanStackRouterDevtools />
+      <Titlebar />
+      <Outlet />
+      <TanStackRouterDevtools/>
     </main>
   )
 }    
