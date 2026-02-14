@@ -31,6 +31,8 @@ bind_interrupts!(struct Irqs {
     USBCTRL_IRQ => InterruptHandler<USB>;
 });
 
+const USB_PACKET_SIZE: usize = 64;
+
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
     // Initialize the heap allocator
@@ -76,7 +78,7 @@ async fn main(spawner: Spawner) {
     let mut class = {
         static STATE: StaticCell<State> = StaticCell::new();
         let state = STATE.init(State::new());
-        CdcAcmClass::new(&mut builder, state, 64)
+        CdcAcmClass::new(&mut builder, state, USB_PACKET_SIZE as u16)
     };
 
     // Build the builder.
@@ -122,19 +124,21 @@ async fn send_frames<'d, T: Instance + 'd>(class: &mut CdcAcmClass<'d, Driver<'d
         // class.write_packet(data).await?;
         
         let mut data = Vec::new();
-        for i in 0..10 {
+        for i in 0..1000 {
             data.push((2048.0 * sinf(i as f32 / 100.0)) as u16);
         }
         let message = Message::Frame(FrameData {
             data,
-            timescale: 1.0,
-            voltagescale: 2.0,
+            center: 2048,
+            timestep_ms: 0.1,
+            voltage_scale: 2.0,
         });
         let mut bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 
-        let length = bytes.len().to_string() + "\n";
-
-        class.write_packet(&bytes).await?;
+        // Send in chunks of USB_PACKET_SIZE
+        for chunk in bytes.chunks(USB_PACKET_SIZE) {
+            class.write_packet(chunk).await?;
+        }
 
         Timer::after_secs(1).await;
     }
