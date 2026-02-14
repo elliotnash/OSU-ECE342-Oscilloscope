@@ -31,8 +31,8 @@ function Index() {
 
   return (
     <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
-      <div className="flex-1 flex flex-col">
-        <div ref={plotContainerRef} className="flex-1 min-w-0 min-h-0 w-full h-full flex overflow-hidden">
+      <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
+        <div ref={plotContainerRef} className="flex-1 min-w-0 min-h-0 w-full h-full flex">
           {plotSize.width > 0 && plotSize.height > 0 && (
             <Plot width={plotSize.width} height={plotSize.height} />
           )}
@@ -82,32 +82,68 @@ export type CurveProps = {
   height: number;
 };
 
+// Align domain to grid: extend data range so both ends fall exactly on grid lines.
+// Returns [domainMin, domainMax] and the step used (for drawing grid lines).
+function alignDomainToGrid(
+  dataMin: number,
+  dataMax: number,
+  approximateDivisions: number = 10
+): { domain: [number, number]; step: number } {
+  const range = dataMax - dataMin;
+  if (range <= 0) return { domain: [dataMin, dataMax], step: range || 1 };
+  const tempScale = scaleLinear<number>({ domain: [dataMin, dataMax], range: [0, 1] });
+  const ticks = tempScale.ticks(approximateDivisions);
+  const step = ticks.length >= 2 ? ticks[1] - ticks[0] : range / approximateDivisions;
+  if (step <= 0) return { domain: [dataMin, dataMax], step: range || 1 };
+  const domainMin = Math.floor(dataMin / step) * step;
+  const domainMax = Math.ceil(dataMax / step) * step;
+  return { domain: [domainMin, domainMax], step };
+}
+
 export default function Plot({ width, height }: CurveProps) {
   // const axisPadding = { top: 20, right: 50, bottom: 50, left: 60 };
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
   const chartWidth = width - axisPadding.left - axisPadding.right;
   const chartHeight = height - axisPadding.top - axisPadding.bottom;
 
+  const xDataExtent = extent(plotData, getX) as [number, number];
+  const yMin = Math.min(...plotData.map(getY));
+  const yMax = Math.max(...plotData.map(getY));
+  const { domain: xDomain, step: xStep } = alignDomainToGrid(xDataExtent[0], xDataExtent[1]);
+  const { domain: yDomain, step: yStep } = alignDomainToGrid(yMin, yMax);
+
   // scales
   const xScale = scaleLinear<number>({
-    domain: extent(plotData, getX) as [number, number],
+    domain: xDomain,
     range: [0, chartWidth],
   });
   const yScale = scaleLinear<number>({
-    domain: [Math.min(...plotData.map(getY)), Math.max(...plotData.map(getY))],
+    domain: yDomain,
     range: [chartHeight, 0],
   });
 
-  // Generate tick values for axes
-  const xTicks = xScale.ticks(10);
-  const yTicks = yScale.ticks(8);
+  // Grid line positions at exact step intervals (graph ends on a box divider)
+  const xGridValues = (() => {
+    const out: number[] = [];
+    const count = Math.round((xDomain[1] - xDomain[0]) / xStep);
+    for (let i = 0; i < count; i++) out.push(xDomain[0] + i * xStep);
+    out.push(xDomain[1]);
+    return out;
+  })();
+  const yGridValues = (() => {
+    const out: number[] = [];
+    const count = Math.round((yDomain[1] - yDomain[0]) / yStep);
+    for (let i = 0; i < count; i++) out.push(yDomain[0] + i * yStep);
+    out.push(yDomain[1]);
+    return out;
+  })();
 
   return (
     <svg role="application" aria-label="Oscilloscope Plot" width={width} height={height}>
       {/* Chart area */}
       <Group left={axisPadding.left} top={axisPadding.top}>
-        {/* Grid lines */}
-        {xTicks.map((tick) => (
+        {/* Grid lines — aligned so graph ends exactly on a box divider */}
+        {xGridValues.map((tick) => (
           <line
             key={`x-grid-${tick}`}
             x1={xScale(tick)}
@@ -118,7 +154,7 @@ export default function Plot({ width, height }: CurveProps) {
             strokeWidth={1}
           />
         ))}
-        {yTicks.map((tick) => (
+        {yGridValues.map((tick) => (
           <line
             key={`y-grid-${tick}`}
             x1={0}

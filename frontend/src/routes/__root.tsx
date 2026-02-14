@@ -44,7 +44,7 @@ function RootLayout() {
     <main className="h-screen flex flex-col overflow-hidden">
       <Titlebar />
       <Outlet />
-      <TanStackRouterDevtools/>
+      <TanStackRouterDevtools position="top-right"/>
     </main>
   )
 }    
