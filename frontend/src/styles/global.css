@@ -149,6 +149,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
+
+  touch-action: pan-x pan-y;
+  height: 100%;
 }
 
 .dark {
@@ -247,6 +250,7 @@
     font-feature-settings:
       "rlig" 1,
       "calt" 1;
+    overflow: hidden;
   }
 
   ::-webkit-scrollbar {

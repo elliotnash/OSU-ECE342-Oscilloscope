@@ -9,18 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as TestRouteImport } from './routes/test'
 import { Route as HomeRouteImport } from './routes/home'
+import { Route as SubpageRouteImport } from './routes/_subpage'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SubpageTestRouteImport } from './routes/_subpage/test'
 
-const TestRoute = TestRouteImport.update({
-  id: '/test',
-  path: '/test',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const HomeRoute = HomeRouteImport.update({
   id: '/home',
   path: '/home',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubpageRoute = SubpageRouteImport.update({
+  id: '/_subpage',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -28,51 +28,57 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SubpageTestRoute = SubpageTestRouteImport.update({
+  id: '/test',
+  path: '/test',
+  getParentRoute: () => SubpageRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
-  '/test': typeof TestRoute
+  '/test': typeof SubpageTestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/home': typeof HomeRoute
-  '/test': typeof TestRoute
+  '/test': typeof SubpageTestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_subpage': typeof SubpageRouteWithChildren
   '/home': typeof HomeRoute
-  '/test': typeof TestRoute
+  '/_subpage/test': typeof SubpageTestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths: '/' | '/home' | '/test'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/home' | '/test'
-  id: '__root__' | '/' | '/home' | '/test'
+  id: '__root__' | '/' | '/_subpage' | '/home' | '/_subpage/test'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SubpageRoute: typeof SubpageRouteWithChildren
   HomeRoute: typeof HomeRoute
-  TestRoute: typeof TestRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/test': {
-      id: '/test'
-      path: '/test'
-      fullPath: '/test'
-      preLoaderRoute: typeof TestRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/home': {
       id: '/home'
       path: '/home'
       fullPath: '/home'
       preLoaderRoute: typeof HomeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_subpage': {
+      id: '/_subpage'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof SubpageRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -82,13 +88,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_subpage/test': {
+      id: '/_subpage/test'
+      path: '/test'
+      fullPath: '/test'
+      preLoaderRoute: typeof SubpageTestRouteImport
+      parentRoute: typeof SubpageRoute
+    }
   }
 }
 
+interface SubpageRouteChildren {
+  SubpageTestRoute: typeof SubpageTestRoute
+}
+
+const SubpageRouteChildren: SubpageRouteChildren = {
+  SubpageTestRoute: SubpageTestRoute,
+}
+
+const SubpageRouteWithChildren =
+  SubpageRoute._addFileChildren(SubpageRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SubpageRoute: SubpageRouteWithChildren,
   HomeRoute: HomeRoute,
-  TestRoute: TestRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

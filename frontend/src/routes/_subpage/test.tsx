@@ -3,7 +3,7 @@ import { Channel } from '@tauri-apps/api/core'
 import { useEffect, useState } from 'react'
 import { commands, FrameData } from '~/bindings'
 
-export const Route = createFileRoute('/test')({
+export const Route = createFileRoute('/_subpage/test')({
   component: RouteComponent,
 })
 

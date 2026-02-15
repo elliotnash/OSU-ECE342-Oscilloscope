@@ -9,6 +9,9 @@ import { Group } from '@visx/group';
 import { LinePath } from '@visx/shape';
 import { scaleLinear } from '@visx/scale';
 import type { FrameData } from "~/bindings";
+import { Titlebar } from "~/components/titlebar";
+import { Bars3Icon } from "@heroicons/react/24/solid";
+import { Menu, MenuContent, MenuItem, MenuTrigger } from "~/components/menu";
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -30,19 +33,42 @@ function Index() {
   }, []);
 
   return (
-    <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
-      <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
-        <div ref={plotContainerRef} className="flex-1 min-w-0 min-h-0 w-full h-full flex">
-          {plotSize.width > 0 && plotSize.height > 0 && (
-            <Plot width={plotSize.width} height={plotSize.height} />
-          )}
+    <>
+      <Titlebar menuButton={
+        <Menu>
+          <MenuTrigger>
+            <Button size="sq-sm" intent="outline">
+              <Bars3Icon/>
+            </Button>
+          </MenuTrigger>
+          <MenuContent>
+            <MenuItem>
+              <Link to="/test">Settings</Link>
+            </MenuItem>
+            <MenuItem>
+              <Link to="/test">About</Link>
+            </MenuItem>
+            <MenuItem>
+              <Link to="/test">Test Panel</Link>
+            </MenuItem>
+          </MenuContent>
+        </Menu>
+      }/>
+      <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
+        <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
+          <div ref={plotContainerRef} className="flex-1 min-w-0 min-h-0 w-full h-full flex">
+            {plotSize.width > 0 && plotSize.height > 0 && (
+              <Plot width={plotSize.width} height={plotSize.height} />
+            )}
+          </div>
+          <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
-        <div className="bg-secondary/25 border rounded-xl p-4"></div>
+        <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-center justify-center gap-4 shrink-0">
+          <ControlPanel />
+        </div>
       </div>
-      <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-center justify-center gap-4 shrink-0">
-        <ControlPanel />
-      </div>
-    </div>
+    </>
+   
   );
 }
 
@@ -50,7 +76,6 @@ function ControlPanel() {
   return (
     <>
       <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
-      <Button intent="outline"><Link to="/test">Test Panel</Link></Button>
     </>
   )
 }

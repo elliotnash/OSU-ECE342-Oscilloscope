@@ -4,7 +4,6 @@ import { useEffect } from "react";
 import { titlebarLayout } from "~/main";
 import { Button } from "~/components/button";
 import { Button as RACButton } from "react-aria-components";
-import { Bars3Icon } from "@heroicons/react/24/solid";
 import { type } from "@tauri-apps/plugin-os";
 import WindowMinimizeSymbolic from "~/assets/adwaita/window-minimize-symbolic.svg?react";
 import WindowMaximizeSymbolic from "~/assets/adwaita/window-maximize-symbolic.svg?react";
@@ -17,7 +16,7 @@ const osType = type();
 
 const layout = await commands.getTitlebarLayout();
 
-export function Titlebar() {
+export function Titlebar({ menuButton }: { menuButton?: React.ReactNode }) {
     useEffect(() => {
         info(JSON.stringify(titlebarLayout));
     }, []);
@@ -27,7 +26,7 @@ export function Titlebar() {
             {/* Left buttons */}
         
             <div className="flex items-center gap-2 flex-1 min-w-0 justify-start pl-2">
-                {layout.left.map(mapTitlebarButton)}
+                {layout.left.map((button) => mapTitlebarButton(button, menuButton))}
             </div>
             <div className="absolute left-[50vw] -translate-x-1/2 flex items-center gap-2 pointer-events-none">
                 <div className="pointer-events-auto flex items-center gap-2 px-2 py-1 text-sm select-none">
@@ -36,20 +35,16 @@ export function Titlebar() {
             </div>
             {/* Right buttons */}
             <div className="flex items-center gap-2 flex-1 min-w-0 justify-end pr-2">
-                {layout.right.map(mapTitlebarButton)}
+                {layout.right.map((button) => mapTitlebarButton(button, menuButton))}
             </div>
         </div>
     )
 }
 
-function mapTitlebarButton(button: TitlebarButton) {
+function mapTitlebarButton(button: TitlebarButton, menuButton?: React.ReactNode) {
     switch (button) {
         case "Menu":
-            return (
-                <Button size="sq-sm" intent="outline">
-                    <Bars3Icon/>
-                </Button>
-            );
+            return menuButton;
         case "Minimize":
             return <NativeMinimize/>;
         case "Maximize":

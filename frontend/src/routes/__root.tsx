@@ -5,6 +5,8 @@ import { commands, events, SerialStatus } from '~/bindings';
 import { Titlebar } from '~/components/titlebar';
 import { useNavigate } from '@tanstack/react-router';
 import { info } from '@tauri-apps/plugin-log';
+import { Button } from '~/components/button';
+import { Bars3Icon } from "@heroicons/react/24/solid";
 
 function RootLayout() {
   const navigate = useNavigate();
@@ -42,7 +44,6 @@ function RootLayout() {
 
   return (
     <main className="h-screen flex flex-col overflow-hidden">
-      <Titlebar />
       <Outlet />
       <TanStackRouterDevtools position="top-right"/>
     </main>
