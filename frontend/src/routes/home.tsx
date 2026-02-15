@@ -40,11 +40,19 @@ function Index() {
         <div className="bg-secondary/25 border rounded-xl p-4"></div>
       </div>
       <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-center justify-center gap-4 shrink-0">
-        <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
-        <Button intent="outline"><Link to="/test">Test Panel</Link></Button>
+        <ControlPanel />
       </div>
     </div>
   );
+}
+
+function ControlPanel() {
+  return (
+    <>
+      <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
+      <Button intent="outline"><Link to="/test">Test Panel</Link></Button>
+    </>
+  )
 }
 
 // Generate a sine wave with 1000 data points as 12-bit values (0-4095)
@@ -139,46 +147,58 @@ export default function Plot({ width, height }: CurveProps) {
   })();
 
   return (
-    <svg role="application" aria-label="Oscilloscope Plot" width={width} height={height}>
-      {/* Chart area */}
-      <Group left={axisPadding.left} top={axisPadding.top}>
-        {/* Grid lines — aligned so graph ends exactly on a box divider */}
-        {xGridValues.map((tick) => (
+    <div className="relative">
+      <div className="bg-red-500 absolute top-0 right-0 z-10">THIS WILL BE A MINIMAP</div>
+      <svg role="application" aria-label="Oscilloscope Plot" width={width} height={height}>
+        {/* Chart area */}
+        <Group left={axisPadding.left} top={axisPadding.top}>
+          {/* Grid lines — aligned so graph ends exactly on a box divider */}
+          {xGridValues.map((tick) => (
+            <line
+              key={`x-grid-${tick}`}
+              x1={xScale(tick)}
+              x2={xScale(tick)}
+              y1={0}
+              y2={chartHeight}
+              stroke="rgba(255, 255, 255, 0.1)"
+              strokeWidth={1}
+            />
+          ))}
+          {yGridValues.map((tick) => (
+            <line
+              key={`y-grid-${tick}`}
+              x1={0}
+              x2={chartWidth}
+              y1={yScale(tick)}
+              y2={yScale(tick)}
+              stroke="oklch(from var(--fg) l c h / 0.1)"
+              strokeWidth={1}
+            />
+          ))}
+
           <line
-            key={`x-grid-${tick}`}
-            x1={xScale(tick)}
-            x2={xScale(tick)}
-            y1={0}
-            y2={chartHeight}
-            stroke="rgba(255, 255, 255, 0.1)"
-            strokeWidth={1}
-          />
-        ))}
-        {yGridValues.map((tick) => (
-          <line
-            key={`y-grid-${tick}`}
             x1={0}
             x2={chartWidth}
-            y1={yScale(tick)}
-            y2={yScale(tick)}
-            stroke="rgba(255, 255, 255, 0.1)"
-            strokeWidth={1}
-          />
-        ))}
-
-        {/* Data line */}
-        {width > 8 && (
-          <LinePath<PlotPoint>
-            curve={allCurves.curveStep}
-            data={plotData}
-            x={(d) => xScale(getX(d)) ?? 0}
-            y={(d) => yScale(getY(d)) ?? 0}
-            stroke="var(--primary)"
+            y1={yScale(0)}
+            y2={yScale(0)}
+            stroke="oklch(from var(--fg) l c h / 0.2)"
             strokeWidth={2}
-            shapeRendering="geometricPrecision"
           />
-        )}
-      </Group>
-    </svg>
+
+          {/* Data line */}
+          {width > 8 && (
+            <LinePath<PlotPoint>
+              curve={allCurves.curveStep}
+              data={plotData}
+              x={(d) => xScale(getX(d)) ?? 0}
+              y={(d) => yScale(getY(d)) ?? 0}
+              stroke="var(--primary)"
+              strokeWidth={2}
+              shapeRendering="geometricPrecision"
+            />
+          )}
+        </Group>
+      </svg>
+    </div>
   );
 }
