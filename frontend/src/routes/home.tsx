@@ -1,17 +1,22 @@
 import { Button } from "~/components/button";
 import "~/styles/global.css";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState, useLayoutEffect } from "react";
+import { useRef, useState, useLayoutEffect, useCallback } from "react";
 
 import { extent } from '@visx/vendor/d3-array';
 import * as allCurves from '@visx/curve';
 import { Group } from '@visx/group';
 import { LinePath } from '@visx/shape';
 import { scaleLinear } from '@visx/scale';
-import type { FrameData } from "~/bindings";
+import type { Channel, FrameData } from "~/bindings";
 import { Titlebar } from "~/components/titlebar";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "~/components/menu";
+import { Card, CardContent, CardHeader, CardTitle } from "~/components/card";
+import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/select";
+import { ToggleGroup, ToggleGroupItem } from "~/components/toggle-group";
+import { Key } from "react-aria-components";
+import { Label } from "~/components/field";
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -63,7 +68,7 @@ function Index() {
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
-        <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-center justify-center gap-4 shrink-0">
+        <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-left justify-top gap-4 shrink-0">
           <ControlPanel />
         </div>
       </div>
@@ -75,8 +80,90 @@ function Index() {
 function ControlPanel() {
   return (
     <>
-      <h1 className="text-4xl font-semibold text-fg">Oscope Client</h1>
+      <ChannelCard channel="A" />
+      <ChannelCard channel="B" />
     </>
+  )
+}
+
+const voltageScaleOptions = [
+  { id: "1", value: 1.5 },
+  { id: "2", value: 0.36 },
+  { id: "3", value: 0.07 },
+]
+
+function ChannelCard({ channel }: { channel: Channel }) {
+  const [voltageScale, setVoltageScale] = useState(voltageScaleOptions[0]);
+  const [coupling, setCoupling] = useState<Key>("DC");
+  const [attenuation, setAttenuation] = useState<Key>("1x");
+
+  const handleVoltageScaleChange = useCallback((key: Key | null) => {
+      if (key) {
+        const newScale = voltageScaleOptions.find((option) => option.id === key) ?? voltageScaleOptions[0];
+        setVoltageScale(newScale);
+        // TODO: Dispatch tauri event to set voltage scale on hardware
+      }
+  }, []);
+
+  const handleCouplingChange = useCallback((keys: Set<Key>) => {
+    if (keys.size > 0) {
+      const newCoupling = keys.values().next().value;
+      if (newCoupling) {
+        setCoupling(newCoupling);
+        // TODO: Dispatch tauri event to set coupling on hardware
+      }
+    }
+  }, []);
+
+  const handleAttenuationChange = useCallback((keys: Set<Key>) => {
+    if (keys.size > 0) {
+      const newAttenuation = keys.values().next().value;
+      if (newAttenuation) {
+        setAttenuation(newAttenuation);
+        // TODO: Dispatch tauri event to set coupling on hardware
+      }
+    }
+  }, []);
+
+  return (
+    <Card className="portrait:h-full landscape:w-full gap-2">
+      <CardHeader>
+        <CardTitle>Channel {channel}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2">
+          <div className="">
+            <Label>Voltage Scale</Label>
+            <Select key={`voltage-scale-${attenuation}`} value={voltageScale.id} onChange={handleVoltageScaleChange}>
+              <SelectTrigger />
+              <SelectContent items={voltageScaleOptions}>
+                {(item) => (
+                  <SelectItem id={item.id} textValue={`\u00B1${attenuation === "1x" ? item.value : parseFloat((item.value * 10).toFixed(2))}V`}>
+                    {`\u00B1${attenuation === "1x" ? item.value : parseFloat((item.value * 10).toFixed(2))}V`}
+                  </SelectItem>
+                )}
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="flex flex-row gap-4">
+            <div className="flex flex-col">
+              <Label>Coupling</Label>
+              <ToggleGroup selectedKeys={[coupling]} onSelectionChange={handleCouplingChange}>
+                <ToggleGroupItem id="DC">DC</ToggleGroupItem>
+                <ToggleGroupItem id="AC">AC</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+            <div className="flex flex-col">
+              <Label>Attenuation</Label>
+              <ToggleGroup selectedKeys={[attenuation]} onSelectionChange={handleAttenuationChange}>
+                <ToggleGroupItem id="1x">1x</ToggleGroupItem>
+                <ToggleGroupItem id="10x">10x</ToggleGroupItem>
+              </ToggleGroup>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -94,7 +181,8 @@ const frameData: FrameData = {
   data: generateSineWave(1000, 4, 2048),
   center: 2048,
   timestep_ms: 0.1,
-  voltage_scale: 3.0
+  voltage_scale: 3.0,
+  channel: "A",
 }
 
 // Convert frameData to plot data points

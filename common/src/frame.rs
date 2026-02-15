@@ -164,6 +164,14 @@ where
     Ok(data)
 }
 
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "std", derive(Type))]
+pub enum Channel {
+    #[default] 
+    A,
+    B,
+}
+
 // Also derive Type if std feature is enabled
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "std", derive(Type))]
@@ -176,6 +184,7 @@ pub struct FrameData {
     pub center: u16,
     pub timestep_ms: f32,
     pub voltage_scale: f32,
+    pub channel: Channel,
 }
 
 #[cfg(test)]
@@ -190,6 +199,7 @@ mod tests {
             center: 2048,
             timestep_ms: 1.0,
             voltage_scale: 2.0,
+            channel: Channel::A,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
@@ -205,6 +215,7 @@ mod tests {
             center: 2048,
             timestep_ms: 1.0,
             voltage_scale: 2.0,
+            channel: Channel::B,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
@@ -221,6 +232,7 @@ mod tests {
             center: 2048,
             timestep_ms: 1.0,
             voltage_scale: 2.0,
+            channel: Channel::A,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
@@ -241,6 +253,7 @@ mod tests {
             center: 2048,
             timestep_ms: 1.0,
             voltage_scale: 2.0,
+            channel: Channel::B,
         };
         let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
         let deserialized =
