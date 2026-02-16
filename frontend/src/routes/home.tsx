@@ -97,10 +97,10 @@ function ControlPanel() {
 }
 
 const mathChannelPresets = [
-  { id: "1", value: "CH1 + CH2" },
-  { id: "2", value: "CH1 - CH2" },
-  { id: "3", value: "CH1 * CH2" },
-  { id: "4", value: "CH1 / CH2" },
+  { id: "1", value: "CHA + CHB" },
+  { id: "2", value: "CHA - CHB" },
+  { id: "3", value: "CHA * CHB" },
+  { id: "4", value: "CHA / CHB" },
 ]
 
 function MathChannelCard() {
