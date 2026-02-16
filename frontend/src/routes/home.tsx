@@ -15,8 +15,13 @@ import { Menu, MenuContent, MenuItem, MenuTrigger } from "~/components/menu";
 import { Card, CardContent, CardHeader, CardTitle } from "~/components/card";
 import { Select, SelectContent, SelectItem, SelectTrigger } from "~/components/select";
 import { ToggleGroup, ToggleGroupItem } from "~/components/toggle-group";
-import { Key } from "react-aria-components";
+import type { Key } from "react-aria-components";
 import { Label } from "~/components/field";
+import { ScrollArea } from "~/components/scroll-area";
+import { Switch } from "~/components/switch";
+import { Tabs, Tab, TabList, TabPanel } from "~/components/tabs";
+import { TextField } from "~/components/text-field";
+import { Input } from "~/components/input";
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -68,9 +73,12 @@ function Index() {
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
-        <div className="flex flex-row p-4 bg-secondary/25 border rounded-xl landscape:flex-col items-left justify-top gap-4 shrink-0">
-          <ControlPanel />
-        </div>
+          <ScrollArea className="landscape:w-max portrait:h-max bg-secondary/25 border rounded-xl">
+            <div className="flex flex-row p-4 landscape:flex-col w-max h-max gap-4">
+              <ControlPanel />
+            </div>
+          </ScrollArea>
+        {/* </div> */}
       </div>
     </>
    
@@ -82,7 +90,125 @@ function ControlPanel() {
     <>
       <ChannelCard channel="A" />
       <ChannelCard channel="B" />
+      <CommondCard />
+      <MathChannelCard />
     </>
+  )
+}
+
+const mathChannelPresets = [
+  { id: "1", value: "CH1 + CH2" },
+  { id: "2", value: "CH1 - CH2" },
+  { id: "3", value: "CH1 * CH2" },
+  { id: "4", value: "CH1 / CH2" },
+]
+
+function MathChannelCard() {
+  const [enabled, setEnabled] = useState(true);
+  const [isPreset, setIsPreset] = useState(true);
+  const [preset, setPreset] = useState(mathChannelPresets[0]);
+  const [customExpression, setCustomExpression] = useState("");
+
+  const handlePresetChange = useCallback((key: Key | null) => {
+    if (key) {
+      const newPreset = mathChannelPresets.find((option) => option.id === key) ?? mathChannelPresets[0];
+      setPreset(newPreset);
+    }
+  }, []);
+
+  return (
+    <Card className="h-auto landscape:w-full min-w-0 gap-2">
+      <CardHeader>
+        <CardTitle className="flex flex-row w-full justify-between">
+          Math Channel <Switch isSelected={enabled} onChange={setEnabled}/>
+        </CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2">
+          <Tabs isDisabled={!enabled} className="w-full mt-[-8pt]" onSelectionChange={(tab) => setIsPreset(tab === "preset")}>
+            <TabList >
+              <Tab id="preset">Preset</Tab>
+              <Tab id="custom">Custom</Tab>
+            </TabList>
+            <TabPanel id="preset">
+              <div className="grid min-w-0 w-full *:col-start-1 *:row-start-1">
+                <Select value={preset.id} onChange={handlePresetChange}>
+                  <SelectTrigger />
+                  <SelectContent items={mathChannelPresets}>
+                    {(item) => <SelectItem id={item.id} textValue={item.value}>{item.value}</SelectItem>}
+                  </SelectContent>
+                </Select>
+                {/* Invisible copy so grid cell is at least as wide as the Input */}
+                <div className="invisible pointer-events-none w-fit **:data-[slot=control]:w-max!">
+                  <Input value={customExpression} onChange={(e) => setCustomExpression(e.target.value)} />
+                </div>
+              </div>
+            </TabPanel>
+            <TabPanel id="custom">
+              <div className="grid min-w-0 w-full *:col-start-1 *:row-start-1">
+                {/* Invisible copy so grid cell is at least as wide as the Select */}
+                <div className="invisible pointer-events-none w-fit">
+                  <Select value={preset.id} onChange={handlePresetChange}>
+                    <SelectTrigger />
+                    <SelectContent items={mathChannelPresets}>
+                      {(item) => <SelectItem id={item.id} textValue={item.value}>{item.value}</SelectItem>}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <div className="min-w-0 overflow-hidden">
+                  <Input value={customExpression} onChange={(e) => setCustomExpression(e.target.value)} />
+                </div>
+              </div>
+            </TabPanel>
+          </Tabs>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+const sampleRateOptions = [
+  { id: "1", value: 250_000, label: "250 kHz" },
+  { id: "2", value: 200_000, label: "200 kHz" },
+  { id: "3", value: 150_000, label: "150 kHz" },
+  { id: "4", value: 100_000, label: "100 kHz" },
+  { id: "5", value: 75_000, label: "75 kHz" },
+  { id: "6", value: 50_000, label: "50 kHz" },
+  { id: "7", value: 25_000, label: "25 kHz" },
+  { id: "8", value: 10_000, label: "10 kHz" },
+]
+
+function CommondCard() {
+  const [sampleRate, setSampleRate] = useState(sampleRateOptions[0]);
+  const handleSampleRateChange = useCallback((key: Key | null) => {
+    if (key) {
+      const newSampleRate = sampleRateOptions.find((option) => option.id === key) ?? sampleRateOptions[0];
+      setSampleRate(newSampleRate);
+      // TODO: Dispatch tauri event to set sample rate on hardware
+    }
+  }, []);
+
+  return (
+    <Card className="h-auto landscape:w-full gap-2">
+      <CardHeader>
+        <CardTitle>All Channels</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-row gap-4">
+            <div className="w-full">
+              <Label>Sample Rate</Label>
+              <Select value={sampleRate.id} onChange={handleSampleRateChange}>
+                <SelectTrigger />
+                <SelectContent items={sampleRateOptions}>
+                  {(item) => <SelectItem id={item.id} textValue={item.label}>{item.label}</SelectItem>}
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   )
 }
 
@@ -96,6 +222,7 @@ function ChannelCard({ channel }: { channel: Channel }) {
   const [voltageScale, setVoltageScale] = useState(voltageScaleOptions[0]);
   const [coupling, setCoupling] = useState<Key>("DC");
   const [attenuation, setAttenuation] = useState<Key>("1x");
+  const [enabled, setEnabled] = useState(true);
 
   const handleVoltageScaleChange = useCallback((key: Key | null) => {
       if (key) {
@@ -126,15 +253,17 @@ function ChannelCard({ channel }: { channel: Channel }) {
   }, []);
 
   return (
-    <Card className="portrait:h-full landscape:w-full gap-2">
+    <Card className="h-auto landscape:w-full gap-2">
       <CardHeader>
-        <CardTitle>Channel {channel}</CardTitle>
+        <CardTitle className="flex flex-row w-full justify-between">
+          Channel {channel} <Switch isSelected={enabled} onChange={setEnabled}/>
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <div className="">
+          <div>
             <Label>Voltage Scale</Label>
-            <Select key={`voltage-scale-${attenuation}`} value={voltageScale.id} onChange={handleVoltageScaleChange}>
+            <Select isDisabled={!enabled} key={`voltage-scale-${attenuation}`} value={voltageScale.id} onChange={handleVoltageScaleChange}>
               <SelectTrigger />
               <SelectContent items={voltageScaleOptions}>
                 {(item) => (
@@ -145,17 +274,17 @@ function ChannelCard({ channel }: { channel: Channel }) {
               </SelectContent>
             </Select>
           </div>
-          <div className="flex flex-row gap-4">
+          <div className="flex flex-row gap-4 justify-between">
             <div className="flex flex-col">
               <Label>Coupling</Label>
-              <ToggleGroup selectedKeys={[coupling]} onSelectionChange={handleCouplingChange}>
+              <ToggleGroup isDisabled={!enabled} selectedKeys={[coupling]} onSelectionChange={handleCouplingChange}>
                 <ToggleGroupItem id="DC">DC</ToggleGroupItem>
                 <ToggleGroupItem id="AC">AC</ToggleGroupItem>
               </ToggleGroup>
             </div>
             <div className="flex flex-col">
               <Label>Attenuation</Label>
-              <ToggleGroup selectedKeys={[attenuation]} onSelectionChange={handleAttenuationChange}>
+              <ToggleGroup isDisabled={!enabled} selectedKeys={[attenuation]} onSelectionChange={handleAttenuationChange}>
                 <ToggleGroupItem id="1x">1x</ToggleGroupItem>
                 <ToggleGroupItem id="10x">10x</ToggleGroupItem>
               </ToggleGroup>
