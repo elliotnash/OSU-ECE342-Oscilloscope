@@ -412,7 +412,9 @@ export default function Plot() {
               typeof yRaw === "number" && Number.isFinite(yRaw)
                 ? Number(yRaw.toPrecision(4))
                 : yRaw;
-            return `<div>${item.marker || ""} ${y}V</div>`;
+            const markerColor = chartTheme.series;
+            const marker = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${markerColor};margin-right:4px;"></span>`;
+            return `<div>${marker} ${y}V</div>`;
           }),
         ];
 
