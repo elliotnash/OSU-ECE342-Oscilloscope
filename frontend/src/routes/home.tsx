@@ -1,6 +1,6 @@
 import { Button } from "~/components/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 
 import { extent } from '@visx/vendor/d3-array';
 import { scaleLinear } from '@visx/scale';
@@ -326,6 +326,36 @@ function alignDomainToGrid(
 }
 
 export default function Plot() {
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [chartTheme, setChartTheme] = useState({
+    bg: "transparent",
+    card: "rgba(255, 255, 255, 0.05)",
+    axisLabel: "rgba(255, 255, 255, 0.7)",
+    axisLine: "rgba(255, 255, 255, 0.7)",
+    gridLine: "rgba(255, 255, 255, 0.1)",
+    series: "rgb(96, 165, 250)",
+  });
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const styles = getComputedStyle(containerRef.current);
+
+    const bg = styles.getPropertyValue("--bg").trim();
+    const fg = styles.getPropertyValue("--fg").trim();
+    const border = styles.getPropertyValue("--border").trim();
+    const primary = styles.getPropertyValue("--primary").trim();
+    const secondary = styles.getPropertyValue("--secondary").trim();
+
+    setChartTheme((prev) => ({
+      bg: bg || prev.bg,
+      card: `color-mix(in oklch, ${bg}, ${secondary} 25%)` || prev.card,
+      axisLabel: fg || prev.axisLabel,
+      axisLine: `oklch(from ${fg} l c h / 0.3)` || prev.axisLine,
+      gridLine: border || prev.gridLine,
+      series: primary || prev.series,
+    }));
+  }, []);
+
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
 
   const xDataExtent = extent(plotData, getX) as [number, number];
@@ -336,6 +366,7 @@ export default function Plot() {
 
   const option = {
     animation: false,
+    backgroundColor: chartTheme.bg,
     grid: {
       top: axisPadding.top,
       right: axisPadding.right,
@@ -345,7 +376,48 @@ export default function Plot() {
     },
     tooltip: {
       trigger: "axis",
-      axisPointer: { type: "cross" },
+      axisPointer: {
+        type: "cross",
+        lineStyle: {
+          color: chartTheme.axisLine,
+        },
+        label: {
+          backgroundColor: chartTheme.card,
+          borderColor: chartTheme.gridLine,
+          borderWidth: 1,
+          color: chartTheme.axisLabel,
+        },
+      },
+      backgroundColor: chartTheme.card,
+      borderColor: chartTheme.gridLine,
+      borderWidth: 1,
+      textStyle: {
+        color: chartTheme.axisLabel,
+      },
+      formatter: (params: any) => {
+        const items = Array.isArray(params) ? params : [params];
+        if (!items.length) return "";
+
+        const xRaw = items[0].axisValue;
+        const x =
+          typeof xRaw === "number" && Number.isFinite(xRaw)
+            ? Number(xRaw.toPrecision(4))
+            : xRaw;
+
+        const lines = [
+          `<div>t: ${x}</div>`,
+          ...items.map((item) => {
+            const yRaw = item.value?.[1] ?? item.value;
+            const y =
+              typeof yRaw === "number" && Number.isFinite(yRaw)
+                ? Number(yRaw.toPrecision(4))
+                : yRaw;
+            return `<div>${item.marker || ""} ${y}V</div>`;
+          }),
+        ];
+
+        return lines.join("");
+      },
     },
     xAxis: {
       type: "value",
@@ -354,16 +426,35 @@ export default function Plot() {
       interval: xStep,
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.7)",
+          color: chartTheme.axisLine,
         },
       },
       axisLabel: {
-        color: "rgba(255, 255, 255, 0.7)",
+        color: chartTheme.axisLabel,
+        formatter: (value: number) => {
+          if (!Number.isFinite(value)) return "";
+          // 4 significant figures, avoid floating-point noise
+          return Number(value.toPrecision(4)).toString();
+        },
+      },
+      axisPointer: {
+        lineStyle: {
+          color: chartTheme.axisLine,
+        },
+        label: {
+          formatter: (params: any) => {
+            const value = params.value;
+            if (typeof value === "number" && Number.isFinite(value)) {
+              return Number(value.toPrecision(4)).toString();
+            }
+            return value?.toString() || "";
+          },
+        },
       },
       splitLine: {
         show: true,
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.1)",
+          color: chartTheme.gridLine,
           width: 1,
         },
       },
@@ -375,21 +466,35 @@ export default function Plot() {
       interval: yStep,
       axisLine: {
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.7)",
+          color: chartTheme.axisLine,
         },
       },
       axisLabel: {
-        color: "rgba(255, 255, 255, 0.7)",
+        color: chartTheme.axisLabel,
         formatter: (value: number) => {
           if (!Number.isFinite(value)) return "";
-          // 3 significant figures, avoid floating-point noise like 0.9999999999
-          return Number(value.toPrecision(3)).toString();
+          // 4 significant figures, avoid floating-point noise like 0.9999999999
+          return Number(value.toPrecision(4)).toString();
+        },
+      },
+      axisPointer: {
+        lineStyle: {
+          color: chartTheme.axisLine,
+        },
+        label: {
+          formatter: (params: any) => {
+            const value = params.value;
+            if (typeof value === "number" && Number.isFinite(value)) {
+              return Number(value.toPrecision(4)).toString();
+            }
+            return value?.toString() || "";
+          },
         },
       },
       splitLine: {
         show: true,
         lineStyle: {
-          color: "rgba(255, 255, 255, 0.1)",
+          color: chartTheme.gridLine,
           width: 1,
         },
       },
@@ -399,9 +504,8 @@ export default function Plot() {
         type: "line",
         data: plotData.map((point) => [point.x, point.y]),
         showSymbol: false,
-        step: "middle",
         lineStyle: {
-          color: "rgb(96, 165, 250)",
+          color: chartTheme.series,
           width: 2,
         },
       },
@@ -409,7 +513,7 @@ export default function Plot() {
   };
 
   return (
-    <div className="relative w-full h-full pb-4">
+    <div ref={containerRef} className="relative w-full h-full pb-4">
       {/* <div className="bg-red-500 absolute top-0 right-0 z-10">THIS WILL BE A MINIMAP</div> */}
       <ReactECharts
         style={{ width: "100%", height: "100%" }}
