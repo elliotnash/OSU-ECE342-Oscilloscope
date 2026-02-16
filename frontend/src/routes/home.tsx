@@ -1,13 +1,10 @@
 import { Button } from "~/components/button";
-import "~/styles/global.css";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useRef, useState, useLayoutEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 import { extent } from '@visx/vendor/d3-array';
-import * as allCurves from '@visx/curve';
-import { Group } from '@visx/group';
-import { LinePath } from '@visx/shape';
 import { scaleLinear } from '@visx/scale';
+import ReactECharts from "echarts-for-react";
 import type { Channel, FrameData } from "~/bindings";
 import { Titlebar } from "~/components/titlebar";
 import { Bars3Icon } from "@heroicons/react/24/solid";
@@ -20,7 +17,6 @@ import { Label } from "~/components/field";
 import { ScrollArea } from "~/components/scroll-area";
 import { Switch } from "~/components/switch";
 import { Tabs, Tab, TabList, TabPanel } from "~/components/tabs";
-import { TextField } from "~/components/text-field";
 import { Input } from "~/components/input";
 
 export const Route = createFileRoute('/home')({
@@ -28,20 +24,6 @@ export const Route = createFileRoute('/home')({
 })
 
 function Index() {
-  const plotContainerRef = useRef<HTMLDivElement>(null);
-  const [plotSize, setPlotSize] = useState({ width: 0, height: 0 });
-
-  useLayoutEffect(() => {
-    const el = plotContainerRef.current;
-    if (!el) return;
-    const observer = new ResizeObserver((entries) => {
-      const { width, height } = entries[0]?.contentRect ?? { width: 0, height: 0 };
-      setPlotSize({ width: Math.round(width), height: Math.round(height) });
-    });
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
-
   return (
     <>
       <Titlebar menuButton={
@@ -66,10 +48,8 @@ function Index() {
       }/>
       <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
-          <div ref={plotContainerRef} className="flex-1 min-w-0 min-h-0 w-full h-full flex">
-            {plotSize.width > 0 && plotSize.height > 0 && (
-              <Plot width={plotSize.width} height={plotSize.height} />
-            )}
+          <div className="flex-1 min-w-0 min-h-0 w-full h-full flex">
+            <Plot/>
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
@@ -327,11 +307,6 @@ const plotData: PlotPoint[] = frameData.data.map((value, index) => ({
 const getX = (d: PlotPoint) => d.x;
 const getY = (d: PlotPoint) => d.y;
 
-export type CurveProps = {
-  width: number;
-  height: number;
-};
-
 // Align domain to grid: extend data range so both ends fall exactly on grid lines.
 // Returns [domainMin, domainMax] and the step used (for drawing grid lines).
 function alignDomainToGrid(
@@ -350,11 +325,8 @@ function alignDomainToGrid(
   return { domain: [domainMin, domainMax], step };
 }
 
-export default function Plot({ width, height }: CurveProps) {
-  // const axisPadding = { top: 20, right: 50, bottom: 50, left: 60 };
+export default function Plot() {
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
-  const chartWidth = width - axisPadding.left - axisPadding.right;
-  const chartHeight = height - axisPadding.top - axisPadding.bottom;
 
   const xDataExtent = extent(plotData, getX) as [number, number];
   const yMin = Math.min(...plotData.map(getY));
@@ -362,85 +334,89 @@ export default function Plot({ width, height }: CurveProps) {
   const { domain: xDomain, step: xStep } = alignDomainToGrid(xDataExtent[0], xDataExtent[1]);
   const { domain: yDomain, step: yStep } = alignDomainToGrid(yMin, yMax);
 
-  // scales
-  const xScale = scaleLinear<number>({
-    domain: xDomain,
-    range: [0, chartWidth],
-  });
-  const yScale = scaleLinear<number>({
-    domain: yDomain,
-    range: [chartHeight, 0],
-  });
-
-  // Grid line positions at exact step intervals (graph ends on a box divider)
-  const xGridValues = (() => {
-    const out: number[] = [];
-    const count = Math.round((xDomain[1] - xDomain[0]) / xStep);
-    for (let i = 0; i < count; i++) out.push(xDomain[0] + i * xStep);
-    out.push(xDomain[1]);
-    return out;
-  })();
-  const yGridValues = (() => {
-    const out: number[] = [];
-    const count = Math.round((yDomain[1] - yDomain[0]) / yStep);
-    for (let i = 0; i < count; i++) out.push(yDomain[0] + i * yStep);
-    out.push(yDomain[1]);
-    return out;
-  })();
+  const option = {
+    animation: false,
+    grid: {
+      top: axisPadding.top,
+      right: axisPadding.right,
+      bottom: axisPadding.bottom,
+      left: axisPadding.left,
+      containLabel: false,
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "cross" },
+    },
+    xAxis: {
+      type: "value",
+      min: xDomain[0],
+      max: xDomain[1],
+      interval: xStep,
+      axisLine: {
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.7)",
+        },
+      },
+      axisLabel: {
+        color: "rgba(255, 255, 255, 0.7)",
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.1)",
+          width: 1,
+        },
+      },
+    },
+    yAxis: {
+      type: "value",
+      min: yDomain[0],
+      max: yDomain[1],
+      interval: yStep,
+      axisLine: {
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.7)",
+        },
+      },
+      axisLabel: {
+        color: "rgba(255, 255, 255, 0.7)",
+        formatter: (value: number) => {
+          if (!Number.isFinite(value)) return "";
+          // 3 significant figures, avoid floating-point noise like 0.9999999999
+          return Number(value.toPrecision(3)).toString();
+        },
+      },
+      splitLine: {
+        show: true,
+        lineStyle: {
+          color: "rgba(255, 255, 255, 0.1)",
+          width: 1,
+        },
+      },
+    },
+    series: [
+      {
+        type: "line",
+        data: plotData.map((point) => [point.x, point.y]),
+        showSymbol: false,
+        step: "middle",
+        lineStyle: {
+          color: "rgb(96, 165, 250)",
+          width: 2,
+        },
+      },
+    ],
+  };
 
   return (
-    <div className="relative">
-      <div className="bg-red-500 absolute top-0 right-0 z-10">THIS WILL BE A MINIMAP</div>
-      <svg role="application" aria-label="Oscilloscope Plot" width={width} height={height}>
-        {/* Chart area */}
-        <Group left={axisPadding.left} top={axisPadding.top}>
-          {/* Grid lines — aligned so graph ends exactly on a box divider */}
-          {xGridValues.map((tick) => (
-            <line
-              key={`x-grid-${tick}`}
-              x1={xScale(tick)}
-              x2={xScale(tick)}
-              y1={0}
-              y2={chartHeight}
-              stroke="rgba(255, 255, 255, 0.1)"
-              strokeWidth={1}
-            />
-          ))}
-          {yGridValues.map((tick) => (
-            <line
-              key={`y-grid-${tick}`}
-              x1={0}
-              x2={chartWidth}
-              y1={yScale(tick)}
-              y2={yScale(tick)}
-              stroke="oklch(from var(--fg) l c h / 0.1)"
-              strokeWidth={1}
-            />
-          ))}
-
-          <line
-            x1={0}
-            x2={chartWidth}
-            y1={yScale(0)}
-            y2={yScale(0)}
-            stroke="oklch(from var(--fg) l c h / 0.2)"
-            strokeWidth={2}
-          />
-
-          {/* Data line */}
-          {width > 8 && (
-            <LinePath<PlotPoint>
-              curve={allCurves.curveStep}
-              data={plotData}
-              x={(d) => xScale(getX(d)) ?? 0}
-              y={(d) => yScale(getY(d)) ?? 0}
-              stroke="var(--primary)"
-              strokeWidth={2}
-              shapeRendering="geometricPrecision"
-            />
-          )}
-        </Group>
-      </svg>
+    <div className="relative w-full h-full pb-4">
+      {/* <div className="bg-red-500 absolute top-0 right-0 z-10">THIS WILL BE A MINIMAP</div> */}
+      <ReactECharts
+        style={{ width: "100%", height: "100%" }}
+        option={option}
+        notMerge={true}
+        lazyUpdate={true}
+      />
     </div>
   );
 }
