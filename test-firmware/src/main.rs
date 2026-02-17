@@ -12,7 +12,7 @@ use embassy_rp::bind_interrupts;
 use embassy_rp::peripherals::USB;
 use embassy_rp::usb::{Driver, Instance, InterruptHandler};
 use embassy_usb::UsbDevice;
-use embassy_usb::class::cdc_acm::{CdcAcmClass, State};
+use embassy_usb::class::cdc_acm::{Sender, Receiver, CdcAcmClass, State};
 use embassy_usb::driver::EndpointError;
 use libm::sinf;
 use static_cell::StaticCell;
@@ -20,8 +20,7 @@ use {defmt_rtt as _, panic_probe as _};
 use alloc::vec::Vec;
 use alloc::string::{String, ToString};
 use common::message::Message;
-use common::frame::FrameData;
-
+use common::frame::{ FrameData, ScopeChannel };
 use common::usb::{OSCOPE_VID, OSCOPE_PID};
 
 #[global_allocator]
@@ -87,11 +86,13 @@ async fn main(spawner: Spawner) {
     // Run the USB device.
     spawner.spawn(usb_task(usb));
 
+    let (mut tx, mut rx) = class.split();
+
     // Do stuff with the class!
     loop {
-        class.wait_connection().await;
+        tx.wait_connection().await;
         info!("Connected");
-        let _ = send_frames(&mut class).await;
+        let _ = send_frames(&mut tx).await;
         info!("Disconnected");
     }
 }
@@ -115,19 +116,22 @@ impl From<EndpointError> for Disconnected {
     }
 }
 
-async fn send_frames<'d, T: Instance + 'd>(class: &mut CdcAcmClass<'d, Driver<'d, T>>) -> Result<(), Disconnected> {
+async fn send_frames<'d, T: Instance + 'd>(tx: &mut Sender<'d, Driver<'d, T>>) -> Result<(), Disconnected> {
     let mut buf = [0; 64];
     loop {
         // let n = class.read_packet(&mut buf).await?;
         // let data = &buf[..n];
         // info!("data: {:x}", data);
         // class.write_packet(data).await?;
+
+        // class.read_packet(data)
         
         let mut data = Vec::new();
         for i in 0..1000 {
             data.push((2048.0 * sinf(i as f32 / 100.0)) as u16);
         }
         let message = Message::Frame(FrameData {
+            channel: ScopeChannel::A,
             data,
             center: 2048,
             timestep_ms: 0.1,
@@ -137,7 +141,7 @@ async fn send_frames<'d, T: Instance + 'd>(class: &mut CdcAcmClass<'d, Driver<'d
 
         // Send in chunks of USB_PACKET_SIZE
         for chunk in bytes.chunks(USB_PACKET_SIZE) {
-            class.write_packet(chunk).await?;
+            tx.write_packet(chunk).await?;
         }
 
         Timer::after_secs(1).await;

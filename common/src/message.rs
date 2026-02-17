@@ -2,6 +2,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::frame::FrameData;
 use crate::log::SerializableLogRecord;
+use crate::options::ChannelOptions;
 
 /// Message type enum
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -12,6 +13,8 @@ pub enum Message {
     Frame(FrameData),
     /// Log message with log level and string content
     Log(SerializableLogRecord),
+    SetSampleRate(f32),
+    SetChannelOptions(ChannelOptions),
 }
 
 #[cfg(test)]

@@ -2,7 +2,6 @@ import { getCurrentWindow } from "@tauri-apps/api/window";
 import { info } from "@tauri-apps/plugin-log";
 import { useEffect } from "react";
 import { titlebarLayout } from "~/main";
-import { Button } from "~/components/button";
 import { Button as RACButton } from "react-aria-components";
 import { type } from "@tauri-apps/plugin-os";
 import WindowMinimizeSymbolic from "~/assets/adwaita/window-minimize-symbolic.svg?react";

@@ -5,7 +5,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { extent } from '@visx/vendor/d3-array';
 import { scaleLinear } from '@visx/scale';
 import ReactECharts from "echarts-for-react";
-import type { Channel, FrameData } from "~/bindings";
+import type { ScopeChannel, FrameData } from "~/bindings";
 import { Titlebar } from "~/components/titlebar";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "~/components/menu";
@@ -53,7 +53,7 @@ function Index() {
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
-          <ScrollArea className="landscape:w-max portrait:h-max bg-secondary/25 border rounded-xl">
+          <ScrollArea scrollFade className="landscape:w-max portrait:h-max bg-secondary/25 border rounded-xl">
             <div className="flex flex-row p-4 landscape:flex-col w-max h-max gap-4">
               <ControlPanel />
             </div>
@@ -198,7 +198,7 @@ const voltageScaleOptions = [
   { id: "3", value: 0.07 },
 ]
 
-function ChannelCard({ channel }: { channel: Channel }) {
+function ChannelCard({ channel }: { channel: ScopeChannel }) {
   const [voltageScale, setVoltageScale] = useState(voltageScaleOptions[0]);
   const [coupling, setCoupling] = useState<Key>("DC");
   const [attenuation, setAttenuation] = useState<Key>("1x");
