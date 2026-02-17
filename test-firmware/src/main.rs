@@ -45,7 +45,7 @@ type ScopeUsbReceiver = CdcReceiver<'static, ScopeUsbDriver>;
 async fn main(spawner: Spawner) {
     // Initialize the heap allocator
     unsafe {
-        embedded_alloc::init!(HEAP, 1024*16);
+        embedded_alloc::init!(HEAP, 1024*64);
     }
 
     let p = embassy_rp::init(Default::default());
