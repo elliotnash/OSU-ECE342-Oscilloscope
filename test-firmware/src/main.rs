@@ -4,6 +4,8 @@
 extern crate alloc;
 
 use alloc::format;
+use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
+use embassy_sync::channel::Channel;
 use embassy_time::Timer;
 use embedded_alloc::TlsfHeap as Heap;
 
@@ -13,7 +15,7 @@ use embassy_rp::bind_interrupts;
 use embassy_rp::peripherals::USB;
 use embassy_rp::usb::{Driver, Instance, InterruptHandler};
 use embassy_usb::UsbDevice;
-use embassy_usb::class::cdc_acm::{Sender, Receiver, CdcAcmClass, State};
+use embassy_usb::class::cdc_acm::{Sender as CdcSender, Receiver as CdcReceiver, CdcAcmClass, State};
 use embassy_usb::driver::EndpointError;
 use libm::sinf;
 use static_cell::StaticCell;
@@ -36,8 +38,8 @@ const USB_PACKET_SIZE: usize = 64;
 type ScopeUsbDriver = Driver<'static, USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
 type ScopeUsbClass = CdcAcmClass<'static, ScopeUsbDriver>;
-type ScopeUsbSender = Sender<'static, ScopeUsbDriver>;
-type ScopeUsbReceiver = Receiver<'static, ScopeUsbDriver>;
+type ScopeUsbSender = CdcSender<'static, ScopeUsbDriver>;
+type ScopeUsbReceiver = CdcReceiver<'static, ScopeUsbDriver>;
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
@@ -95,8 +97,10 @@ async fn main(spawner: Spawner) {
 
     let (mut tx, mut rx) = class.split();
 
-    spawner.spawn(send_frames_task(tx));
+    spawner.spawn(send_messages_task(tx));
     spawner.spawn(receive_messages_task(rx));
+
+    spawner.spawn(send_dummy_frames_task());
 }
 
 #[embassy_executor::task]
@@ -105,11 +109,11 @@ async fn usb_task(mut usb: ScopeUsbDevice) -> ! {
 }
 
 #[embassy_executor::task]
-async fn send_frames_task(mut tx: ScopeUsbSender) -> ! {
+async fn send_messages_task(mut tx: ScopeUsbSender) -> ! {
     loop {
         tx.wait_connection().await;
         info!("USB Connected");
-        let _ = send_frames(&mut tx).await;
+        let _ = send_messages(&mut tx).await;
         info!("USB Disconnected");
     }
 }
@@ -119,6 +123,30 @@ async fn receive_messages_task(mut rx: ScopeUsbReceiver) -> ! {
     loop {
         rx.wait_connection().await;
         let _ = receive_messages(&mut rx).await;
+    }
+}
+
+#[embassy_executor::task]
+async fn send_dummy_frames_task() -> ! {
+    let message_sender = MESSAGE_TX.sender();
+    let mut shift = 0;
+    loop {
+        let mut data = Vec::new();
+        for i in 0..1000 {
+            data.push((2048.0 * sinf((i + shift) as f32 / 100.0)) as u16);
+        }
+        shift += 1;
+        let message = Message::Frame(FrameData {
+            channel: ScopeChannel::A,
+            data,
+            center: 2048,
+            timestep_ms: 0.1,
+            voltage_scale: 2.0,
+        });
+
+        message_sender.send(message).await;
+
+        Timer::after_secs(1).await;
     }
 }
 
@@ -133,9 +161,12 @@ impl From<EndpointError> for Disconnected {
     }
 }
 
+static MESSAGE_RX: Channel<ThreadModeRawMutex, Message, 64> = Channel::new();
+
 async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected> {
     let mut buf = Vec::new();
     let mut packet_buf = [0; USB_PACKET_SIZE];
+    let mut message_sender = MESSAGE_RX.sender();
     loop {
         let n = rx.read_packet(&mut packet_buf).await?; 
         // let data = &buf[..n];
@@ -146,6 +177,7 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
                 match postcard::from_bytes_cobs::<Message>(&mut buf) {
                     Ok(message) => {
                         info!("Received message: {:?}", &message);
+                        message_sender.send(message).await;
                     }
                     Err(e) => {
                         error!("Failed to deserialize message: {:?}", defmt::Debug2Format(&e));
@@ -166,28 +198,18 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
     }
 }
 
-async fn send_frames(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
-    let mut shift = 0;
+static MESSAGE_TX: Channel<ThreadModeRawMutex, Message, 64> = Channel::new();
+
+async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
+    let mut message_receiver = MESSAGE_TX.receiver();
     loop {        
-        let mut data = Vec::new();
-        for i in 0..1000 {
-            data.push((2048.0 * sinf((i + shift) as f32 / 100.0)) as u16);
-        }
-        shift += 1;
-        let message = Message::Frame(FrameData {
-            channel: ScopeChannel::A,
-            data,
-            center: 2048,
-            timestep_ms: 0.1,
-            voltage_scale: 2.0,
-        });
+        let message = message_receiver.receive().await;
+        
         let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 
         // Send in chunks of USB_PACKET_SIZE
         for chunk in bytes.chunks(USB_PACKET_SIZE) {
             tx.write_packet(chunk).await?;
         }
-
-        Timer::after_secs(1).await;
     }
 }
