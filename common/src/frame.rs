@@ -165,6 +165,7 @@ where
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub enum ScopeChannel {
     #[default] 
@@ -174,6 +175,7 @@ pub enum ScopeChannel {
 
 // Also derive Type if std feature is enabled
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub struct FrameData {
     #[serde(

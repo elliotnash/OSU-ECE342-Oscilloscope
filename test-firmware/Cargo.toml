@@ -19,7 +19,7 @@ embassy-usb = { version = "0.5.1", features = ["defmt"] }
 embassy-usb-logger = { version = "0.5.1" }
 usbd-hid = "0.9.0"
 
-defmt = "1.0.1"
+defmt = { version = "1.0.1", features = ["alloc"] }
 defmt-rtt = "1.1.0"
 fixed = "1.30.0"
 fixed-macro = "1.2.0"

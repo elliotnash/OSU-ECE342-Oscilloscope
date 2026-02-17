@@ -6,11 +6,14 @@ edition = "2024"
 [features]
 default = ["std"]
 std = ["serde/std", "specta", "tauri-specta"]
-alloc = ["serde/alloc"]
+alloc = ["serde/alloc", "defmt"]
 
 [dependencies]
 serde = { version = "1.0", default-features = false, features = ["derive"] }
 log = "0.4"
+
+# Dependencies only with alloc feature
+defmt = { version = "1.0.1", features = ["alloc"], optional = true }
 
 # Dependencies only for specta (under std feature)
 tauri-specta = { version = "2.0.0-rc.21", features = ["typescript", "derive"], optional = true }

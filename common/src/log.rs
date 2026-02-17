@@ -20,6 +20,7 @@ use serde::{Deserialize, Serialize};
 /// `log_into_record` macro is provided. Use it directly in a function call to
 /// convert a `SerializedRecord` into a `log::Record`.
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 pub struct SerializableLogRecord {
     pub level: String,
     pub args: String,

@@ -5,6 +5,7 @@ use specta::Type;
 use crate::frame::ScopeChannel;
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub enum ScopeGain {
     One,
@@ -13,6 +14,7 @@ pub enum ScopeGain {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub enum ScopeCoupling {
     DC,
@@ -20,6 +22,7 @@ pub enum ScopeCoupling {
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub struct ChannelOptions {
     pub channel: ScopeChannel,

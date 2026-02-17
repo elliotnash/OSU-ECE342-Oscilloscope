@@ -6,6 +6,7 @@ use crate::options::ChannelOptions;
 
 /// Message type enum
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[serde(rename_all = "snake_case")]
 pub enum Message {
     /// Heartbeat message with no payload

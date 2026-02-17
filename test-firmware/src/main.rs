@@ -3,10 +3,11 @@
 
 extern crate alloc;
 
+use alloc::format;
 use embassy_time::Timer;
 use embedded_alloc::TlsfHeap as Heap;
 
-use defmt::{info, panic};
+use defmt::{info, error, panic};
 use embassy_executor::Spawner;
 use embassy_rp::bind_interrupts;
 use embassy_rp::peripherals::USB;
@@ -99,6 +100,9 @@ async fn main(spawner: Spawner) {
 
 type MyUsbDriver = Driver<'static, USB>;
 type MyUsbDevice = UsbDevice<'static, MyUsbDriver>;
+type MyClass = CdcAcmClass<'static, MyUsbDriver>;
+type MySender = Sender<'static, MyUsbDriver>;
+type MyReceiver = Receiver<'static, MyUsbDriver>;
 
 #[embassy_executor::task]
 async fn usb_task(mut usb: MyUsbDevice) -> ! {
@@ -116,20 +120,47 @@ impl From<EndpointError> for Disconnected {
     }
 }
 
-async fn send_frames<'d, T: Instance + 'd>(tx: &mut Sender<'d, Driver<'d, T>>) -> Result<(), Disconnected> {
-    let mut buf = [0; 64];
+async fn receive_messages<'d, T: Instance + 'd>(rx: &mut Receiver<'d, Driver<'d, T>>) -> Result<(), Disconnected> {
+    let mut buf = Vec::new();
+    let mut packet_buf = [0; USB_PACKET_SIZE];
     loop {
-        // let n = class.read_packet(&mut buf).await?;
+        let n = rx.read_packet(&mut packet_buf).await?; 
         // let data = &buf[..n];
-        // info!("data: {:x}", data);
-        // class.write_packet(data).await?;
+        buf.reserve(n);
+        for i in 0..n {
+            if packet_buf[i] == 0x00 {
+                // Received null byte indicating the end of message, parse it.
+                match postcard::from_bytes_cobs::<Message>(&mut buf) {
+                    Ok(message) => {
+                        info!("Received message: {:?}", &message);
+                    }
+                    Err(e) => {
+                        error!("Failed to deserialize message: {}", defmt::Debug2Format(&e));
+                    }
+                }
+                // Reset the message buffer
+                unsafe {
+                    // Clear the buffer without explicitely zeroing the elements.
+                    // Since the elements are u8, they are stored directly in the Vec,
+                    // so they do not need to be free'd.
+                    // This is more efficient than calling clear().
+                    buf.set_len(0);
+                }
+            } else {
+                buf.push(packet_buf[i]);
+            }
+        }
+    }
+}
 
-        // class.read_packet(data)
-        
+async fn send_frames(tx: &mut MySender) -> Result<(), Disconnected> {
+    let mut shift = 0;
+    loop {        
         let mut data = Vec::new();
         for i in 0..1000 {
-            data.push((2048.0 * sinf(i as f32 / 100.0)) as u16);
+            data.push((2048.0 * sinf((i + shift) as f32 / 100.0)) as u16);
         }
+        shift += 1;
         let message = Message::Frame(FrameData {
             channel: ScopeChannel::A,
             data,
