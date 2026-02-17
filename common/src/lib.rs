@@ -3,6 +3,7 @@
 pub mod frame;
 pub mod log;
 pub mod message;
+pub mod options;
 
 pub mod usb {
     pub const OSCOPE_VID: u16 = 0x8585; 

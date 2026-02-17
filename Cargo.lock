@@ -688,6 +688,7 @@ dependencies = [
 name = "common"
 version = "0.1.0"
 dependencies = [
+ "defmt",
  "log",
  "postcard",
  "serde",

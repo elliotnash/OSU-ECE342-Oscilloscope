@@ -1,12 +1,10 @@
 import { createRootRoute, Outlet } from '@tanstack/react-router';
 import { TanStackRouterDevtools } from '@tanstack/react-router-devtools';
 import { useEffect } from 'react';
-import { commands, events, SerialStatus } from '~/bindings';
-import { Titlebar } from '~/components/titlebar';
+import { commands, events, type SerialStatus } from '~/bindings';
 import { useNavigate } from '@tanstack/react-router';
 import { info } from '@tauri-apps/plugin-log';
-import { Button } from '~/components/button';
-import { Bars3Icon } from "@heroicons/react/24/solid";
+import "~/styles/global.css";
 
 function RootLayout() {
   const navigate = useNavigate();
