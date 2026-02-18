@@ -14,6 +14,20 @@ use std::io::Write;
 use std::path::PathBuf;
 
 fn main() {
+    // Check which chip feature is enabled
+    // Features use CARGO_FEATURE_* environment variables (uppercase, underscores for hyphens)
+    let has_rp2040 = env::var("CARGO_FEATURE_RP2040").is_ok();
+    let has_rp2350 = env::var("CARGO_FEATURE_RP2350").is_ok();
+
+    if !has_rp2040 && !has_rp2350 {
+        panic!("One of features 'rp2040' or 'rp2350' must be enabled. Use --features rp2040 or --features rp2350");
+    }
+    if has_rp2040 && has_rp2350 {
+        panic!("Features 'rp2040' and 'rp2350' are mutually exclusive. Use --no-default-features --features <chip> to switch");
+    }
+
+    let use_rp2040 = has_rp2040;
+
     // Put `memory.x` in our output directory and ensure it's
     // on the linker search path.
     let out = &PathBuf::from(env::var_os("OUT_DIR").unwrap());
@@ -31,6 +45,11 @@ fn main() {
 
     println!("cargo:rustc-link-arg-bins=--nmagic");
     println!("cargo:rustc-link-arg-bins=-Tlink.x");
-    println!("cargo:rustc-link-arg-bins=-Tlink-rp.x");
+    
+    // link-rp.x is only needed for RP2040 (embassy-rp generates it when rp2040 feature is enabled)
+    if use_rp2040 {
+        println!("cargo:rustc-link-arg-bins=-Tlink-rp.x");
+    }
+    
     println!("cargo:rustc-link-arg-bins=-Tdefmt.x");
 }

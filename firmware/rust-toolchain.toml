@@ -2,5 +2,6 @@
 channel = "stable"
 components = [ "rust-src", "rustfmt", "llvm-tools" ]
 targets = [
-    "thumbv6m-none-eabi",
+    "thumbv6m-none-eabi",        # RP2040
+    "thumbv8m.main-none-eabihf", # RP2350
 ]

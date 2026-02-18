@@ -5,12 +5,32 @@ name = "firmware"
 version = "0.1.0"
 authors = ["Elliot Nash", "Yahir Raygoza Cortez", "Oliver Siemens"]
 
+[features]
+# Chip selection features - choose RP2040 or RP2350
+# 
+# Usage:
+#   RP2350 (default): cargo build --target thumbv8m.main-none-eabihf
+#   RP2040:           cargo build --no-default-features --features rp2040 --target thumbv6m-none-eabi
+#   RP2350 (explicit): cargo build --features rp2350 --target thumbv8m.main-none-eabihf
+#
+# The target triple and probe-rs chip name are automatically handled based on the feature:
+#   - RP2040:  target = thumbv6m-none-eabi,        chip = RP2040
+#   - RP2350:  target = thumbv8m.main-none-eabihf, chip = RP235x
+default = ["rp2350"]
+rp2040 = ["embassy-rp/rp2040"]
+rp2350 = ["embassy-rp/rp235xa"]
+
 [dependencies]
+common = { path = "../common", default-features = false, features = ["alloc"] }
+
+libm = "0.2"
+
 embassy-embedded-hal = { version = "0.5.0", features = ["defmt"] }
 embassy-sync = { version = "0.7.2", features = ["defmt"] }
 embassy-executor = {  version = "0.9.1", features = ["arch-cortex-m", "executor-thread", "executor-interrupt", "defmt"] }
 embassy-time = { version = "0.5.0", features = ["defmt", "defmt-timestamp-uptime"] }
-embassy-rp = { version = "0.9.0", features = ["defmt", "unstable-pac", "time-driver", "critical-section-impl", "rp235xa"] }
+# embassy-rp chip feature is enabled via our rp2040/rp2350 features
+embassy-rp = { version = "0.9.0", features = ["defmt", "unstable-pac", "time-driver", "critical-section-impl"] }
 embassy-futures = { version = "0.1.2"}
 embassy-usb = { version = "0.5.1", features = ["defmt"] }
 embassy-usb-logger = { version = "0.5.1" }
@@ -18,7 +38,7 @@ usbd-hid = "0.9.0"
 
 defmt = { version = "1.0.1", features = ["alloc"] }
 defmt-rtt = "1.1.0"
-fixed = "1.29.0"
+fixed = "1.30.0"
 fixed-macro = "1.2.0"
 
 cortex-m = { version = "0.7.7", features = ["inline-asm"] }
@@ -32,6 +52,7 @@ embedded-hal-async = "1.0.0"
 embedded-hal-bus = { version = "0.3.0", features = ["async"] }
 embedded-io-async = { version = "0.7.0", features = ["defmt"] }
 embedded-storage = { version = "0.3" }
+embedded-alloc = { version = "0.7.0", features = ["tlsf"]}
 static_cell = "2.1.1"
 portable-atomic = { version = "1.11.1", features = ["critical-section"] }
 log = "0.4.28"
