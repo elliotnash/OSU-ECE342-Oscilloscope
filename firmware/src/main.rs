@@ -3,28 +3,28 @@
 
 extern crate alloc;
 
-use alloc::format;
-use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
-use embassy_sync::watch::Watch;
 use embassy_time::Timer;
 use embedded_alloc::TlsfHeap as Heap;
 
-use defmt::{info, error, panic};
+use alloc::vec::Vec;
+use common::frame::{FrameData, ScopeChannel};
+use common::message::Message;
+use common::usb::{OSCOPE_PID, OSCOPE_VID};
+use defmt::info;
 use embassy_executor::Spawner;
 use embassy_rp::bind_interrupts;
 use embassy_rp::peripherals::USB;
-use embassy_rp::usb::{Driver, Instance, InterruptHandler};
+use embassy_rp::usb::{Driver, InterruptHandler};
 use embassy_usb::UsbDevice;
-use embassy_usb::class::cdc_acm::{Sender as CdcSender, Receiver as CdcReceiver, CdcAcmClass, State};
-use embassy_usb::driver::EndpointError;
+use embassy_usb::class::cdc_acm::{
+    CdcAcmClass, Receiver as CdcReceiver, Sender as CdcSender, State,
+};
 use libm::sinf;
+use message::{MESSAGE_RX, MESSAGE_TX, receive_messages_task, send_messages_task};
 use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
-use alloc::vec::Vec;
-use alloc::string::{String, ToString};
-use common::message::Message;
-use common::frame::{ FrameData, ScopeChannel };
-use common::usb::{OSCOPE_VID, OSCOPE_PID};
+
+pub mod message;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -34,9 +34,6 @@ bind_interrupts!(struct Irqs {
 });
 
 const USB_PACKET_SIZE: usize = 64;
-
-static MESSAGE_RX: Watch<ThreadModeRawMutex, Message, 2> = Watch::new();
-static MESSAGE_TX: Watch<ThreadModeRawMutex, Message, 2> = Watch::new();
 
 type ScopeUsbDriver = Driver<'static, USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -48,7 +45,7 @@ type ScopeUsbReceiver = CdcReceiver<'static, ScopeUsbDriver>;
 async fn main(spawner: Spawner) {
     // Initialize the heap allocator
     unsafe {
-        embedded_alloc::init!(HEAP, 1024*64);
+        embedded_alloc::init!(HEAP, 1024 * 64);
     }
 
     let p = embassy_rp::init(Default::default());
@@ -86,7 +83,7 @@ async fn main(spawner: Spawner) {
     };
 
     // Create classes on the builder.
-    let mut class = {
+    let class: ScopeUsbClass = {
         static STATE: StaticCell<State> = StaticCell::new();
         let state = STATE.init(State::new());
         CdcAcmClass::new(&mut builder, state, USB_PACKET_SIZE as u16)
@@ -96,37 +93,19 @@ async fn main(spawner: Spawner) {
     let usb = builder.build();
 
     // Run the USB device.
-    spawner.spawn(usb_task(usb));
+    let _ = spawner.spawn(usb_task(usb));
 
-    let (mut tx, mut rx) = class.split();
+    let (tx, rx) = class.split();
 
-    spawner.spawn(send_messages_task(tx));
-    spawner.spawn(receive_messages_task(rx));
+    let _ = spawner.spawn(send_messages_task(tx));
+    let _ = spawner.spawn(receive_messages_task(rx));
 
-    spawner.spawn(send_dummy_frames_task());
+    let _ = spawner.spawn(send_dummy_frames_task());
 }
 
 #[embassy_executor::task]
 async fn usb_task(mut usb: ScopeUsbDevice) -> ! {
     usb.run().await
-}
-
-#[embassy_executor::task]
-async fn send_messages_task(mut tx: ScopeUsbSender) -> ! {
-    loop {
-        tx.wait_connection().await;
-        info!("USB Connected");
-        let _ = send_messages(&mut tx).await;
-        info!("USB Disconnected");
-    }
-}
-
-#[embassy_executor::task]
-async fn receive_messages_task(mut rx: ScopeUsbReceiver) -> ! {
-    loop {
-        rx.wait_connection().await;
-        let _ = receive_messages(&mut rx).await;
-    }
 }
 
 #[embassy_executor::task]
@@ -155,68 +134,11 @@ async fn send_dummy_frames_task() -> ! {
 
 #[embassy_executor::task]
 async fn print_messages_task() -> ! {
-    let mut message_receiver = MESSAGE_RX.receiver().expect("Failed to create message receiver");
+    let mut message_receiver = MESSAGE_RX
+        .receiver()
+        .expect("Failed to create message receiver");
     loop {
         let message = message_receiver.changed().await;
         info!("Received message: {:?}", &message);
-    }
-}
-
-struct Disconnected {}
-
-impl From<EndpointError> for Disconnected {
-    fn from(val: EndpointError) -> Self {
-        match val {
-            EndpointError::BufferOverflow => panic!("Buffer overflow"),
-            EndpointError::Disabled => Disconnected {},
-        }
-    }
-}
-
-async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected> {
-    let mut buf = Vec::new();
-    let mut packet_buf = [0; USB_PACKET_SIZE];
-    let mut message_sender = MESSAGE_RX.sender();
-    loop {
-        let n = rx.read_packet(&mut packet_buf).await?; 
-        // let data = &buf[..n];
-        buf.reserve(n);
-        for i in 0..n {
-            if packet_buf[i] == 0x00 {
-                // Received null byte indicating the end of message, parse it.
-                match postcard::from_bytes_cobs::<Message>(&mut buf) {
-                    Ok(message) => {
-                        message_sender.send(message);
-                    }
-                    Err(e) => {
-                        error!("Failed to deserialize message: {:?}", defmt::Debug2Format(&e));
-                    }
-                }
-                // Reset the message buffer
-                unsafe {
-                    // Clear the buffer without explicitely zeroing the elements.
-                    // Since the elements are u8, they are stored directly in the Vec,
-                    // so they do not need to be free'd.
-                    // This is more efficient than calling clear().
-                    buf.set_len(0);
-                }
-            } else {
-                buf.push(packet_buf[i]);
-            }
-        }
-    }
-}
-
-async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
-    let mut message_receiver = MESSAGE_TX.receiver().expect("Failed to create message receiver");
-    loop {        
-        let message = message_receiver.changed().await;
-        
-        let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
-
-        // Send in chunks of USB_PACKET_SIZE
-        for chunk in bytes.chunks(USB_PACKET_SIZE) {
-            tx.write_packet(chunk).await?;
-        }
     }
 }
