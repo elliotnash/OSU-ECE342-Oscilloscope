@@ -5,7 +5,7 @@ extern crate alloc;
 
 use alloc::format;
 use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
-use embassy_sync::channel::Channel;
+use embassy_sync::watch::Watch;
 use embassy_time::Timer;
 use embedded_alloc::TlsfHeap as Heap;
 
@@ -34,6 +34,9 @@ bind_interrupts!(struct Irqs {
 });
 
 const USB_PACKET_SIZE: usize = 64;
+
+static MESSAGE_RX: Watch<ThreadModeRawMutex, Message, 2> = Watch::new();
+static MESSAGE_TX: Watch<ThreadModeRawMutex, Message, 2> = Watch::new();
 
 type ScopeUsbDriver = Driver<'static, USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -144,9 +147,18 @@ async fn send_dummy_frames_task() -> ! {
             voltage_scale: 2.0,
         });
 
-        message_sender.send(message).await;
+        message_sender.send(message);
 
         Timer::after_secs(1).await;
+    }
+}
+
+#[embassy_executor::task]
+async fn print_messages_task() -> ! {
+    let mut message_receiver = MESSAGE_RX.receiver().expect("Failed to create message receiver");
+    loop {
+        let message = message_receiver.changed().await;
+        info!("Received message: {:?}", &message);
     }
 }
 
@@ -161,8 +173,6 @@ impl From<EndpointError> for Disconnected {
     }
 }
 
-static MESSAGE_RX: Channel<ThreadModeRawMutex, Message, 64> = Channel::new();
-
 async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected> {
     let mut buf = Vec::new();
     let mut packet_buf = [0; USB_PACKET_SIZE];
@@ -176,8 +186,7 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
                 // Received null byte indicating the end of message, parse it.
                 match postcard::from_bytes_cobs::<Message>(&mut buf) {
                     Ok(message) => {
-                        info!("Received message: {:?}", &message);
-                        message_sender.send(message).await;
+                        message_sender.send(message);
                     }
                     Err(e) => {
                         error!("Failed to deserialize message: {:?}", defmt::Debug2Format(&e));
@@ -198,12 +207,10 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
     }
 }
 
-static MESSAGE_TX: Channel<ThreadModeRawMutex, Message, 64> = Channel::new();
-
 async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
-    let mut message_receiver = MESSAGE_TX.receiver();
+    let mut message_receiver = MESSAGE_TX.receiver().expect("Failed to create message receiver");
     loop {        
-        let message = message_receiver.receive().await;
+        let message = message_receiver.changed().await;
         
         let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 
