@@ -1170,7 +1170,13 @@
 		(uuid "01bce3e1-cf8d-4c66-bc5a-17c7e871cd25")
 	)
 	(junction
-		(at 96.52 26.67)
+		(at 73.66 53.34)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "0e7cab35-32f2-4cd8-ad5a-95c9267d5163")
+	)
+	(junction
+		(at 96.52 31.75)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "187b378f-b7d6-47fc-a360-48bb75891ead")
@@ -1182,10 +1188,22 @@
 		(uuid "38ac2efb-41a1-4a02-bb1e-a0301a1767cb")
 	)
 	(junction
+		(at 73.66 29.21)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "718870ae-c6e3-44e3-98d9-ff622f5e680a")
+	)
+	(junction
 		(at 44.45 86.36)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "7dac9816-69ba-4ffa-b190-07d07c31e9c6")
+	)
+	(junction
+		(at 93.98 55.88)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "94fd2d87-a48f-4f6c-a919-391fe6da37c1")
 	)
 	(junction
 		(at 114.3 90.17)
@@ -1194,10 +1212,16 @@
 		(uuid "97b30ec9-8c9c-42a3-b86d-1423544093f6")
 	)
 	(junction
-		(at 96.52 44.45)
+		(at 96.52 55.88)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "ba974a2f-500e-4aea-90bb-f2707bafa12f")
+	)
+	(junction
+		(at 93.98 31.75)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "d1f41f21-997f-451e-81a3-81f040f12604")
 	)
 	(junction
 		(at 120.65 83.82)
@@ -1219,6 +1243,16 @@
 	)
 	(wire
 		(pts
+			(xy 93.98 55.88) (xy 93.98 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0571a1c3-96ad-46ee-bac5-63b276b55f63")
+	)
+	(wire
+		(pts
 			(xy 113.03 83.82) (xy 120.65 83.82)
 		)
 		(stroke
@@ -1226,6 +1260,16 @@
 			(type default)
 		)
 		(uuid "08bd0303-eca5-45a8-9f2b-aec020fd31d8")
+	)
+	(wire
+		(pts
+			(xy 57.15 34.29) (xy 77.47 34.29)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0973682d-4378-4b9f-a92e-35552d6b71c2")
 	)
 	(wire
 		(pts
@@ -1269,7 +1313,7 @@
 	)
 	(wire
 		(pts
-			(xy 92.71 26.67) (xy 96.52 26.67)
+			(xy 92.71 31.75) (xy 93.98 31.75)
 		)
 		(stroke
 			(width 0)
@@ -1299,7 +1343,7 @@
 	)
 	(wire
 		(pts
-			(xy 96.52 44.45) (xy 92.71 44.45)
+			(xy 96.52 55.88) (xy 93.98 55.88)
 		)
 		(stroke
 			(width 0)
@@ -1326,6 +1370,16 @@
 			(type default)
 		)
 		(uuid "35807e01-c833-4f4d-9b7b-c91ff68026e5")
+	)
+	(wire
+		(pts
+			(xy 46.99 53.34) (xy 60.96 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3840f9bb-840e-4a38-97b5-7571e16cda70")
 	)
 	(wire
 		(pts
@@ -1369,6 +1423,16 @@
 	)
 	(wire
 		(pts
+			(xy 73.66 53.34) (xy 77.47 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "62a187bf-5aca-4bfc-831d-6691512a62fe")
+	)
+	(wire
+		(pts
 			(xy 114.3 90.17) (xy 114.3 91.44)
 		)
 		(stroke
@@ -1409,6 +1473,16 @@
 	)
 	(wire
 		(pts
+			(xy 93.98 31.75) (xy 93.98 15.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8349d573-412a-474a-b5ac-60015c750ac1")
+	)
+	(wire
+		(pts
 			(xy 44.45 86.36) (xy 60.96 86.36)
 		)
 		(stroke
@@ -1416,6 +1490,16 @@
 			(type default)
 		)
 		(uuid "8a3d6538-8376-4768-a10a-b9a2aabc8c9c")
+	)
+	(wire
+		(pts
+			(xy 93.98 31.75) (xy 96.52 31.75)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8abd3ec8-cf87-4758-ae19-38b559277edd")
 	)
 	(wire
 		(pts
@@ -1429,6 +1513,56 @@
 	)
 	(wire
 		(pts
+			(xy 81.28 39.37) (xy 73.66 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8d640df5-1414-4f80-8633-b02b9cd11bc8")
+	)
+	(wire
+		(pts
+			(xy 81.28 15.24) (xy 73.66 15.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "8f177408-67af-4325-a1c8-0e05e0289eef")
+	)
+	(wire
+		(pts
+			(xy 73.66 29.21) (xy 77.47 29.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9d2dfc0f-e3b3-46e7-8d2b-4e96523f1790")
+	)
+	(wire
+		(pts
+			(xy 93.98 55.88) (xy 92.71 55.88)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "9e113646-ef83-44f3-8be2-bb0a1141cd1c")
+	)
+	(wire
+		(pts
+			(xy 93.98 39.37) (xy 88.9 39.37)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "a3b3ae62-6d54-4e53-b9c5-385365fb369f")
+	)
+	(wire
+		(pts
 			(xy 50.8 88.9) (xy 60.96 88.9)
 		)
 		(stroke
@@ -1436,16 +1570,6 @@
 			(type default)
 		)
 		(uuid "aacce2ed-bc26-4882-bcca-4b76e9984d8e")
-	)
-	(wire
-		(pts
-			(xy 66.04 24.13) (xy 77.47 24.13)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "b2b7251b-101d-4967-992c-c026eb7299b4")
 	)
 	(wire
 		(pts
@@ -1459,17 +1583,17 @@
 	)
 	(wire
 		(pts
-			(xy 66.04 46.99) (xy 77.47 46.99)
+			(xy 68.58 53.34) (xy 73.66 53.34)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "d5dece4f-d39a-4c0a-9e0c-93a1f32270f3")
+		(uuid "d1f01d0e-b1c2-491b-a7c5-31bdeb406b53")
 	)
 	(wire
 		(pts
-			(xy 100.33 44.45) (xy 96.52 44.45)
+			(xy 100.33 55.88) (xy 96.52 55.88)
 		)
 		(stroke
 			(width 0)
@@ -1489,6 +1613,26 @@
 	)
 	(wire
 		(pts
+			(xy 93.98 15.24) (xy 88.9 15.24)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e0c46a94-a122-4eaf-b149-df193548547c")
+	)
+	(wire
+		(pts
+			(xy 68.58 29.21) (xy 73.66 29.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "e0d103f0-98bf-452b-9325-331f042d2dff")
+	)
+	(wire
+		(pts
 			(xy 120.65 81.28) (xy 120.65 83.82)
 		)
 		(stroke
@@ -1499,7 +1643,7 @@
 	)
 	(wire
 		(pts
-			(xy 96.52 26.67) (xy 100.33 26.67)
+			(xy 96.52 31.75) (xy 100.33 31.75)
 		)
 		(stroke
 			(width 0)
@@ -1529,6 +1673,16 @@
 	)
 	(wire
 		(pts
+			(xy 73.66 15.24) (xy 73.66 29.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ec8e5565-8a1a-4315-bf6d-0bee9734fa9a")
+	)
+	(wire
+		(pts
 			(xy 162.56 63.5) (xy 162.56 59.69)
 		)
 		(stroke
@@ -1536,16 +1690,6 @@
 			(type default)
 		)
 		(uuid "ece654b6-3b61-485a-8bac-8f3f7d3a24e8")
-	)
-	(wire
-		(pts
-			(xy 66.04 41.91) (xy 77.47 41.91)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ed39a1b9-fb01-458b-84cc-d99d06173b00")
 	)
 	(wire
 		(pts
@@ -1559,6 +1703,16 @@
 	)
 	(wire
 		(pts
+			(xy 73.66 39.37) (xy 73.66 53.34)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f3d5e694-d2f6-4bbb-9a42-b994ed2e37b5")
+	)
+	(wire
+		(pts
 			(xy 111.76 86.36) (xy 124.46 86.36)
 		)
 		(stroke
@@ -1569,16 +1723,26 @@
 	)
 	(wire
 		(pts
-			(xy 66.04 29.21) (xy 77.47 29.21)
+			(xy 57.15 58.42) (xy 77.47 58.42)
 		)
 		(stroke
 			(width 0)
 			(type default)
 		)
-		(uuid "fee73580-c899-426d-8e3f-25741361fa2a")
+		(uuid "fe980569-2846-40b1-ad71-99ef34d74b5e")
+	)
+	(wire
+		(pts
+			(xy 46.99 29.21) (xy 60.96 29.21)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "ff0679af-5b9e-4aa9-add6-cd749b9651de")
 	)
 	(label "CHB_COMP"
-		(at 66.04 46.99 0)
+		(at 46.99 53.34 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1588,7 +1752,7 @@
 		(uuid "1296f54c-9287-4ac1-83df-16de7e9255c2")
 	)
 	(label "CHA_COMP"
-		(at 66.04 29.21 0)
+		(at 46.99 29.21 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1619,7 +1783,7 @@
 	)
 	(hierarchical_label "CHA_TRIG"
 		(shape output)
-		(at 100.33 26.67 0)
+		(at 100.33 31.75 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1630,7 +1794,7 @@
 	)
 	(hierarchical_label "CHB_TRIG"
 		(shape output)
-		(at 100.33 44.45 0)
+		(at 100.33 55.88 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1641,7 +1805,7 @@
 	)
 	(hierarchical_label "CHA_ASIG"
 		(shape input)
-		(at 66.04 24.13 180)
+		(at 57.15 34.29 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1685,7 +1849,7 @@
 	)
 	(hierarchical_label "CHB_ASIG"
 		(shape input)
-		(at 66.04 41.91 180)
+		(at 57.15 58.42 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -1693,6 +1857,73 @@
 			(justify right)
 		)
 		(uuid "edbc3d60-6086-4277-8aa7-eb594ca9dd5e")
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 85.09 39.37 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "02a83424-d18b-49b9-b291-d04a32db95c5")
+		(property "Reference" "R45"
+			(at 87.376 41.656 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1M"
+			(at 82.804 41.656 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 85.09 41.148 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 85.09 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 85.09 39.37 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "516ec6c2-1ae5-41f7-ba61-3d65180dbd8f")
+		)
+		(pin "1"
+			(uuid "109f1b70-b773-47c6-b8cc-3605182b83f6")
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/865345ee-93ca-410b-9293-676d9f6f2ef0"
+					(reference "R45")
+					(unit 1)
+				)
+			)
+		)
 	)
 	(symbol
 		(lib_id "Device:Opamp_Dual")
@@ -2020,35 +2251,33 @@
 		)
 	)
 	(symbol
-		(lib_id "Connector:TestPoint")
-		(at 96.52 44.45 0)
+		(lib_id "Device:R")
+		(at 64.77 53.34 90)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
 		(fields_autoplaced yes)
-		(uuid "472a99f3-a06c-4482-8449-749f16aa4a84")
-		(property "Reference" "TP16"
-			(at 99.06 39.8779 0)
+		(uuid "43b1859d-0a7a-43ba-bf2a-7ae644e3dc5e")
+		(property "Reference" "R44"
+			(at 64.77 46.99 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Value" "TestPoint"
-			(at 99.06 42.4179 0)
+		(property "Value" "10k"
+			(at 64.77 49.53 90)
 			(effects
 				(font
 					(size 1.27 1.27)
 				)
-				(justify left)
 			)
 		)
-		(property "Footprint" "CustomTestPoints:TestPoint_0603_1608Metric"
-			(at 101.6 44.45 0)
+		(property "Footprint" ""
+			(at 64.77 55.118 90)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2057,7 +2286,77 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 101.6 44.45 0)
+			(at 64.77 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 64.77 53.34 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "cc7155a6-eec1-441b-8973-c39d83c93160")
+		)
+		(pin "1"
+			(uuid "a7e1be59-7e1f-4c91-956e-00bc6e7128f9")
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/865345ee-93ca-410b-9293-676d9f6f2ef0"
+					(reference "R44")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Connector:TestPoint")
+		(at 96.52 55.88 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "472a99f3-a06c-4482-8449-749f16aa4a84")
+		(property "Reference" "TP16"
+			(at 99.06 51.3079 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "TestPoint"
+			(at 99.06 53.8479 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "CustomTestPoints:TestPoint_0603_1608Metric"
+			(at 101.6 55.88 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 101.6 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2066,7 +2365,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 96.52 44.45 0)
+			(at 96.52 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2075,7 +2374,7 @@
 			)
 		)
 		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
-			(at 96.52 44.45 0)
+			(at 96.52 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2233,7 +2532,7 @@
 	)
 	(symbol
 		(lib_id "Device:Opamp_Dual")
-		(at 85.09 26.67 0)
+		(at 85.09 31.75 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2242,7 +2541,7 @@
 		(fields_autoplaced yes)
 		(uuid "67c24abe-6fc1-4514-9b60-2809c6e3b5fb")
 		(property "Reference" "U7"
-			(at 85.09 16.51 0)
+			(at 85.09 21.59 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2250,7 +2549,7 @@
 			)
 		)
 		(property "Value" "Opamp_Dual"
-			(at 85.09 19.05 0)
+			(at 85.09 24.13 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2258,7 +2557,7 @@
 			)
 		)
 		(property "Footprint" "MCP6572T_E_SN:SOIC127P600X175-8N"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2267,7 +2566,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2276,7 +2575,7 @@
 			)
 		)
 		(property "Description" "Dual operational amplifier"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2285,7 +2584,7 @@
 			)
 		)
 		(property "Sim.Library" "${KICAD9_SYMBOL_DIR}/Simulation_SPICE.sp"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2294,7 +2593,7 @@
 			)
 		)
 		(property "Sim.Name" "kicad_builtin_opamp_dual"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2303,7 +2602,7 @@
 			)
 		)
 		(property "Sim.Device" "SUBCKT"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2312,7 +2611,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=out1 2=in1- 3=in1+ 4=vee 5=in2+ 6=in2- 7=out2 8=vcc"
-			(at 85.09 26.67 0)
+			(at 85.09 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2348,6 +2647,141 @@
 			(project ""
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/865345ee-93ca-410b-9293-676d9f6f2ef0"
 					(reference "U7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 64.77 29.21 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "74f9609f-a83a-4c99-ba69-470de1870422")
+		(property "Reference" "R29"
+			(at 64.77 22.86 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 64.77 25.4 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 64.77 30.988 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 64.77 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 64.77 29.21 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "27d2dc3a-6733-4d3e-b5f1-e9f13347ed86")
+		)
+		(pin "1"
+			(uuid "2bbb26d6-1b0f-41c8-b171-87d87f5d0067")
+		)
+		(instances
+			(project ""
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/865345ee-93ca-410b-9293-676d9f6f2ef0"
+					(reference "R29")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Device:R")
+		(at 85.09 15.24 90)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "7808abd6-9c65-41b4-a9a3-cade5a762d7e")
+		(property "Reference" "R30"
+			(at 87.376 17.526 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "1M"
+			(at 82.804 17.526 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 85.09 17.018 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 85.09 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Resistor"
+			(at 85.09 15.24 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "27d2dc3a-6733-4d3e-b5f1-e9f13347ed86")
+		)
+		(pin "1"
+			(uuid "2bbb26d6-1b0f-41c8-b171-87d87f5d0067")
+		)
+		(instances
+			(project ""
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/865345ee-93ca-410b-9293-676d9f6f2ef0"
+					(reference "R30")
 					(unit 1)
 				)
 			)
@@ -2645,7 +3079,7 @@
 	)
 	(symbol
 		(lib_id "Connector:TestPoint")
-		(at 96.52 26.67 0)
+		(at 96.52 31.75 0)
 		(unit 1)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -2654,7 +3088,7 @@
 		(fields_autoplaced yes)
 		(uuid "907f9320-4b26-4aeb-bd93-a3e517af25f3")
 		(property "Reference" "TP15"
-			(at 99.06 22.0979 0)
+			(at 99.06 27.1779 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2663,7 +3097,7 @@
 			)
 		)
 		(property "Value" "TestPoint"
-			(at 99.06 24.6379 0)
+			(at 99.06 29.7179 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2672,7 +3106,7 @@
 			)
 		)
 		(property "Footprint" "CustomTestPoints:TestPoint_0603_1608Metric"
-			(at 101.6 26.67 0)
+			(at 101.6 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2681,7 +3115,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 101.6 26.67 0)
+			(at 101.6 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2690,7 +3124,7 @@
 			)
 		)
 		(property "Description" "test point"
-			(at 96.52 26.67 0)
+			(at 96.52 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -2699,7 +3133,7 @@
 			)
 		)
 		(property "Purchase Link" "https://www.digikey.com/en/products/detail/koa-speer-electronics-inc/RCUCTE/11476561"
-			(at 96.52 26.67 0)
+			(at 96.52 31.75 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3132,7 +3566,7 @@
 	)
 	(symbol
 		(lib_id "Device:Opamp_Dual")
-		(at 85.09 44.45 0)
+		(at 85.09 55.88 0)
 		(unit 2)
 		(exclude_from_sim no)
 		(in_bom yes)
@@ -3141,7 +3575,7 @@
 		(fields_autoplaced yes)
 		(uuid "d67d7410-54bf-424d-94e3-0d1b617df97d")
 		(property "Reference" "U7"
-			(at 85.09 34.29 0)
+			(at 85.09 45.72 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3149,7 +3583,7 @@
 			)
 		)
 		(property "Value" "Opamp_Dual"
-			(at 85.09 36.83 0)
+			(at 85.09 48.26 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3157,7 +3591,7 @@
 			)
 		)
 		(property "Footprint" "MCP6572T_E_SN:SOIC127P600X175-8N"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3166,7 +3600,7 @@
 			)
 		)
 		(property "Datasheet" "~"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3175,7 +3609,7 @@
 			)
 		)
 		(property "Description" "Dual operational amplifier"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3184,7 +3618,7 @@
 			)
 		)
 		(property "Sim.Library" "${KICAD9_SYMBOL_DIR}/Simulation_SPICE.sp"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3193,7 +3627,7 @@
 			)
 		)
 		(property "Sim.Name" "kicad_builtin_opamp_dual"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3202,7 +3636,7 @@
 			)
 		)
 		(property "Sim.Device" "SUBCKT"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -3211,7 +3645,7 @@
 			)
 		)
 		(property "Sim.Pins" "1=out1 2=in1- 3=in1+ 4=vee 5=in2+ 6=in2- 7=out2 8=vcc"
-			(at 85.09 44.45 0)
+			(at 85.09 55.88 0)
 			(effects
 				(font
 					(size 1.27 1.27)
