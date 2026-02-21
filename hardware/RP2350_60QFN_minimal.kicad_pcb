@@ -9,8 +9,8 @@
 	(paper "A4")
 	(title_block
 		(title "ECE342 USB Oscilliscope")
-		(date "2026-02-04")
-		(rev "REV1")
+		(date "2026-02-21")
+		(rev "REV2")
 		(company "Oregon State University")
 		(comment 1 "Oliver Siemens")
 		(comment 2 "Elliot Nash")
@@ -35990,7 +35990,7 @@
 		)
 	)
 	(gr_text "Channel A"
-		(at 196.9224 133.054999 270)
+		(at 188.2 133.275 270)
 		(layer "B.SilkS")
 		(uuid "06a96636-580f-4e70-97ad-3607e24fdde8")
 		(effects
@@ -36002,7 +36002,7 @@
 		)
 	)
 	(gr_text "Yahir Raygoza-Cortez\nElliot Nash\nOliver Siemens"
-		(at 148.7624 121.874999 0)
+		(at 145.785 122.095 0)
 		(layer "B.SilkS")
 		(uuid "14201c54-0ca1-46c3-a266-fd00967f3dc4")
 		(effects
@@ -36027,7 +36027,7 @@
 		)
 	)
 	(gr_text "Designed by"
-		(at 155.4524 113.804999 0)
+		(at 152.475 114.025 0)
 		(layer "B.SilkS")
 		(uuid "4d2b424f-6bbc-4e0b-8c1a-15b812fd1cca")
 		(effects
@@ -36051,7 +36051,7 @@
 		)
 	)
 	(gr_text "Channel B"
-		(at 196.8724 111.334999 270)
+		(at 188.15 111.555 270)
 		(layer "B.SilkS")
 		(uuid "93795c24-85e6-43a2-a281-c675df1b3934")
 		(effects
@@ -36063,7 +36063,7 @@
 		)
 	)
 	(gr_text "USB Oscilloscope"
-		(at 158.7224 110.394999 0)
+		(at 155.745 110.615 0)
 		(layer "B.SilkS")
 		(uuid "9435dfff-c02d-4101-bbbf-ca4da70b6ed8")
 		(effects
