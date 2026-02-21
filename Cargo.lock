@@ -1443,6 +1443,7 @@ dependencies = [
  "pio",
  "rand_core 0.6.4",
  "rand_core 0.9.5",
+ "rp-binary-info",
  "rp-pac",
  "rp2040-boot2",
  "sha2-const-stable",
@@ -4632,6 +4633,12 @@ dependencies = [
  "libc",
  "svgbobdoc",
 ]
+
+[[package]]
+name = "rp-binary-info"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "f582261945fa215d40e2988b4df595d11c0908c0fff97a0fe23df766d117b790"
 
 [[package]]
 name = "rp-pac"

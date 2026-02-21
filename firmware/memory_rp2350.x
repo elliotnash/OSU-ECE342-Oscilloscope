@@ -1,10 +1,8 @@
 MEMORY {
     /*
-     * The RP2350 has either external or internal flash.
-     *
-     * 2 MiB is a safe default here, although a Pico 2 has 4 MiB.
+     * External flash at XIP base. This board has 16 MiB.
      */
-    FLASH : ORIGIN = 0x10000000, LENGTH = 2048K
+    FLASH : ORIGIN = 0x10000000, LENGTH = 16384K
     /*
      * RAM consists of 8 banks, SRAM0-SRAM7, with a striped mapping.
      * This is usually good for performance, as it distributes load on
@@ -19,6 +17,11 @@ MEMORY {
      */
     SRAM4 : ORIGIN = 0x20080000, LENGTH = 4K
     SRAM5 : ORIGIN = 0x20081000, LENGTH = 4K
+    /*
+     * External 8 MiB PSRAM (XIP CS1, cached at 0x11000000 after 16 MiB flash).
+     * Use for heap or large buffers; ensure PSRAM is enabled at runtime.
+     */
+    PSRAM : ORIGIN = 0x11000000, LENGTH = 8192K
 }
 
 SECTIONS {
