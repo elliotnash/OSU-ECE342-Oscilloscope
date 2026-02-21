@@ -1027,32 +1027,30 @@
 			)
 			(embedded_fonts no)
 		)
-		(symbol "Simulation_SPICE:OPAMP"
+		(symbol "OPAMP_1"
 			(pin_names
 				(offset 0.254)
 			)
 			(exclude_from_sim no)
 			(in_bom yes)
 			(on_board yes)
-			(property "Reference" "U"
-				(at 3.81 3.175 0)
+			(property "Reference" "U9"
+				(at 4.572 3.048 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left)
 				)
 			)
 			(property "Value" "${SIM.PARAMS}"
-				(at 3.81 -3.175 0)
+				(at 7.62 3.2451 0)
 				(effects
 					(font
 						(size 1.27 1.27)
 					)
-					(justify left)
 				)
 			)
-			(property "Footprint" ""
+			(property "Footprint" "OPA320:DBV5"
 				(at 0 0 0)
 				(effects
 					(font
@@ -1116,6 +1114,15 @@
 					(hide yes)
 				)
 			)
+			(property "Purchase Link" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
 			(property "ki_keywords" "simulation"
 				(at 0 0 0)
 				(effects
@@ -1125,7 +1132,7 @@
 					(hide yes)
 				)
 			)
-			(symbol "OPAMP_0_1"
+			(symbol "OPAMP_1_0_1"
 				(polyline
 					(pts
 						(xy 5.08 0) (xy -5.08 5.08) (xy -5.08 -5.08) (xy 5.08 0)
@@ -1139,7 +1146,7 @@
 					)
 				)
 			)
-			(symbol "OPAMP_1_1"
+			(symbol "OPAMP_1_1_1"
 				(pin input line
 					(at -7.62 2.54 0)
 					(length 2.54)
@@ -1150,7 +1157,7 @@
 							)
 						)
 					)
-					(number "1"
+					(number "3"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1168,7 +1175,7 @@
 							)
 						)
 					)
-					(number "2"
+					(number "4"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1186,7 +1193,7 @@
 							)
 						)
 					)
-					(number "3"
+					(number "5"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1204,7 +1211,7 @@
 							)
 						)
 					)
-					(number "4"
+					(number "2"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -1222,7 +1229,7 @@
 							)
 						)
 					)
-					(number "5"
+					(number "1"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -2398,28 +2405,22 @@
 		(uuid "25441a29-9136-4383-a07a-95c0f0dd96e4")
 	)
 	(junction
-		(at 191.77 77.47)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "2579c1ae-897d-416d-a684-59e0e49ed45e")
-	)
-	(junction
 		(at 224.79 74.93)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "2c5535e1-8d53-419c-8c38-9563501523ba")
 	)
 	(junction
+		(at 142.24 72.39)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2fede2fd-10d6-40dd-ae4b-a6dd44e797ad")
+	)
+	(junction
 		(at 234.95 74.93)
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "334dc93e-2923-49b2-8fc2-066cf132fd18")
-	)
-	(junction
-		(at 142.24 72.39)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "3696a168-0a73-44e2-9621-7cb457fd68d7")
 	)
 	(junction
 		(at 53.34 67.31)
@@ -2432,12 +2433,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "56f76ef0-c09b-4add-bbcd-91fbbff30424")
-	)
-	(junction
-		(at 207.01 74.93)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "71df6699-2fbf-4cfd-b27d-54899185e965")
 	)
 	(junction
 		(at 196.85 30.48)
@@ -2468,6 +2463,18 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "bffdde2a-0e0f-4681-9d28-5292ec9d2136")
+	)
+	(junction
+		(at 207.01 74.93)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "ced8fc49-f433-4742-aba6-de58ecc23e2e")
+	)
+	(junction
+		(at 191.77 77.47)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "cf2b4f14-fa7f-4bc8-98b2-a4b0ced8ff17")
 	)
 	(junction
 		(at 66.04 67.31)
@@ -4267,6 +4274,7 @@
 		)
 	)
 	(symbol
+		(lib_name "OPAMP_1")
 		(lib_id "Simulation_SPICE:OPAMP")
 		(at 105.41 69.85 0)
 		(unit 1)
@@ -4463,6 +4471,81 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:C")
+		(at 185.42 114.3 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "36a16cfb-fe45-4c07-a8ba-bc9da1ba79bd")
+		(property "Reference" "C42"
+			(at 189.23 113.0299 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "100n"
+			(at 189.23 115.5699 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
+			(at 186.3852 118.11 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "~"
+			(at 185.42 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Unpolarized capacitor"
+			(at 185.42 114.3 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "73e09a0d-7b03-46a3-964e-85b9b4366e26")
+		)
+		(pin "1"
+			(uuid "a65217cd-80c6-4f8b-83af-b7175a4101c9")
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "C42")
+					(unit 1)
+				)
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
+					(reference "C34")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "OPAMP_1")
 		(lib_id "Simulation_SPICE:OPAMP")
 		(at 134.62 72.39 0)
 		(unit 1)
@@ -4470,9 +4553,9 @@
 		(in_bom yes)
 		(on_board yes)
 		(dnp no)
-		(uuid "320b1977-ad6e-4002-a349-53489f7999e3")
-		(property "Reference" "U16"
-			(at 137.922 68.834 0)
+		(uuid "3e3724b7-dbec-42c6-a7f6-c35e3f05fbc2")
+		(property "Reference" "U11"
+			(at 139.192 69.342 0)
 			(effects
 				(font
 					(size 1.27 1.27)
@@ -4551,7 +4634,7 @@
 				(hide yes)
 			)
 		)
-		(property "Purchase Link" "https://www.digikey.com/en/products/detail/texas-instruments/OPA320AIDBVR/2747429"
+		(property "Purchase Link" ""
 			(at 134.62 72.39 0)
 			(effects
 				(font
@@ -4561,102 +4644,28 @@
 			)
 		)
 		(pin "2"
-			(uuid "934728fd-4e7c-4a22-8d05-b4f02385b7aa")
+			(uuid "ab0232f3-9696-43ce-af4b-5c6479820c72")
 		)
 		(pin "4"
-			(uuid "30fa1b31-3a2d-4d6c-a9f5-30fc213c713c")
+			(uuid "826e1102-3a7d-41f1-b725-e142fb845d51")
 		)
 		(pin "1"
-			(uuid "6bebe45a-0b76-42ed-9194-ffeb3ebf15a2")
+			(uuid "9e87d16b-bd5f-4b0e-971f-7e8f4b7a1d69")
 		)
 		(pin "5"
-			(uuid "bcd0f366-dfee-4a52-b78d-dc0705072578")
+			(uuid "7e56088d-b0e7-4c12-9c50-2a1eae727e29")
 		)
 		(pin "3"
-			(uuid "4083a1e4-0134-46e6-b71f-c24705a5f7a0")
+			(uuid "78692bd4-6882-4fb3-a9f2-c8a0f34621da")
 		)
 		(instances
 			(project "RP2350_60QFN_minimal"
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
-					(reference "U16")
-					(unit 1)
-				)
-				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
 					(reference "U11")
 					(unit 1)
 				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Device:C")
-		(at 185.42 114.3 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(fields_autoplaced yes)
-		(uuid "36a16cfb-fe45-4c07-a8ba-bc9da1ba79bd")
-		(property "Reference" "C42"
-			(at 189.23 113.0299 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Value" "100n"
-			(at 189.23 115.5699 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-			)
-		)
-		(property "Footprint" "Capacitor_SMD:C_0402_1005Metric"
-			(at 186.3852 118.11 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "~"
-			(at 185.42 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Unpolarized capacitor"
-			(at 185.42 114.3 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "73e09a0d-7b03-46a3-964e-85b9b4366e26")
-		)
-		(pin "1"
-			(uuid "a65217cd-80c6-4f8b-83af-b7175a4101c9")
-		)
-		(instances
-			(project "RP2350_60QFN_minimal"
-				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
-					(reference "C42")
-					(unit 1)
-				)
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
-					(reference "C34")
+					(reference "U12")
 					(unit 1)
 				)
 			)
@@ -4748,132 +4757,6 @@
 				)
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
 					(reference "U8")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
-		(lib_id "Simulation_SPICE:OPAMP")
-		(at 199.39 74.93 0)
-		(unit 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(dnp no)
-		(uuid "42c9aa56-020e-418a-b0a0-a4643fbb8469")
-		(property "Reference" "U18"
-			(at 202.438 70.866 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "${SIM.PARAMS}"
-			(at 207.01 71.6849 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "OPA320:DBV5"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#sec__SUBCKT_Subcircuits"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Description" "Operational amplifier, single"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Pins" "1=in+ 2=in- 3=vcc 4=vee 5=out"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Device" "SUBCKT"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(justify left)
-				(hide yes)
-			)
-		)
-		(property "Sim.Library" "${KICAD9_SYMBOL_DIR}/Simulation_SPICE.sp"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Sim.Name" "kicad_builtin_opamp"
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(property "Purchase Link" ""
-			(at 199.39 74.93 0)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-				(hide yes)
-			)
-		)
-		(pin "2"
-			(uuid "bf53b63a-d71f-496a-92da-1d14ca12047c")
-		)
-		(pin "4"
-			(uuid "26c87f87-a4cf-4d9e-9b0a-55e883851e02")
-		)
-		(pin "1"
-			(uuid "f728db7a-dc66-482f-8b77-89052c716864")
-		)
-		(pin "5"
-			(uuid "ca94093e-9c37-42fa-9ae9-9526347a9e3f")
-		)
-		(pin "3"
-			(uuid "682909da-5087-41f6-bb4d-00612c732cc0")
-		)
-		(instances
-			(project "RP2350_60QFN_minimal"
-				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
-					(reference "U18")
-					(unit 1)
-				)
-				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
-					(reference "U19")
 					(unit 1)
 				)
 			)
@@ -6968,6 +6851,133 @@
 				)
 				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
 					(reference "#PWR050")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_name "OPAMP_1")
+		(lib_id "Simulation_SPICE:OPAMP")
+		(at 199.39 74.93 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d64327f2-b4cf-4587-bec6-7f8515f4f022")
+		(property "Reference" "U16"
+			(at 203.962 71.882 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "${SIM.PARAMS}"
+			(at 207.01 71.6849 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "OPA320:DBV5"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://ngspice.sourceforge.io/docs/ngspice-html-manual/manual.xhtml#sec__SUBCKT_Subcircuits"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Operational amplifier, single"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Pins" "1=in+ 2=in- 3=vcc 4=vee 5=out"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Device" "SUBCKT"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+				(hide yes)
+			)
+		)
+		(property "Sim.Library" "${KICAD9_SYMBOL_DIR}/Simulation_SPICE.sp"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Sim.Name" "kicad_builtin_opamp"
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Purchase Link" ""
+			(at 199.39 74.93 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "2"
+			(uuid "f38c8b1b-161a-41ad-9385-4f3276e308fe")
+		)
+		(pin "4"
+			(uuid "ad4d97d8-1bc3-455d-8a89-5a75942a713b")
+		)
+		(pin "1"
+			(uuid "67276521-0866-44ba-b41b-ed9981085b96")
+		)
+		(pin "5"
+			(uuid "f7eee26b-5226-45db-854e-603c4a66c543")
+		)
+		(pin "3"
+			(uuid "93240add-1e2b-41b7-b941-511b1f0a5504")
+		)
+		(instances
+			(project "RP2350_60QFN_minimal"
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/73c3c5fb-df78-41b9-8072-c8773a39fe38"
+					(reference "U16")
+					(unit 1)
+				)
+				(path "/94683f5c-9cd9-448e-be96-9792537b5cb8/d3a5c44e-d3c2-4378-8b88-4736949f93fe"
+					(reference "U17")
 					(unit 1)
 				)
 			)
