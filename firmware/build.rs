@@ -20,36 +20,47 @@ fn main() {
     let has_rp2350 = env::var("CARGO_FEATURE_RP2350").is_ok();
 
     if !has_rp2040 && !has_rp2350 {
-        panic!("One of features 'rp2040' or 'rp2350' must be enabled. Use --features rp2040 or --features rp2350");
+        panic!(
+            "One of features 'rp2040' or 'rp2350' must be enabled. Use --features rp2040 or --features rp2350"
+        );
     }
     if has_rp2040 && has_rp2350 {
-        panic!("Features 'rp2040' and 'rp2350' are mutually exclusive. Use --no-default-features --features <chip> to switch");
+        panic!(
+            "Features 'rp2040' and 'rp2350' are mutually exclusive. Use --no-default-features --features <chip> to switch"
+        );
     }
 
     let use_rp2040 = has_rp2040;
+
+    // Select and copy the correct memory.x for the target chip
+    let memory_path = if use_rp2040 {
+        "memory_rp2040.x"
+    } else {
+        "memory_rp2350.x"
+    };
+    let memory_bytes = std::fs::read(memory_path)
+        .unwrap_or_else(|e| panic!("failed to read {}: {}", memory_path, e));
 
     // Put `memory.x` in our output directory and ensure it's
     // on the linker search path.
     let out = &PathBuf::from(env::var_os("OUT_DIR").unwrap());
     File::create(out.join("memory.x"))
         .unwrap()
-        .write_all(include_bytes!("memory.x"))
+        .write_all(&memory_bytes)
         .unwrap();
     println!("cargo:rustc-link-search={}", out.display());
 
-    // By default, Cargo will re-run a build script whenever
-    // any file in the project changes. By specifying `memory.x`
-    // here, we ensure the build script is only re-run when
-    // `memory.x` is changed.
-    println!("cargo:rerun-if-changed=memory.x");
+    // Re-run when either memory file changes
+    println!("cargo:rerun-if-changed=memory_rp2040.x");
+    println!("cargo:rerun-if-changed=memory_rp2350.x");
 
     println!("cargo:rustc-link-arg-bins=--nmagic");
     println!("cargo:rustc-link-arg-bins=-Tlink.x");
-    
+
     // link-rp.x is only needed for RP2040 (embassy-rp generates it when rp2040 feature is enabled)
     if use_rp2040 {
         println!("cargo:rustc-link-arg-bins=-Tlink-rp.x");
     }
-    
+
     println!("cargo:rustc-link-arg-bins=-Tdefmt.x");
 }
