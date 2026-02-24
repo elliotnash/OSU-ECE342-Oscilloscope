@@ -104,14 +104,21 @@ async fn handle_connection(serial: &mut SerialPort) -> std::io::Result<()> {
 
         if read_len > 0 {
             // Process your oscilloscope data here
-            let message = postcard::from_bytes_cobs::<Message>(&mut buffer[..read_len]).expect("Deserialization failed");
-            println!("Received message over USB-CDC: {:?}", message);
+            let message = postcard::from_bytes_cobs::<Message>(&mut buffer[..read_len]);
             match message {
-                Message::Frame(frame) => {
-                    get_frame_watch().send(frame).ok();
+                Ok(message) => {
+                    println!("Received message over USB-CDC: {:?}", message);
+                    match message {
+                        Message::Frame(frame) => {
+                            get_frame_watch().send(frame).ok();
+                        }
+                        _ => {
+                            println!("Message type not implemented yet: {:?}", message);
+                        }
+                    }
                 }
-                _ => {
-                    println!("Message type not implemented yet: {:?}", message);
+                Err(e) => {
+                    println!("Error deserializing message: {:?}", e);
                 }
             }
         }
