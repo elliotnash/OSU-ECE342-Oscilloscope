@@ -140,7 +140,7 @@ where
     fn push_delta(data: &mut Vec<u16>, value: u8) {
         // Since the most significant bit signifies absolute/delta, we need to sign extend the value
         // before we interpret it as a two's complement value (casting to i8).
-        let delta = ((value & 0b0111_1111) | ((value & 0b0100_0000) << 1)) as i16;
+        let delta = (((value & 0b0111_1111) | ((value & 0b0100_0000) << 1)) as i8) as i16;
         let last = *data
             .last()
             .expect("Delta value received without previous value") as i16;
