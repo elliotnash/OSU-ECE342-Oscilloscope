@@ -3,17 +3,21 @@
 
 extern crate alloc;
 
+use common::frame::{FrameData, ScopeChannel};
+use common::message::Message;
+use common::trigger::TriggerOptions;
 use defmt::{error, info};
-use embassy_rp::gpio::Flex;
-use embassy_rp::i2c;
+use embassy_rp::adc::Adc;
+use embassy_rp::gpio::{Flex, Pull};
+use embassy_rp::{Peri, adc, bind_interrupts, dma, i2c, peripherals};
+use embassy_time::{Duration, Ticker};
 use embedded_alloc::TlsfHeap as Heap;
 
 use crate::driver::mcp47feb::Mcp47feb;
+use crate::message::{MESSAGE_RX, MESSAGE_TX};
 use crate::softi2c::SoftI2c;
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::Spawner;
-use embassy_rp::bind_interrupts;
-use embassy_rp::peripherals::{self, USB};
 use embassy_rp::usb::{self, Driver};
 use embassy_usb::UsbDevice;
 use embassy_usb::class::cdc_acm::{
@@ -32,13 +36,14 @@ pub mod softi2c;
 static HEAP: Heap = Heap::empty();
 
 bind_interrupts!(struct Irqs {
-    USBCTRL_IRQ => usb::InterruptHandler<USB>;
+    ADC_IRQ_FIFO => adc::InterruptHandler;
+    USBCTRL_IRQ => usb::InterruptHandler<peripherals::USB>;
     I2C1_IRQ => i2c::InterruptHandler<peripherals::I2C1>;
 });
 
 const USB_PACKET_SIZE: usize = 64;
 
-type ScopeUsbDriver = Driver<'static, USB>;
+type ScopeUsbDriver = Driver<'static, peripherals::USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
 type ScopeUsbClass = CdcAcmClass<'static, ScopeUsbDriver>;
 type ScopeUsbSender = CdcSender<'static, ScopeUsbDriver>;
@@ -140,38 +145,119 @@ async fn main(spawner: Spawner) {
     // // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
     // // Timer::after_secs(1).await;
 
+    // Initialize the DAC and message handler
+
     let sda = Flex::new(p.PIN_7);
     let scl = Flex::new(p.PIN_6);
-    let mut i2c = SoftI2c::new(sda, scl);
+    let i2c = SoftI2c::new(sda, scl);
 
-    i2c.scan().await;
-
-    info!("I2C scanner completed");
-
-    // Use the MCP47FEB driver with the bitbanged SoftI2c
     let mut dac = Mcp47feb::new(i2c, driver::mcp47feb::default_address::A0);
-    match dac.ping().await {
-        Ok(()) => info!("DAC found and responding"),
-        Err(_) => error!("DAC ping failed (no ACK or bus error)"),
+
+    dac.ping().await.expect("DAC ping failed");
+    dac.set_vref(
+        driver::mcp47feb::DacChannel::Dac0,
+        driver::mcp47feb::VrefSource::Vdd,
+    )
+    .await
+    .expect("Failed to set VREF on channel A");
+    dac.set_vref(
+        driver::mcp47feb::DacChannel::Dac1,
+        driver::mcp47feb::VrefSource::Vdd,
+    )
+    .await
+    .expect("Failed to set VREF on channel B");
+
+    let _ = spawner.spawn(handle_messages_task(dac));
+
+    // Initialize the ADC and frame sender
+
+    let mut adc = Adc::new(p.ADC, Irqs, adc::Config::default());
+    let mut adc_dma = p.DMA_CH0;
+    let mut adc_pins = [
+        adc::Channel::new_pin(p.PIN_26, Pull::None),
+        adc::Channel::new_pin(p.PIN_27, Pull::None),
+    ];
+
+    let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins));
+}
+
+#[embassy_executor::task]
+async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>) -> ! {
+    let mut message_receiver = MESSAGE_RX
+        .receiver()
+        .expect("Failed to create message receiver");
+    let message_sender = MESSAGE_TX.sender();
+    loop {
+        let message = message_receiver.changed().await;
+        match message {
+            Message::Heartbeat => {
+                message_sender.send(Message::Heartbeat);
+            }
+            Message::SetTriggerOptions(trigger) => {
+                set_trigger_options(&mut dac, &trigger).await;
+            }
+            Message::SetChannelOptions(_channel) => {}
+            Message::SetSampleRate(_sample_rate) => {}
+            _ => {
+                error!("Received unexpected message: {:?}", message);
+            }
+        }
     }
-    if let Ok(()) = dac.ping().await {
-        if dac
-            .set_vref(
-                driver::mcp47feb::DacChannel::Dac0,
-                driver::mcp47feb::VrefSource::Vdd,
-            )
+}
+
+async fn set_trigger_options(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger: &TriggerOptions) {
+    let dac_channel = match trigger.channel {
+        ScopeChannel::A => driver::mcp47feb::DacChannel::Dac0,
+        ScopeChannel::B => driver::mcp47feb::DacChannel::Dac1,
+    };
+
+    dac.write_dac(dac_channel, trigger.value as u16)
+        .await
+        .expect("Failed to write DAC value");
+}
+
+#[embassy_executor::task]
+async fn read_adc_task(
+    mut adc: Adc<'static, adc::Async>,
+    mut adc_dma: Peri<'static, peripherals::DMA_CH0>,
+    mut adc_pins: [adc::Channel<'static>; 2],
+) -> ! {
+    let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666 * 60));
+    let message_sender = MESSAGE_TX.sender();
+    const BLOCK_SIZE: usize = 100;
+    const NUM_CHANNELS: usize = 2;
+    loop {
+        // Send frames at 60 Hz
+        frame_ticker.next().await;
+
+        let mut buf = [0_u16; { BLOCK_SIZE * NUM_CHANNELS }];
+        let div = 119; // 100kHz sample rate (48Mhz / 200kHz * 2ch - 1)
+        adc.read_many_multichannel(&mut adc_pins, &mut buf, div, adc_dma.reborrow())
             .await
-            .is_ok()
-        {
-            info!("DAC VREF set to VDD");
-        }
-        if dac
-            .write_dac(driver::mcp47feb::DacChannel::Dac0, 0)
-            .await
-            .is_ok()
-        {
-            info!("DAC0 set to 0");
-        }
+            .expect("Failed to read ADC samples");
+
+        let ch_a_samples = buf.iter().step_by(2);
+
+        let ch_a_frame = FrameData {
+            data: ch_a_samples.copied().collect(),
+            center: 4096,
+            voltage_scale: 2.0,
+            channel: ScopeChannel::A,
+            timestep_ms: 0.005, // This should be timestep of 200kHz
+        };
+        info!("Send frame: {:?}", &ch_a_frame);
+        message_sender.send(Message::Frame(ch_a_frame));
+
+        // let ch_b_samples = buf.iter().skip(1).step_by(2);
+        // let ch_b_frame = FrameData {
+        //     data: ch_b_samples.copied().collect(),
+        //     center: 4096,
+        //     voltage_scale: 2.0,
+        //     channel: ScopeChannel::B,
+        //     timestep_ms: 0.005, // This should be timestep of 200kHz
+        // };
+
+        // message_sender.send(Message::Frame(ch_b_frame));
     }
 }
 
