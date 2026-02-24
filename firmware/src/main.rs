@@ -6,10 +6,10 @@ extern crate alloc;
 use common::frame::{FrameData, ScopeChannel};
 use common::message::Message;
 use common::trigger::TriggerOptions;
-use defmt::{error, info};
+use defmt::{debug, error, info};
 use embassy_rp::adc::Adc;
 use embassy_rp::gpio::{Flex, Pull};
-use embassy_rp::{Peri, adc, bind_interrupts, dma, i2c, peripherals};
+use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
 use embassy_time::{Duration, Ticker};
 use embedded_alloc::TlsfHeap as Heap;
 
@@ -171,9 +171,9 @@ async fn main(spawner: Spawner) {
 
     // Initialize the ADC and frame sender
 
-    let mut adc = Adc::new(p.ADC, Irqs, adc::Config::default());
-    let mut adc_dma = p.DMA_CH0;
-    let mut adc_pins = [
+    let adc = Adc::new(p.ADC, Irqs, adc::Config::default());
+    let adc_dma = p.DMA_CH0;
+    let adc_pins = [
         adc::Channel::new_pin(p.PIN_26, Pull::None),
         adc::Channel::new_pin(p.PIN_27, Pull::None),
     ];
@@ -183,15 +183,13 @@ async fn main(spawner: Spawner) {
 
 #[embassy_executor::task]
 async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>) -> ! {
-    let mut message_receiver = MESSAGE_RX
-        .receiver()
-        .expect("Failed to create message receiver");
+    let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
     loop {
-        let message = message_receiver.changed().await;
+        let message = message_receiver.receive().await;
         match message {
             Message::Heartbeat => {
-                message_sender.send(Message::Heartbeat);
+                let _ = message_sender.try_send(Message::Heartbeat);
             }
             Message::SetTriggerOptions(trigger) => {
                 set_trigger_options(&mut dac, &trigger).await;
@@ -230,34 +228,34 @@ async fn read_adc_task(
         // Send frames at 60 Hz
         frame_ticker.next().await;
 
+        let sample_rate = 250_000;
+
         let mut buf = [0_u16; { BLOCK_SIZE * NUM_CHANNELS }];
-        let div = 119; // 100kHz sample rate (48Mhz / 200kHz * 2ch - 1)
+        let div = (48_000_000_u32 / (sample_rate * 2) - 1) as u16;
+        debug!("Sampling with div: {}", div);
         adc.read_many_multichannel(&mut adc_pins, &mut buf, div, adc_dma.reborrow())
             .await
             .expect("Failed to read ADC samples");
 
         let ch_a_samples = buf.iter().step_by(2);
-
         let ch_a_frame = FrameData {
             data: ch_a_samples.copied().collect(),
-            center: 4096,
+            center: 2048,
             voltage_scale: 2.0,
             channel: ScopeChannel::A,
             timestep_ms: 0.005, // This should be timestep of 200kHz
         };
-        info!("Send frame: {:?}", &ch_a_frame);
-        message_sender.send(Message::Frame(ch_a_frame));
+        let _ = message_sender.try_send(Message::Frame(ch_a_frame));
 
-        // let ch_b_samples = buf.iter().skip(1).step_by(2);
-        // let ch_b_frame = FrameData {
-        //     data: ch_b_samples.copied().collect(),
-        //     center: 4096,
-        //     voltage_scale: 2.0,
-        //     channel: ScopeChannel::B,
-        //     timestep_ms: 0.005, // This should be timestep of 200kHz
-        // };
-
-        // message_sender.send(Message::Frame(ch_b_frame));
+        let ch_b_samples = buf.iter().skip(1).step_by(2);
+        let ch_b_frame = FrameData {
+            data: ch_b_samples.copied().collect(),
+            center: 2048,
+            voltage_scale: 2.0,
+            channel: ScopeChannel::B,
+            timestep_ms: 0.005, // This should be timestep of 200kHz
+        };
+        let _ = message_sender.try_send(Message::Frame(ch_b_frame));
     }
 }
 

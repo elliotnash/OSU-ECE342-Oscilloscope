@@ -3,11 +3,11 @@ use alloc::vec::Vec;
 use common::message::Message;
 use defmt::{error, info, panic};
 use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
-use embassy_sync::watch::Watch;
+use embassy_sync::channel::Channel;
 use embassy_usb::driver::EndpointError;
 
-pub static MESSAGE_RX: Watch<ThreadModeRawMutex, Message, 2> = Watch::new();
-pub static MESSAGE_TX: Watch<ThreadModeRawMutex, Message, 2> = Watch::new();
+pub static MESSAGE_RX: Channel<ThreadModeRawMutex, Message, 2> = Channel::new();
+pub static MESSAGE_TX: Channel<ThreadModeRawMutex, Message, 2> = Channel::new();
 
 #[embassy_executor::task]
 pub async fn send_messages_task(mut tx: ScopeUsbSender) -> ! {
@@ -51,7 +51,7 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
                 // Received null byte indicating the end of message, parse it.
                 match postcard::from_bytes_cobs::<Message>(&mut buf) {
                     Ok(message) => {
-                        message_sender.send(message);
+                        message_sender.send(message).await;
                     }
                     Err(e) => {
                         error!(
@@ -76,11 +76,10 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
 }
 
 async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
-    let mut message_receiver = MESSAGE_TX
-        .receiver()
-        .expect("Failed to create message receiver");
+    let message_receiver = MESSAGE_TX.receiver();
     loop {
-        let message = message_receiver.changed().await;
+        let message = message_receiver.receive().await;
+        info!("Sending message: {:?}", &message);
 
         let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 
