@@ -4,12 +4,12 @@
 extern crate alloc;
 
 use defmt::{error, info};
-use embassy_rp::gpio::{Flex, Pull};
-use embassy_rp::i2c::{self, I2c};
-use embassy_time::Timer;
+use embassy_rp::gpio::Flex;
+use embassy_rp::i2c;
 use embedded_alloc::TlsfHeap as Heap;
 
 use crate::driver::mcp47feb::Mcp47feb;
+use crate::softi2c::SoftI2c;
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::Spawner;
 use embassy_rp::bind_interrupts;
@@ -26,6 +26,7 @@ use {defmt_rtt as _, panic_probe as _};
 
 pub mod driver;
 pub mod message;
+pub mod softi2c;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -42,93 +43,6 @@ type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
 type ScopeUsbClass = CdcAcmClass<'static, ScopeUsbDriver>;
 type ScopeUsbSender = CdcSender<'static, ScopeUsbDriver>;
 type ScopeUsbReceiver = CdcReceiver<'static, ScopeUsbDriver>;
-
-pub struct SoftI2c<'d> {
-    sda: Flex<'d>,
-    scl: Flex<'d>,
-}
-
-impl<'d> SoftI2c<'d> {
-    pub fn new(sda: Flex<'d>, scl: Flex<'d>) -> Self {
-        let mut s = Self { sda, scl };
-        s.sda.set_as_output();
-        s.scl.set_as_output();
-        s.sda.set_high();
-        s.scl.set_high();
-        s
-    }
-
-    async fn wait(&self) {
-        // 20 microseconds = 50kHz. Safe for weak pull-ups.
-        Timer::after_micros(20).await;
-    }
-
-    async fn start(&mut self) {
-        self.sda.set_as_output();
-        self.sda.set_high();
-        self.scl.set_high();
-        self.wait().await;
-        self.sda.set_low();
-        self.wait().await;
-        self.scl.set_low();
-        self.wait().await;
-    }
-
-    async fn stop(&mut self) {
-        self.sda.set_as_output();
-        self.sda.set_low();
-        self.wait().await;
-        self.scl.set_high();
-        self.wait().await;
-        self.sda.set_high();
-        self.wait().await;
-    }
-
-    /// Sends a byte and returns true if ACK was received
-    async fn send_byte(&mut self, byte: u8) -> bool {
-        self.sda.set_as_output();
-        for i in 0..8 {
-            let bit = (byte >> (7 - i)) & 1;
-            if bit == 1 {
-                self.sda.set_high();
-            } else {
-                self.sda.set_low();
-            }
-            self.wait().await;
-            self.scl.set_high();
-            self.wait().await;
-            self.scl.set_low();
-            self.wait().await;
-        }
-
-        // Check ACK
-        self.sda.set_as_input();
-        self.sda.set_pull(Pull::Up);
-        self.wait().await;
-        self.scl.set_high();
-        self.wait().await;
-
-        let ack = self.sda.is_low(); // Slave pulls low to ACK
-
-        self.scl.set_low();
-        self.wait().await;
-        ack
-    }
-
-    pub async fn scan(&mut self) {
-        info!("Scanning (Software I2C)...");
-        for addr in 0x08..0x78u8 {
-            // Standard I2C range
-            self.start().await;
-            if self.send_byte(addr << 1).await {
-                info!("Device found at 0x{:02x}", addr);
-            }
-            self.stop().await;
-            Timer::after_millis(5).await;
-        }
-        info!("Scan complete.");
-    }
-}
 
 #[embassy_executor::main]
 async fn main(spawner: Spawner) {
@@ -191,6 +105,41 @@ async fn main(spawner: Spawner) {
 
     info!("Firmware started");
 
+    // let mut psram_config = embassy_rp::psram::Config::aps6404l();
+    // psram_config.max_mem_freq = 25_000_000;
+    // psram_config.init_clkdiv = 30;
+    // let psram = embassy_rp::psram::Psram::new(
+    //     embassy_rp::qmi_cs1::QmiCs1::new(p.QMI_CS1, p.PIN_8),
+    //     psram_config,
+    // );
+
+    // let Ok(psram) = psram else {
+    //     error!("PSRAM not found");
+    //     loop {
+    //         Timer::after_secs(1).await;
+    //     }
+    // };
+
+    // let psram_slice = unsafe {
+    //     let psram_ptr = psram.base_address();
+    //     let slice: &'static mut [u8] =
+    //         core::slice::from_raw_parts_mut(psram_ptr, psram.size() as usize);
+    //     slice
+    // };
+
+    // psram_slice.fill(0x55);
+    // // psram_slice[0x100] = 0x55;
+    // info!("PSRAM filled with 0x55");
+    // let at_addr = psram_slice[0x100];
+    // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
+    // Timer::after_secs(1).await;
+
+    // // psram_slice.fill(0xAA);
+    // // info!("PSRAM filled with 0xAA");
+    // // let at_addr = psram_slice[0x100];
+    // // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
+    // // Timer::after_secs(1).await;
+
     let sda = Flex::new(p.PIN_7);
     let scl = Flex::new(p.PIN_6);
     let mut i2c = SoftI2c::new(sda, scl);
@@ -199,80 +148,29 @@ async fn main(spawner: Spawner) {
 
     info!("I2C scanner completed");
 
-    i2c.start().await;
-    if i2c.send_byte(0x60 << 1).await {
-        i2c.send_byte(0x00 << 3).await;
-        i2c.send_byte(0x08).await;
-        i2c.send_byte(0x00).await;
-        info!("Data sent to DAC!");
-    } else {
-        error!("DAC did not ACK address 0x60");
+    // Use the MCP47FEB driver with the bitbanged SoftI2c
+    let mut dac = Mcp47feb::new(i2c, driver::mcp47feb::default_address::A0);
+    match dac.ping().await {
+        Ok(()) => info!("DAC found and responding"),
+        Err(_) => error!("DAC ping failed (no ACK or bus error)"),
     }
-    i2c.stop().await;
-
-    // let mut i2c_config = i2c::Config::default();
-    // i2c_config.frequency = 100_000;
-    // i2c_config.scl_pullup = false;
-    // i2c_config.sda_pullup = false;
-
-    // let mut i2c = I2c::new_async(p.I2C1, p.PIN_6, p.PIN_7, Irqs, i2c_config);
-
-    // i2c_scanner(&mut i2c).await;
-    // info!("I2C scanner completed");
-
-    // test_dac(&mut i2c).await;
-    // info!("DAC test completed");
-
-    // let mut dac = Mcp47feb::new(i2c, 0x60);
-    // dac.ping().await.unwrap();
-    // dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 0x0000)
-    //     .await
-    //     .unwrap();
-    // dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 0x0000)
-    //     .await
-    //     .unwrap();
-    // defmt::info!("DAC initialized");
-}
-
-async fn i2c_scanner(i2c: &mut i2c::I2c<'_, peripherals::I2C1, i2c::Async>) {
-    info!("Scanning I2C bus...");
-    for addr in 0x00..0x80u8 {
-        // We just try to read 1 byte. If the device is there, it will ACK.
-        let mut read_buf = [0u8; 1];
-        match i2c.read_async(addr, &mut read_buf).await {
-            Ok(_) => info!("Found device at address: 0x{:02x}", addr),
-            Err(_) => {} // No device at this address
+    if let Ok(()) = dac.ping().await {
+        if dac
+            .set_vref(
+                driver::mcp47feb::DacChannel::Dac0,
+                driver::mcp47feb::VrefSource::Vdd,
+            )
+            .await
+            .is_ok()
+        {
+            info!("DAC VREF set to VDD");
         }
-    }
-    info!("Scan complete.");
-}
-
-const DAC_ADDR: u8 = 0x61;
-
-// Command bytes for the MCP47FEB
-// Memory Address 0x00 is Volatile DAC0
-// Write Command bits are typically 00 (bits 4-3 of the command byte)
-const WRITE_CMD: u8 = 0x00 << 3;
-
-async fn test_dac(i2c: &mut i2c::I2c<'_, peripherals::I2C1, i2c::Async>) {
-    // We want to send 3 bytes: [Command Byte, Data High Byte, Data Low Byte]
-    // For a 12-bit DAC (MCP47FEB21/22), the value 0x7FF is roughly mid-scale.
-    let dac_value: u16 = 0x7FF;
-    let hi_byte = (dac_value >> 8) as u8;
-    let lo_byte = (dac_value & 0xFF) as u8;
-
-    let tx_buffer = [WRITE_CMD, hi_byte, lo_byte];
-
-    match i2c.write_async(DAC_ADDR, tx_buffer).await {
-        Ok(_) => {
-            // Success! You should see a voltage on Vout0 roughly half of Vref/Vdd
-            info!("DAC Write Successful");
-        }
-        Err(e) => {
-            // If you get a 'NoAcknowledge' error here, it's likely:
-            // 1. The wrong I2C address
-            // 2. The internal pull-ups aren't strong enough
-            error!("I2C Error: {:?}", e);
+        if dac
+            .write_dac(driver::mcp47feb::DacChannel::Dac0, 0)
+            .await
+            .is_ok()
+        {
+            info!("DAC0 set to 0");
         }
     }
 }
