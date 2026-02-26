@@ -4,13 +4,13 @@
 extern crate alloc;
 
 use common::frame::{FrameData, ScopeChannel};
-use common::message::Message;
-use common::trigger::{self, TriggerOptions};
+use common::message::{Message, VerificationMessage};
+use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
 use embassy_rp::adc::Adc;
-use embassy_rp::gpio::{Level, Output, Flex, Pull, Input, AnyPin};
+use embassy_rp::gpio::{Level, Output, Flex, Pull, Input};
 use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
-use embassy_time::{Duration, Ticker, Timer};
+use embassy_time::{Duration, Ticker};
 use embedded_alloc::TlsfHeap as Heap;
 
 use crate::driver::mcp47feb::Mcp47feb;
@@ -58,11 +58,8 @@ async fn main(spawner: Spawner) {
 
     let p = embassy_rp::init(Default::default());
 
-    // Initialize PIN_14 as an output and set it HIGH immediately
-    let mut test_pin_high = Output::new(p.PIN_14, Level::High);
-
-    // Initialize PIN_15 as an output and set it LOW immediately
-    let mut test_pin_low = Output::new(p.PIN_15, Level::Low);
+    let _test_pin_high = Output::new(p.PIN_14, Level::High);
+    let _test_pin_low = Output::new(p.PIN_15, Level::Low);
 
     // Initialize PIN_16 as an input with no internal pull resistor
     let test_pin_in = Input::new(p.PIN_16, Pull::None);
@@ -112,53 +109,18 @@ async fn main(spawner: Spawner) {
     // Run the USB device.
     let _ = spawner.spawn(usb_task(usb));
 
-    // Add this where you spawn your other tasks (like usb_task)
-    spawner.spawn(verify_trigger_task(Input::new(p.PIN_16.degrade(), Pull::None))).unwrap();
+    // Spawn the trigger verification task
+    spawner.spawn(verify_trigger_task(test_pin_in)).unwrap();
 
     let (tx, rx) = class.split();
 
+    // This handles sending binary COBS/Postcard data to the Tauri Frontend
     let _ = spawner.spawn(send_messages_task(tx));
     let _ = spawner.spawn(receive_messages_task(rx));
 
     info!("Firmware started");
 
-    // let mut psram_config = embassy_rp::psram::Config::aps6404l();
-    // psram_config.max_mem_freq = 25_000_000;
-    // psram_config.init_clkdiv = 30;
-    // let psram = embassy_rp::psram::Psram::new(
-    //     embassy_rp::qmi_cs1::QmiCs1::new(p.QMI_CS1, p.PIN_8),
-    //     psram_config,
-    // );
-
-    // let Ok(psram) = psram else {
-    //     error!("PSRAM not found");
-    //     loop {
-    //         Timer::after_secs(1).await;
-    //     }
-    // };
-
-    // let psram_slice = unsafe {
-    //     let psram_ptr = psram.base_address();
-    //     let slice: &'static mut [u8] =
-    //         core::slice::from_raw_parts_mut(psram_ptr, psram.size() as usize);
-    //     slice
-    // };
-
-    // psram_slice.fill(0x55);
-    // // psram_slice[0x100] = 0x55;
-    // info!("PSRAM filled with 0x55");
-    // let at_addr = psram_slice[0x100];
-    // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
-    // Timer::after_secs(1).await;
-
-    // // psram_slice.fill(0xAA);
-    // // info!("PSRAM filled with 0xAA");
-    // // let at_addr = psram_slice[0x100];
-    // // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
-    // // Timer::after_secs(1).await;
-
     // Initialize the DAC and message handler
-
     let sda = Flex::new(p.PIN_7);
     let scl = Flex::new(p.PIN_6);
     let i2c = SoftI2c::new(sda, scl);
@@ -182,7 +144,6 @@ async fn main(spawner: Spawner) {
     let _ = spawner.spawn(handle_messages_task(dac));
 
     // Initialize the ADC and frame sender
-
     let adc = Adc::new(p.ADC, Irqs, adc::Config::default());
     let adc_dma = p.DMA_CH0;
     let adc_pins = [
@@ -288,20 +249,17 @@ pub static PICOTOOL_ENTRIES: [embassy_rp::binary_info::EntryAddr; 4] = [
 
 // This task reads the state of the GPIO pin and logs at 60Hz
 #[embassy_executor::task]
-async fn verify_trigger_task(mut pin: Input<'static>) {
-    let mut ticker = Ticker::every(Duration::from_micros_floor(16_666 * 60));
+async fn verify_trigger_task(pin: Input<'static>) {
+    let mut ticker = Ticker::every(Duration::from_micros_floor(16_666 * 60)); // ~60 Hz
     let message_sender = MESSAGE_TX.sender();
+    
     loop {
         ticker.next().await;
+        let is_high = pin.is_high();
 
-        let sample =  pin.is_high();
-
-        let trigger_state = if sample {
-            "HIGH"
-        } else {
-            "LOW"
-        };
-
-        let _ = message_sender.try_send(Message::Frame(trigger_state.to_string()));
+        // Send the boolean state wrapped in the correct Verification message
+        let _ = message_sender.try_send(Message::Verification(
+            VerificationMessage::TriggerState(is_high)
+        ));
     }
 }
