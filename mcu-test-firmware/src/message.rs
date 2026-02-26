@@ -51,7 +51,7 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
                 // Received null byte indicating the end of message, parse it.
                 match postcard::from_bytes_cobs::<Message>(&mut buf) {
                     Ok(message) => {
-                        message_sender.send(message);
+                        message_sender.send(message).await;
                     }
                     Err(e) => {
                         error!(
@@ -76,10 +76,10 @@ async fn receive_messages(rx: &mut ScopeUsbReceiver) -> Result<(), Disconnected>
 }
 
 async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
-    let mut message_receiver = MESSAGE_TX
-        .receiver();
+    let message_receiver = MESSAGE_TX.receiver();
     loop {
         let message = message_receiver.receive().await;
+        info!("Sending message: {:?}", &message);
 
         let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 

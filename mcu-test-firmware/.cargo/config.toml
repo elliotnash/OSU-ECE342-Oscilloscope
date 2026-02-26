@@ -1,0 +1,27 @@
+# NOTE: Target and runner are set based on chip selection feature.
+# Override via command line: --target <target-triple>
+# 
+# For RP2040:  --target thumbv6m-none-eabi
+# For RP2350:  --target thumbv8m.main-none-eabihf
+
+[target.'cfg(all(target_arch = "arm", target_os = "none"))']
+# Default runner for RP2350 (can be overridden via command line)
+# runner = "probe-rs run --chip RP235x" # for swd
+# runner = "picotool load -u -v -x -t elf"
+runner = "elf2uf2-rs --deploy --serial --verbose" # for elf2uf2
+
+[build]
+# Default target for RP2350 (override with --target when building for RP2040)
+target = "thumbv8m.main-none-eabihf" # Cortex-M33 (ARMv8-M Mainline) + hard-float
+
+[env]
+DEFMT_LOG = "debug"
+
+[alias]
+# Build aliases for RP2040
+build-rp2040 = "build --no-default-features --features rp2040 --target thumbv6m-none-eabi"
+run-rp2040 = "run --no-default-features --features rp2040 --target thumbv6m-none-eabi"
+
+# Build aliases for RP2350
+build-rp2350 = "build --features rp2350 --target thumbv8m.main-none-eabihf"
+run-rp2350 = "run --features rp2350 --target thumbv8m.main-none-eabihf"
