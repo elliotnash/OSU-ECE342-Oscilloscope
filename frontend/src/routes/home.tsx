@@ -42,6 +42,12 @@ function Index() {
     B: "1x",
   });
 
+  const [mathState, setMathState] = useState<MathState>({
+    enabled: false,
+    mode: "preset",
+    presetId: mathChannelPresets[0]?.id ?? "1",
+  });
+
   const handleChannelEnabledChange = useCallback((channel: ScopeChannel, enabled: boolean) => {
     setChannelVisibility((prev) => ({
       ...prev,
@@ -58,6 +64,18 @@ function Index() {
     },
     [],
   );
+
+  const handleMathEnabledChange = useCallback((enabled: boolean) => {
+    setMathState((prev) => ({ ...prev, enabled }));
+  }, []);
+
+  const handleMathModeChange = useCallback((mode: "preset" | "custom") => {
+    setMathState((prev) => ({ ...prev, mode }));
+  }, []);
+
+  const handleMathPresetChange = useCallback((presetId: string) => {
+    setMathState((prev) => ({ ...prev, presetId: presetId as MathPresetId }));
+  }, []);
 
   return (
     <>
@@ -87,6 +105,7 @@ function Index() {
             <Plot
               channelVisibility={channelVisibility}
               channelAttenuation={channelAttenuation}
+              mathState={mathState}
             />
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
@@ -98,6 +117,10 @@ function Index() {
                 channelAttenuation={channelAttenuation}
                 onChannelEnabledChange={handleChannelEnabledChange}
                 onChannelAttenuationChange={handleChannelAttenuationChange}
+                mathState={mathState}
+                onMathEnabledChange={handleMathEnabledChange}
+                onMathModeChange={handleMathModeChange}
+                onMathPresetChange={handleMathPresetChange}
               />
             </div>
           </ScrollArea>
@@ -113,11 +136,19 @@ function ControlPanel({
   channelAttenuation,
   onChannelEnabledChange,
   onChannelAttenuationChange,
+  mathState,
+  onMathEnabledChange,
+  onMathModeChange,
+  onMathPresetChange,
 }: {
   channelVisibility: Record<ScopeChannel, boolean>;
   channelAttenuation: Record<ScopeChannel, Key>;
   onChannelEnabledChange: (channel: ScopeChannel, enabled: boolean) => void;
   onChannelAttenuationChange: (channel: ScopeChannel, attenuation: Key) => void;
+  mathState: MathState;
+  onMathEnabledChange: (enabled: boolean) => void;
+  onMathModeChange: (mode: "preset" | "custom") => void;
+  onMathPresetChange: (presetId: string) => void;
 }) {
   return (
     <>
@@ -140,7 +171,12 @@ function ControlPanel({
         }
       />
       <CommondCard />
-      <MathChannelCard />
+      <MathChannelCard
+        state={mathState}
+        onEnabledChange={onMathEnabledChange}
+        onModeChange={onMathModeChange}
+        onPresetChange={onMathPresetChange}
+      />
     </>
   )
 }
@@ -150,37 +186,69 @@ const mathChannelPresets = [
   { id: "2", value: "CHA - CHB" },
   { id: "3", value: "CHA * CHB" },
   { id: "4", value: "CHA / CHB" },
-]
+] as const;
 
-function MathChannelCard() {
-  const [enabled, setEnabled] = useState(true);
-  const [preset, setPreset] = useState(mathChannelPresets[0]);
+type MathPresetId = (typeof mathChannelPresets)[number]["id"];
+
+type MathState = {
+  enabled: boolean;
+  mode: "preset" | "custom";
+  presetId: MathPresetId;
+};
+
+function MathChannelCard({
+  state,
+  onEnabledChange,
+  onModeChange,
+  onPresetChange,
+}: {
+  state: MathState;
+  onEnabledChange: (enabled: boolean) => void;
+  onModeChange: (mode: "preset" | "custom") => void;
+  onPresetChange: (presetId: MathPresetId) => void;
+}) {
   const [customExpression, setCustomExpression] = useState("");
 
-  const handlePresetChange = useCallback((key: Key | null) => {
-    if (key) {
-      const newPreset = mathChannelPresets.find((option) => option.id === key) ?? mathChannelPresets[0];
-      setPreset(newPreset);
-    }
-  }, []);
+  const handlePresetChange = useCallback(
+    (key: Key | null) => {
+      if (key) {
+        const newPreset =
+          mathChannelPresets.find((option) => option.id === key) ??
+          mathChannelPresets[0];
+        onPresetChange(newPreset.id);
+      }
+    },
+    [onPresetChange],
+  );
 
   return (
     <Card className="h-auto landscape:w-full min-w-0 gap-2">
       <CardHeader>
         <CardTitle className="flex flex-row w-full justify-between">
-          Math Channel <Switch isSelected={enabled} onChange={setEnabled}/>
+          Math Channel{" "}
+          <Switch
+            isSelected={state.enabled}
+            onChange={onEnabledChange}
+          />
         </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <Tabs isDisabled={!enabled} className="w-full mt-[-8pt]">
+          <Tabs
+            isDisabled={!state.enabled}
+            className="w-full mt-[-8pt]"
+            selectedKey={state.mode}
+            onSelectionChange={(key) =>
+              onModeChange((key as "preset" | "custom") ?? "preset")
+            }
+          >
             <TabList >
               <Tab id="preset">Preset</Tab>
               <Tab id="custom">Custom</Tab>
             </TabList>
             <TabPanel id="preset">
               <div className="grid min-w-0 w-full *:col-start-1 *:row-start-1">
-                <Select value={preset.id} onChange={handlePresetChange}>
+                <Select value={state.presetId} onChange={handlePresetChange}>
                   <SelectTrigger />
                   <SelectContent items={mathChannelPresets}>
                     {(item) => <SelectItem id={item.id} textValue={item.value}>{item.value}</SelectItem>}
@@ -196,7 +264,7 @@ function MathChannelCard() {
               <div className="grid min-w-0 w-full *:col-start-1 *:row-start-1">
                 {/* Invisible copy so grid cell is at least as wide as the Select */}
                 <div className="invisible pointer-events-none w-fit">
-                  <Select value={preset.id} onChange={handlePresetChange}>
+                  <Select value={state.presetId} onChange={handlePresetChange}>
                     <SelectTrigger />
                     <SelectContent items={mathChannelPresets}>
                       {(item) => <SelectItem id={item.id} textValue={item.value}>{item.value}</SelectItem>}
@@ -232,7 +300,7 @@ function CommondCard() {
     if (key) {
       const newSampleRate = sampleRateOptions.find((option) => option.id === key) ?? sampleRateOptions[0];
       setSampleRate(newSampleRate);
-      // TODO: Dispatch tauri event to set sample rate on hardware
+      void commands.sendSampleRate(newSampleRate.value);
     }
   }, []);
 
@@ -419,9 +487,11 @@ function alignDomainToGrid(
 export default function Plot({
   channelVisibility,
   channelAttenuation,
+  mathState,
 }: {
   channelVisibility: Record<ScopeChannel, boolean>;
   channelAttenuation: Record<ScopeChannel, Key>;
+  mathState: MathState;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
@@ -511,7 +581,47 @@ export default function Plot({
     return acc;
   }, []);
 
-  const allPoints = plotDataByChannel.flatMap((entry) => entry.points);
+  const mathColor = "rgb(34, 197, 94)"; // green
+
+  let mathPoints: PlotPoint[] | null = null;
+  if (mathState.enabled && mathState.mode === "preset") {
+    const a = plotDataByChannel.find((entry) => entry.channel === "A");
+    const b = plotDataByChannel.find((entry) => entry.channel === "B");
+    if (a && b && a.points.length > 0 && b.points.length > 0) {
+      const n = Math.min(a.points.length, b.points.length);
+      const pts: PlotPoint[] = [];
+      for (let i = 0; i < n; i++) {
+        const x = a.points[i].x;
+        const ya = a.points[i].y;
+        const yb = b.points[i].y;
+        let y: number;
+        switch (mathState.presetId) {
+          case "1": // CHA + CHB
+            y = ya + yb;
+            break;
+          case "2": // CHA - CHB
+            y = ya - yb;
+            break;
+          case "3": // CHA * CHB
+            y = ya * yb;
+            break;
+          case "4": // CHA / CHB
+            y = Math.abs(yb) > 1e-9 ? ya / yb : 0;
+            break;
+          default:
+            y = ya;
+            break;
+        }
+        pts.push({ x, y });
+      }
+      mathPoints = pts;
+    }
+  }
+
+  const allPoints = [
+    ...plotDataByChannel.flatMap((entry) => entry.points),
+    ...(mathPoints ?? []),
+  ];
 
   let xDomain: [number, number] = [0, 1];
   let yDomain: [number, number] = [-1, 1];
@@ -589,9 +699,12 @@ export default function Plot({
                 ? Number(yRaw.toPrecision(4))
                 : yRaw;
             const seriesName = (item as { seriesName?: string }).seriesName;
-            const channelKey =
-              seriesName?.endsWith("B") ? "B" : ("A" as ScopeChannel);
-            const markerColor = chartTheme.series[channelKey];
+            let markerColor = chartTheme.series.A;
+            if (seriesName === "Math") {
+              markerColor = mathColor;
+            } else if (seriesName?.endsWith("B")) {
+              markerColor = chartTheme.series.B;
+            }
             const marker = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${markerColor};margin-right:4px;"></span>`;
             return `<div>${marker} ${y}V</div>`;
           }),
@@ -691,6 +804,20 @@ export default function Plot({
           width: 2,
         },
       })),
+      ...(mathPoints
+        ? [
+            {
+              type: "line",
+              name: "Math",
+              data: mathPoints.map((point) => [point.x, point.y]),
+              showSymbol: false,
+              lineStyle: {
+                color: mathColor,
+                width: 2,
+              },
+            },
+          ]
+        : []),
     ],
   };
 

@@ -228,3 +228,12 @@ pub fn send_channel_options(channel_options: ChannelOptions) {
     let message = Message::SetChannelOptions(channel_options);
     serial_tx_broadcast.send(message).ok();
 }
+
+#[tauri::command]
+#[specta::specta]
+pub fn send_sample_rate(sample_rate: f32) {
+    let serial_tx_broadcast = get_serial_tx_broadcast();
+    println!("Sending sample rate: {:?}", sample_rate);
+    let message = Message::SetSampleRate(sample_rate);
+    serial_tx_broadcast.send(message).ok();
+}

@@ -25,6 +25,9 @@ async sendVerificationMessage(message: VerificationMessage) : Promise<void> {
 },
 async sendChannelOptions(channelOptions: ChannelOptions) : Promise<void> {
     await TAURI_INVOKE("send_channel_options", { channelOptions });
+},
+async sendSampleRate(sampleRate: number) : Promise<void> {
+    await TAURI_INVOKE("send_sample_rate", { sampleRate });
 }
 }
 
