@@ -22,6 +22,9 @@ async receiveVerificationMessages(onEvent: TAURI_CHANNEL<VerificationMessage>) :
 },
 async sendVerificationMessage(message: VerificationMessage) : Promise<void> {
     await TAURI_INVOKE("send_verification_message", { message });
+},
+async sendChannelOptions(channelOptions: ChannelOptions) : Promise<void> {
+    await TAURI_INVOKE("send_channel_options", { channelOptions });
 }
 }
 
@@ -40,10 +43,13 @@ serialStatus: "serial-status"
 
 /** user-defined types **/
 
+export type ChannelOptions = { channel: ScopeChannel; enabled: boolean; voltage_gain: ScopeGain; coupling: ScopeCoupling }
 export type Color = { red: number; green: number; blue: number; alpha: number }
 export type FrontendFrameData = { data: number[]; center: number; timestep_ms: number; voltage_scale: number; channel: ScopeChannel }
 export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null; ring: Color | null }
 export type ScopeChannel = "A" | "B"
+export type ScopeCoupling = "DC" | "AC"
+export type ScopeGain = "One" | "Four" | "Twenty"
 export type SerialStatus = "Connected" | "Disconnected"
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"
 export type TitlebarLayout = { left: TitlebarButton[]; right: TitlebarButton[] }

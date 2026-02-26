@@ -6,7 +6,7 @@ use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
 use tokio::{select, sync::{broadcast, watch}, time::sleep};
-use common::{frame::{FrameData, FrontendFrameData}, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
+use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData}, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
@@ -143,7 +143,7 @@ async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
             let message = postcard::from_bytes_cobs::<Message>(&mut buffer[..read_len]);
             match message {
                 Ok(message) => {
-                    println!("Received message over USB-CDC: {:?}", message);
+                    // println!("Received message over USB-CDC: {:?}", message);
                     match message {
                         Message::Frame(frame) => {
                             get_frame_watch().send(frame).ok();
@@ -217,5 +217,14 @@ pub async fn receive_verification_messages(app: AppHandle, on_event: Channel<Ver
 pub fn send_verification_message(message: VerificationMessage) {
     let serial_tx_broadcast = get_serial_tx_broadcast();
     let message = Message::Verification(message);
+    serial_tx_broadcast.send(message).ok();
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn send_channel_options(channel_options: ChannelOptions) {
+    let serial_tx_broadcast = get_serial_tx_broadcast();
+    println!("Sending channel options: {:?}", channel_options);
+    let message = Message::SetChannelOptions(channel_options);
     serial_tx_broadcast.send(message).ok();
 }

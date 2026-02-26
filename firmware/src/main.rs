@@ -296,7 +296,7 @@ async fn read_adc_task(
         let ch_a_frame = FrameData {
             data: ch_a_samples.copied().collect(),
             center: 2048,
-            voltage_scale: 2.0,
+            voltage_scale: 6.6,
             channel: ScopeChannel::A,
             timestep_ms: 0.005, // This should be timestep of 200kHz
         };
@@ -306,7 +306,7 @@ async fn read_adc_task(
         let ch_b_frame = FrameData {
             data: ch_b_samples.copied().collect(),
             center: 2048,
-            voltage_scale: 2.0,
+            voltage_scale: 6.6,
             channel: ScopeChannel::B,
             timestep_ms: 0.005, // This should be timestep of 200kHz
         };

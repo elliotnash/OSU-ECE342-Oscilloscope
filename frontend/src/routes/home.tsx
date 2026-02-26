@@ -6,7 +6,14 @@ import { extent } from "@visx/vendor/d3-array";
 import { scaleLinear } from "@visx/scale";
 import ReactECharts from "echarts-for-react";
 import { Channel } from "@tauri-apps/api/core";
-import { commands, type ScopeChannel, type FrontendFrameData } from "~/bindings";
+import {
+  commands,
+  type ScopeChannel,
+  type FrontendFrameData,
+  type ChannelOptions,
+  type ScopeGain,
+  type ScopeCoupling,
+} from "~/bindings";
 import { Titlebar } from "~/components/titlebar";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "~/components/menu";
@@ -30,12 +37,27 @@ function Index() {
     B: true,
   });
 
+  const [channelAttenuation, setChannelAttenuation] = useState<Record<ScopeChannel, Key>>({
+    A: "1x",
+    B: "1x",
+  });
+
   const handleChannelEnabledChange = useCallback((channel: ScopeChannel, enabled: boolean) => {
     setChannelVisibility((prev) => ({
       ...prev,
       [channel]: enabled,
     }));
   }, []);
+
+  const handleChannelAttenuationChange = useCallback(
+    (channel: ScopeChannel, attenuation: Key) => {
+      setChannelAttenuation((prev) => ({
+        ...prev,
+        [channel]: attenuation,
+      }));
+    },
+    [],
+  );
 
   return (
     <>
@@ -62,7 +84,10 @@ function Index() {
       <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
           <div className="flex-1 min-w-0 min-h-0 w-full h-full flex">
-            <Plot channelVisibility={channelVisibility} />
+            <Plot
+              channelVisibility={channelVisibility}
+              channelAttenuation={channelAttenuation}
+            />
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
@@ -70,7 +95,9 @@ function Index() {
             <div className="flex flex-row p-4 landscape:flex-col w-max h-max gap-4">
               <ControlPanel
                 channelVisibility={channelVisibility}
+                channelAttenuation={channelAttenuation}
                 onChannelEnabledChange={handleChannelEnabledChange}
+                onChannelAttenuationChange={handleChannelAttenuationChange}
               />
             </div>
           </ScrollArea>
@@ -83,22 +110,34 @@ function Index() {
 
 function ControlPanel({
   channelVisibility,
+  channelAttenuation,
   onChannelEnabledChange,
+  onChannelAttenuationChange,
 }: {
   channelVisibility: Record<ScopeChannel, boolean>;
+  channelAttenuation: Record<ScopeChannel, Key>;
   onChannelEnabledChange: (channel: ScopeChannel, enabled: boolean) => void;
+  onChannelAttenuationChange: (channel: ScopeChannel, attenuation: Key) => void;
 }) {
   return (
     <>
       <ChannelCard
         channel="A"
         enabled={channelVisibility.A}
+        attenuation={channelAttenuation.A}
         onEnabledChange={(enabled) => onChannelEnabledChange("A", enabled)}
+        onAttenuationChange={(attenuation) =>
+          onChannelAttenuationChange("A", attenuation)
+        }
       />
       <ChannelCard
         channel="B"
         enabled={channelVisibility.B}
+        attenuation={channelAttenuation.B}
         onEnabledChange={(enabled) => onChannelEnabledChange("B", enabled)}
+        onAttenuationChange={(attenuation) =>
+          onChannelAttenuationChange("B", attenuation)
+        }
       />
       <CommondCard />
       <MathChannelCard />
@@ -227,46 +266,89 @@ const voltageScaleOptions = [
   { id: "3", value: 0.07 },
 ]
 
+function mapVoltageScaleToGain(id: string): ScopeGain {
+  switch (id) {
+    case "2":
+      return "Four";
+    case "3":
+      return "Twenty";
+    case "1":
+    default:
+      return "One";
+  }
+}
+
 function ChannelCard({
   channel,
   enabled,
   onEnabledChange,
+  attenuation,
+  onAttenuationChange,
 }: {
   channel: ScopeChannel;
   enabled: boolean;
   onEnabledChange: (enabled: boolean) => void;
+  attenuation: Key;
+  onAttenuationChange: (attenuation: Key) => void;
 }) {
   const [voltageScale, setVoltageScale] = useState(voltageScaleOptions[0]);
   const [coupling, setCoupling] = useState<Key>("DC");
-  const [attenuation, setAttenuation] = useState<Key>("1x");
 
-  const handleVoltageScaleChange = useCallback((key: Key | null) => {
+  const dispatchChannelOptions = useCallback(
+    (next?: { voltageScaleId?: string; couplingKey?: Key }) => {
+      const id = next?.voltageScaleId ?? voltageScale.id;
+      const gain: ScopeGain = mapVoltageScaleToGain(id);
+      const couplingValue = (next?.couplingKey ?? coupling) as ScopeCoupling;
+
+      const options: ChannelOptions = {
+        channel,
+        enabled: true,
+        voltage_gain: gain,
+        coupling: couplingValue,
+      };
+
+      void commands.sendChannelOptions(options);
+    },
+    [channel, voltageScale.id, coupling],
+  );
+
+  const handleVoltageScaleChange = useCallback(
+    (key: Key | null) => {
       if (key) {
-        const newScale = voltageScaleOptions.find((option) => option.id === key) ?? voltageScaleOptions[0];
+        const newScale =
+          voltageScaleOptions.find((option) => option.id === key) ??
+          voltageScaleOptions[0];
         setVoltageScale(newScale);
-        // TODO: Dispatch tauri event to set voltage scale on hardware
+        dispatchChannelOptions({ voltageScaleId: newScale.id });
       }
-  }, []);
+    },
+    [dispatchChannelOptions],
+  );
 
-  const handleCouplingChange = useCallback((keys: Set<Key>) => {
-    if (keys.size > 0) {
-      const newCoupling = keys.values().next().value;
-      if (newCoupling) {
-        setCoupling(newCoupling);
-        // TODO: Dispatch tauri event to set coupling on hardware
+  const handleCouplingChange = useCallback(
+    (keys: Set<Key>) => {
+      if (keys.size > 0) {
+        const newCoupling = keys.values().next().value as Key | undefined;
+        if (newCoupling) {
+          setCoupling(newCoupling);
+          dispatchChannelOptions({ couplingKey: newCoupling });
+        }
       }
-    }
-  }, []);
+    },
+    [dispatchChannelOptions],
+  );
 
-  const handleAttenuationChange = useCallback((keys: Set<Key>) => {
-    if (keys.size > 0) {
-      const newAttenuation = keys.values().next().value;
-      if (newAttenuation) {
-        setAttenuation(newAttenuation);
-        // TODO: Dispatch tauri event to set coupling on hardware
+  const handleAttenuationChange = useCallback(
+    (keys: Set<Key>) => {
+      if (keys.size > 0) {
+        const newAttenuation = keys.values().next().value as Key | undefined;
+        if (newAttenuation) {
+          onAttenuationChange(newAttenuation);
+        }
       }
-    }
-  }, []);
+    },
+    [onAttenuationChange],
+  );
 
   return (
     <Card className="h-auto landscape:w-full gap-2">
@@ -336,8 +418,10 @@ function alignDomainToGrid(
 
 export default function Plot({
   channelVisibility,
+  channelAttenuation,
 }: {
   channelVisibility: Record<ScopeChannel, boolean>;
+  channelAttenuation: Record<ScopeChannel, Key>;
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
@@ -412,9 +496,16 @@ export default function Plot({
     if (!channelVisibility[channel]) return acc;
     const frame = frames[channel];
     if (!frame) return acc;
+
+    const attenuationKey = channelAttenuation[channel];
+    const attenuationFactor = attenuationKey === "10x" ? 10 : 1;
+
     const points: PlotPoint[] = frame.data.map((value, index) => ({
       x: index * frame.timestep_ms,
-      y: (value - frame.center) * (frame.voltage_scale / 4095),
+      y:
+        (value - frame.center) *
+        (frame.voltage_scale / 4095) *
+        attenuationFactor,
     }));
     acc.push({ channel, points });
     return acc;
@@ -442,6 +533,8 @@ export default function Plot({
     xStep = xAligned.step;
     yStep = yAligned.step;
   }
+
+  // commands
 
   const option = {
     animation: false,
