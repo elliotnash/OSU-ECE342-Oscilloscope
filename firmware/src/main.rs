@@ -156,16 +156,19 @@ async fn main(spawner: Spawner) {
     dac.ping().await.expect("DAC ping failed");
     dac.set_vref(
         driver::mcp47feb::DacChannel::Dac0,
-        driver::mcp47feb::VrefSource::Vdd,
+        driver::mcp47feb::VrefSource::ExternalUnbuffered,
     )
     .await
     .expect("Failed to set VREF on channel A");
     dac.set_vref(
         driver::mcp47feb::DacChannel::Dac1,
-        driver::mcp47feb::VrefSource::Vdd,
+        driver::mcp47feb::VrefSource::ExternalUnbuffered,
     )
     .await
     .expect("Failed to set VREF on channel B");
+
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 128).await;
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128).await;
 
     let _ = spawner.spawn(handle_messages_task(dac));
 
