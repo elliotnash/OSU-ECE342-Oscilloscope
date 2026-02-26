@@ -3,3 +3,5 @@ target/
 .idea/
 .DS_Store
 .pnpm-store
+*.ino
+*.pdf
