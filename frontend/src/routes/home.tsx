@@ -2,10 +2,11 @@ import { Button } from "~/components/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState, useCallback, useEffect, useRef } from "react";
 
-import { extent } from '@visx/vendor/d3-array';
-import { scaleLinear } from '@visx/scale';
+import { extent } from "@visx/vendor/d3-array";
+import { scaleLinear } from "@visx/scale";
 import ReactECharts from "echarts-for-react";
-import type { ScopeChannel, FrameData } from "~/bindings";
+import { Channel } from "@tauri-apps/api/core";
+import { commands, type ScopeChannel, type FrontendFrameData } from "~/bindings";
 import { Titlebar } from "~/components/titlebar";
 import { Bars3Icon } from "@heroicons/react/24/solid";
 import { Menu, MenuContent, MenuItem, MenuTrigger } from "~/components/menu";
@@ -85,7 +86,6 @@ const mathChannelPresets = [
 
 function MathChannelCard() {
   const [enabled, setEnabled] = useState(true);
-  const [isPreset, setIsPreset] = useState(true);
   const [preset, setPreset] = useState(mathChannelPresets[0]);
   const [customExpression, setCustomExpression] = useState("");
 
@@ -105,7 +105,7 @@ function MathChannelCard() {
       </CardHeader>
       <CardContent>
         <div className="flex flex-col gap-2">
-          <Tabs isDisabled={!enabled} className="w-full mt-[-8pt]" onSelectionChange={(tab) => setIsPreset(tab === "preset")}>
+          <Tabs isDisabled={!enabled} className="w-full mt-[-8pt]">
             <TabList >
               <Tab id="preset">Preset</Tab>
               <Tab id="custom">Custom</Tab>
@@ -276,39 +276,12 @@ function ChannelCard({ channel }: { channel: ScopeChannel }) {
   )
 }
 
-// Generate a sine wave with 1000 data points as 12-bit values (0-4095)
-const generateSineWave = (points: number, cycles: number = 2, center: number = 2048): number[] => {
-  return Array.from({ length: points }, (_, i) => {
-    const sine = Math.sin((2 * Math.PI * cycles * i) / points);
-    // Convert sine wave (-1 to 1) to 12-bit value centered around center
-    const value = center + (sine * center * 0.8); // Use 80% of center range for amplitude
-    return Math.max(0, Math.min(4095, Math.round(value))); // Clamp to 12-bit range
-  });
-};
-
-const frameData: FrameData = {
-  data: generateSineWave(1000, 4, 2048),
-  center: 2048,
-  timestep_ms: 0.1,
-  voltage_scale: 3.0,
-  channel: "A",
-}
-
-// Convert frameData to plot data points
-// Voltage conversion: voltage = (value - center) * (voltage_scale / 4095)
-// Time conversion: time = index * timestep_ms
 type PlotPoint = { x: number; y: number };
-const plotData: PlotPoint[] = frameData.data.map((value, index) => ({
-  x: index * frameData.timestep_ms,
-  y: (value - frameData.center) * (frameData.voltage_scale / 4095),
-}));
 
 // data accessors
 const getX = (d: PlotPoint) => d.x;
 const getY = (d: PlotPoint) => d.y;
 
-// Align domain to grid: extend data range so both ends fall exactly on grid lines.
-// Returns [domainMin, domainMax] and the step used (for drawing grid lines).
 function alignDomainToGrid(
   dataMin: number,
   dataMax: number,
@@ -327,13 +300,17 @@ function alignDomainToGrid(
 
 export default function Plot() {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
   const [chartTheme, setChartTheme] = useState({
     bg: "transparent",
     card: "rgba(255, 255, 255, 0.05)",
     axisLabel: "rgba(255, 255, 255, 0.7)",
     axisLine: "rgba(255, 255, 255, 0.7)",
     gridLine: "rgba(255, 255, 255, 0.1)",
-    series: "rgb(96, 165, 250)",
+    series: {
+      A: "rgb(96, 165, 250)",  // blue
+      B: "rgb(244, 114, 182)", // pink
+    } as Record<ScopeChannel, string>,
   });
 
   useEffect(() => {
@@ -352,17 +329,61 @@ export default function Plot() {
       axisLabel: fg || prev.axisLabel,
       axisLine: `oklch(from ${fg} l c h / 0.3)` || prev.axisLine,
       gridLine: border || prev.gridLine,
-      series: primary || prev.series,
+      series: {
+        A: "rgb(190, 114, 250)",
+        B: "rgb(244, 50, 100)",
+      },
     }));
+  }, []);
+
+  useEffect(() => {
+    const onEvent = new Channel<FrontendFrameData>();
+    onEvent.onmessage = (message) => {
+      setFrames((prev) => ({
+        ...prev,
+        [message.channel]: message,
+      }));
+    };
+    void commands.receiveFrames(onEvent);
   }, []);
 
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
 
-  const xDataExtent = extent(plotData, getX) as [number, number];
-  const yMin = Math.min(...plotData.map(getY));
-  const yMax = Math.max(...plotData.map(getY));
-  const { domain: xDomain, step: xStep } = alignDomainToGrid(xDataExtent[0], xDataExtent[1]);
-  const { domain: yDomain, step: yStep } = alignDomainToGrid(yMin, yMax);
+  const channelOrder: ScopeChannel[] = ["A", "B"];
+
+  const plotDataByChannel = channelOrder
+    .map((channel) => frames[channel])
+    .filter((frame): frame is FrontendFrameData => !!frame)
+    .map((frame) => {
+      const points: PlotPoint[] = frame.data.map((value, index) => ({
+        x: index * frame.timestep_ms,
+        y: (value - frame.center) * (frame.voltage_scale / 4095),
+      }));
+      return { channel: frame.channel, points };
+    });
+
+  const allPoints = plotDataByChannel.flatMap((entry) => entry.points);
+
+  let xDomain: [number, number] = [0, 1];
+  let yDomain: [number, number] = [-1, 1];
+  let xStep = 0.1;
+  let yStep = 0.5;
+
+  if (allPoints.length > 0) {
+    const xDataExtent = extent(allPoints, getX) as [number, number];
+    const yMin = Math.min(...allPoints.map(getY));
+    const yMax = Math.max(...allPoints.map(getY));
+    const xAligned = alignDomainToGrid(xDataExtent[0], xDataExtent[1]);
+    const maxAbs = Math.max(Math.abs(yMin), Math.abs(yMax));
+    const yAligned =
+      maxAbs > 0
+        ? alignDomainToGrid(-maxAbs, maxAbs)
+        : { domain: yDomain, step: yStep };
+    xDomain = xAligned.domain;
+    yDomain = yAligned.domain;
+    xStep = xAligned.step;
+    yStep = yAligned.step;
+  }
 
   const option = {
     animation: false,
@@ -394,8 +415,11 @@ export default function Plot() {
       textStyle: {
         color: chartTheme.axisLabel,
       },
-      formatter: (params: any) => {
-        const items = Array.isArray(params) ? params : [params];
+      formatter: (params: unknown) => {
+        const items = (Array.isArray(params) ? params : [params]) as {
+          axisValue: number | string;
+          value?: unknown;
+        }[];
         if (!items.length) return "";
 
         const xRaw = items[0].axisValue;
@@ -407,12 +431,16 @@ export default function Plot() {
         const lines = [
           `<div>t: ${x}</div>`,
           ...items.map((item) => {
-            const yRaw = item.value?.[1] ?? item.value;
+            const raw = item.value as [number, number] | number | undefined;
+            const yRaw = Array.isArray(raw) ? raw[1] : raw;
             const y =
               typeof yRaw === "number" && Number.isFinite(yRaw)
                 ? Number(yRaw.toPrecision(4))
                 : yRaw;
-            const markerColor = chartTheme.series;
+            const seriesName = (item as { seriesName?: string }).seriesName;
+            const channelKey =
+              seriesName?.endsWith("B") ? "B" : ("A" as ScopeChannel);
+            const markerColor = chartTheme.series[channelKey];
             const marker = `<span style="display:inline-block;width:10px;height:10px;border-radius:50%;background-color:${markerColor};margin-right:4px;"></span>`;
             return `<div>${marker} ${y}V</div>`;
           }),
@@ -444,7 +472,7 @@ export default function Plot() {
           color: chartTheme.axisLine,
         },
         label: {
-          formatter: (params: any) => {
+          formatter: (params: { value: number | string }) => {
             const value = params.value;
             if (typeof value === "number" && Number.isFinite(value)) {
               return Number(value.toPrecision(4)).toString();
@@ -484,7 +512,7 @@ export default function Plot() {
           color: chartTheme.axisLine,
         },
         label: {
-          formatter: (params: any) => {
+          formatter: (params: { value: number | string }) => {
             const value = params.value;
             if (typeof value === "number" && Number.isFinite(value)) {
               return Number(value.toPrecision(4)).toString();
@@ -502,15 +530,16 @@ export default function Plot() {
       },
     },
     series: [
-      {
+      ...plotDataByChannel.map(({ channel, points }) => ({
         type: "line",
-        data: plotData.map((point) => [point.x, point.y]),
+        name: `Channel ${channel}`,
+        data: points.map((point) => [point.x, point.y]),
         showSymbol: false,
         lineStyle: {
-          color: chartTheme.series,
+          color: chartTheme.series[channel],
           width: 2,
         },
-      },
+      })),
     ],
   };
 
