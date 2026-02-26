@@ -173,10 +173,9 @@ pub enum ScopeChannel {
     B,
 }
 
-// Also derive Type if std feature is enabled
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "alloc", derive(defmt::Format))]
-#[cfg_attr(feature = "std", derive(Type))]
+// #[cfg_attr(feature = "std", derive(Type))]
 pub struct FrameData {
     #[serde(
         serialize_with = "serialize_12bit_data_delta_packed",
@@ -187,6 +186,40 @@ pub struct FrameData {
     pub timestep_ms: f32,
     pub voltage_scale: f32,
     pub channel: ScopeChannel,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[cfg_attr(feature = "std", derive(Type))]
+pub struct FrontendFrameData {
+    pub data: Vec<u16>,
+    pub center: u16,
+    pub timestep_ms: f32,
+    pub voltage_scale: f32,
+    pub channel: ScopeChannel,
+}
+
+impl From<FrameData> for FrontendFrameData {
+    fn from(frame: FrameData) -> Self {
+        Self {
+            data: frame.data,
+            center: frame.center,
+            timestep_ms: frame.timestep_ms,
+            voltage_scale: frame.voltage_scale,
+            channel: frame.channel,
+        }
+    }
+}
+
+impl From<FrontendFrameData> for FrameData {
+    fn from(frame: FrontendFrameData) -> Self {
+        Self {
+            data: frame.data,
+            center: frame.center,
+            timestep_ms: frame.timestep_ms,
+            voltage_scale: frame.voltage_scale,
+            channel: frame.channel,
+        }
+    }
 }
 
 #[cfg(test)]

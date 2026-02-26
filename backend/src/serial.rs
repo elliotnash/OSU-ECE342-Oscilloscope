@@ -6,7 +6,7 @@ use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
 use tokio::{select, sync::{broadcast, watch}, time::sleep};
-use common::{frame::FrameData, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
+use common::{frame::{FrameData, FrontendFrameData}, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
@@ -187,13 +187,13 @@ async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
 
 #[tauri::command(async)]
 #[specta::specta]
-pub async fn receive_frames(app: AppHandle, on_event: Channel<FrameData>) {
+pub async fn receive_frames(app: AppHandle, on_event: Channel<FrontendFrameData>) {
     let mut frame_watch = get_frame_watch().subscribe();
     let serial_status_watch = get_serial_status_watch().subscribe();
     while serial_status_watch.borrow().clone() == SerialStatus::Connected {
         let frame = frame_watch.changed().await;
         if frame.is_ok() {
-            on_event.send(frame_watch.borrow_and_update().clone()).ok();
+            on_event.send(FrontendFrameData::from(frame_watch.borrow_and_update().clone())).ok();
         }
     }
 }
