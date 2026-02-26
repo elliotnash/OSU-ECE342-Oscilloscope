@@ -301,6 +301,8 @@ function alignDomainToGrid(
 export default function Plot() {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
+  const frameTimesRef = useRef<number[]>([]);
+  const [frameRate, setFrameRate] = useState(0);
   const [chartTheme, setChartTheme] = useState({
     bg: "transparent",
     card: "rgba(255, 255, 255, 0.05)",
@@ -343,8 +345,21 @@ export default function Plot() {
         ...prev,
         [message.channel]: message,
       }));
+
+      const now = performance.now();
+      const times = frameTimesRef.current;
+      times.push(now);
+      const cutoff = now - 1000;
+      while (times.length > 0 && times[0] < cutoff) {
+        times.shift();
+      }
+      setFrameRate(times.length);
     };
     void commands.receiveFrames(onEvent);
+
+    return () => {
+      onEvent.onmessage = () => {};
+    }
   }, []);
 
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
@@ -545,7 +560,9 @@ export default function Plot() {
 
   return (
     <div ref={containerRef} className="relative w-full h-full pb-4">
-      {/* <div className="bg-red-500 absolute top-0 right-0 z-10">THIS WILL BE A MINIMAP</div> */}
+      <div className="absolute top-2 left-2 z-10 rounded-md bg-black/60 px-2 py-1 text-xs text-white">
+        {`FPS: ${frameRate.toFixed(0)}`}
+      </div>
       <ReactECharts
         style={{ width: "100%", height: "100%" }}
         option={option}

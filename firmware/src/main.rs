@@ -254,7 +254,7 @@ async fn read_adc_task(
     mut adc_dma: Peri<'static, peripherals::DMA_CH0>,
     mut adc_pins: [adc::Channel<'static>; 2],
 ) -> ! {
-    let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666 * 60));
+    let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));
     let message_sender = MESSAGE_TX.sender();
     const BLOCK_SIZE: usize = 100;
     const NUM_CHANNELS: usize = 2;

@@ -13,18 +13,31 @@ function RouteComponent() {
   const [verificationMessage, setVerificationMessage] = useState<VerificationMessage|null>(null);
   useEffect(() => {
     const onEvent = new Channel<FrontendFrameData>();
+    let frameCount = 0;
     onEvent.onmessage = (message) => {
-      setFrameData(message);
+      frameCount++;
+      if (frameCount > 60) {
+        setFrameData(message);
+        frameCount = 0;
+      }
     }
     commands.receiveFrames(onEvent);
-  })
+
+    return () => {
+      onEvent.onmessage = () => {};
+    }
+  }, [])
   useEffect(() => {
     const onEvent = new Channel<VerificationMessage>();
     onEvent.onmessage = (message) => {
       setVerificationMessage(message);
     }
     commands.receiveVerificationMessages(onEvent);
-  })
+
+    return () => {
+      onEvent.onmessage = () => {};
+    }
+  }, [])
   return <>
   <h1 className="text-xl">Frame Data</h1>
   <p>Center: {frameData?.center}</p>
