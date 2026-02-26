@@ -175,7 +175,18 @@ async fn main(spawner: Spawner) {
     trigger_pin.set_as_input();
     trigger_pin.set_pull(Pull::None);
 
-    let _ = spawner.spawn(handle_messages_task(dac, trigger_pin));
+    // Output pins
+    let mut switch_pins = [
+        Flex::new(p.PIN_10),
+        Flex::new(p.PIN_11),
+        Flex::new(p.PIN_12),
+    ];
+    for pin in switch_pins.iter_mut() {
+        pin.set_as_output();
+        pin.set_low();
+    }
+
+    let _ = spawner.spawn(handle_messages_task(dac, trigger_pin, switch_pins));
 
     // Initialize the ADC and frame sender
 
@@ -190,7 +201,7 @@ async fn main(spawner: Spawner) {
 }
 
 #[embassy_executor::task]
-async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>, mut trigger_pin: Flex<'static>) -> ! {
+async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>, mut trigger_pin: Flex<'static>, mut switch_pins: [Flex<'static>; 3]) -> ! {
     let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
     loop {
@@ -208,6 +219,16 @@ async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>, mut trigger_p
                 match verification_message {
                     VerificationMessage::StartDacTest => {
                         start_dac_test(&mut dac, &mut trigger_pin).await;
+                    },
+                    VerificationMessage::SetGpioHigh => {
+                        for pin in switch_pins.iter_mut() {
+                            pin.set_high();
+                        }
+                    },
+                    VerificationMessage::SetGpioLow => {
+                        for pin in switch_pins.iter_mut() {
+                            pin.set_low();
+                        }
                     },
                     _ => {}
                 }

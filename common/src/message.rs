@@ -28,6 +28,8 @@ pub enum Message {
 pub enum VerificationMessage {
     TriggerState(bool),
     StartDacTest,
+    SetGpioHigh,
+    SetGpioLow,
 }
 
 #[cfg(test)]

@@ -25,6 +25,18 @@ export const Route = createFileRoute('/home')({
 })
 
 function Index() {
+  const [channelVisibility, setChannelVisibility] = useState<Record<ScopeChannel, boolean>>({
+    A: true,
+    B: true,
+  });
+
+  const handleChannelEnabledChange = useCallback((channel: ScopeChannel, enabled: boolean) => {
+    setChannelVisibility((prev) => ({
+      ...prev,
+      [channel]: enabled,
+    }));
+  }, []);
+
   return (
     <>
       <Titlebar menuButton={
@@ -50,13 +62,16 @@ function Index() {
       <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
           <div className="flex-1 min-w-0 min-h-0 w-full h-full flex">
-            <Plot/>
+            <Plot channelVisibility={channelVisibility} />
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
           <ScrollArea scrollFade className="landscape:w-max portrait:h-max bg-secondary/25 border rounded-xl">
             <div className="flex flex-row p-4 landscape:flex-col w-max h-max gap-4">
-              <ControlPanel />
+              <ControlPanel
+                channelVisibility={channelVisibility}
+                onChannelEnabledChange={handleChannelEnabledChange}
+              />
             </div>
           </ScrollArea>
         {/* </div> */}
@@ -66,11 +81,25 @@ function Index() {
   );
 }
 
-function ControlPanel() {
+function ControlPanel({
+  channelVisibility,
+  onChannelEnabledChange,
+}: {
+  channelVisibility: Record<ScopeChannel, boolean>;
+  onChannelEnabledChange: (channel: ScopeChannel, enabled: boolean) => void;
+}) {
   return (
     <>
-      <ChannelCard channel="A" />
-      <ChannelCard channel="B" />
+      <ChannelCard
+        channel="A"
+        enabled={channelVisibility.A}
+        onEnabledChange={(enabled) => onChannelEnabledChange("A", enabled)}
+      />
+      <ChannelCard
+        channel="B"
+        enabled={channelVisibility.B}
+        onEnabledChange={(enabled) => onChannelEnabledChange("B", enabled)}
+      />
       <CommondCard />
       <MathChannelCard />
     </>
@@ -198,11 +227,18 @@ const voltageScaleOptions = [
   { id: "3", value: 0.07 },
 ]
 
-function ChannelCard({ channel }: { channel: ScopeChannel }) {
+function ChannelCard({
+  channel,
+  enabled,
+  onEnabledChange,
+}: {
+  channel: ScopeChannel;
+  enabled: boolean;
+  onEnabledChange: (enabled: boolean) => void;
+}) {
   const [voltageScale, setVoltageScale] = useState(voltageScaleOptions[0]);
   const [coupling, setCoupling] = useState<Key>("DC");
   const [attenuation, setAttenuation] = useState<Key>("1x");
-  const [enabled, setEnabled] = useState(true);
 
   const handleVoltageScaleChange = useCallback((key: Key | null) => {
       if (key) {
@@ -236,7 +272,7 @@ function ChannelCard({ channel }: { channel: ScopeChannel }) {
     <Card className="h-auto landscape:w-full gap-2">
       <CardHeader>
         <CardTitle className="flex flex-row w-full justify-between">
-          Channel {channel} <Switch isSelected={enabled} onChange={setEnabled}/>
+          Channel {channel} <Switch isSelected={enabled} onChange={onEnabledChange}/>
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -298,7 +334,11 @@ function alignDomainToGrid(
   return { domain: [domainMin, domainMax], step };
 }
 
-export default function Plot() {
+export default function Plot({
+  channelVisibility,
+}: {
+  channelVisibility: Record<ScopeChannel, boolean>;
+}) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
   const frameTimesRef = useRef<number[]>([]);
@@ -366,16 +406,19 @@ export default function Plot() {
 
   const channelOrder: ScopeChannel[] = ["A", "B"];
 
-  const plotDataByChannel = channelOrder
-    .map((channel) => frames[channel])
-    .filter((frame): frame is FrontendFrameData => !!frame)
-    .map((frame) => {
-      const points: PlotPoint[] = frame.data.map((value, index) => ({
-        x: index * frame.timestep_ms,
-        y: (value - frame.center) * (frame.voltage_scale / 4095),
-      }));
-      return { channel: frame.channel, points };
-    });
+  const plotDataByChannel = channelOrder.reduce<
+    { channel: ScopeChannel; points: PlotPoint[] }[]
+  >((acc, channel) => {
+    if (!channelVisibility[channel]) return acc;
+    const frame = frames[channel];
+    if (!frame) return acc;
+    const points: PlotPoint[] = frame.data.map((value, index) => ({
+      x: index * frame.timestep_ms,
+      y: (value - frame.center) * (frame.voltage_scale / 4095),
+    }));
+    acc.push({ channel, points });
+    return acc;
+  }, []);
 
   const allPoints = plotDataByChannel.flatMap((entry) => entry.points);
 
