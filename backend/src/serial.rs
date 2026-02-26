@@ -167,6 +167,14 @@ async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
 async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
     let mut serial_tx_broadcast = get_serial_tx_broadcast().subscribe();
 
+    // Now that we've connected, send heartbeat. This will likely fail to be deserialized since
+    // there is garbage data in the buffer, but this message will clear it allowing future messages
+    // to send successfully.
+
+    let message = Message::Heartbeat;
+    let data = postcard::to_stdvec_cobs(&message).expect("Serialization failed");
+    serial.write_all(&data).await?;
+
     loop {
         let message = serial_tx_broadcast.recv().await;
         if let Ok(message) = message {
