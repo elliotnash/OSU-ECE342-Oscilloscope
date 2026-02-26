@@ -6,7 +6,7 @@ use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
 use tokio::{sync::{watch, broadcast}, time::sleep};
-use common::{frame::FrameData, message::Message, usb::{OSCOPE_PID, OSCOPE_VID}};
+use common::{frame::FrameData, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
@@ -30,6 +30,15 @@ static FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
 fn get_frame_watch() -> watch::Sender<FrameData> {
     FRAME_WATCH.get_or_init(|| {
         let (tx, _rx) = watch::channel(FrameData::default());
+        tx
+    }).clone()
+}
+
+static VERIFICATION_MPSC: OnceLock<broadcast::Sender<VerificationMessage>> = OnceLock::new();
+
+fn get_verification_mpsc() -> broadcast::Sender<VerificationMessage> {
+    VERIFICATION_MPSC.get_or_init(|| {
+        let (tx, _rx) = broadcast::channel(100);
         tx
     }).clone()
 }
@@ -112,6 +121,9 @@ async fn handle_connection(serial: &mut SerialPort) -> std::io::Result<()> {
                         Message::Frame(frame) => {
                             get_frame_watch().send(frame).ok();
                         }
+                        Message::Verification(verification_message) => {
+                            get_verification_mpsc().send(verification_message).ok();
+                        }
                         _ => {
                             println!("Message type not implemented yet: {:?}", message);
                         }
@@ -134,6 +146,20 @@ pub async fn receive_frames(app: AppHandle, on_event: Channel<FrameData>) {
         let frame = frame_watch.changed().await;
         if frame.is_ok() {
             on_event.send(frame_watch.borrow_and_update().clone()).ok();
+        }
+    }
+}
+
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn receive_verification_messages(app: AppHandle, on_event: Channel<VerificationMessage>) {
+    let mut verification_mpsc = get_verification_mpsc().subscribe();
+    let serial_status_watch = get_serial_status_watch().subscribe();
+    while serial_status_watch.borrow().clone() == SerialStatus::Connected {
+        let verification_message = verification_mpsc.recv().await;
+        if let Ok(verification_message) = verification_message {
+            on_event.send(verification_message).ok();
         }
     }
 }

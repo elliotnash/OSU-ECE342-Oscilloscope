@@ -16,6 +16,9 @@ async getSerialStatus() : Promise<SerialStatus> {
 },
 async receiveFrames(onEvent: TAURI_CHANNEL<FrameData>) : Promise<void> {
     await TAURI_INVOKE("receive_frames", { onEvent });
+},
+async receiveVerificationMessages(onEvent: TAURI_CHANNEL<VerificationMessage>) : Promise<void> {
+    await TAURI_INVOKE("receive_verification_messages", { onEvent });
 }
 }
 
@@ -41,6 +44,7 @@ export type ScopeChannel = "A" | "B"
 export type SerialStatus = "Connected" | "Disconnected"
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"
 export type TitlebarLayout = { left: TitlebarButton[]; right: TitlebarButton[] }
+export type VerificationMessage = { TriggerState: boolean } | "StartDacTest"
 
 /** tauri-specta globals **/
 

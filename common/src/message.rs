@@ -4,11 +4,12 @@ use crate::frame::FrameData;
 use crate::log::SerializableLogRecord;
 use crate::channel::ChannelOptions;
 use crate::trigger::TriggerOptions;
+#[cfg(feature = "std")]
+use specta::Type;
 
 /// Message type enum
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "alloc", derive(defmt::Format))]
-#[serde(rename_all = "snake_case")]
 pub enum Message {
     /// Heartbeat message with no payload
     Heartbeat,
@@ -18,6 +19,15 @@ pub enum Message {
     SetSampleRate(f32),
     SetChannelOptions(ChannelOptions),
     SetTriggerOptions(TriggerOptions),
+    Verification(VerificationMessage),
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
+#[cfg_attr(feature = "std", derive(Type))]
+pub enum VerificationMessage {
+    TriggerState(bool),
+    StartDacTest,
 }
 
 #[cfg(test)]
