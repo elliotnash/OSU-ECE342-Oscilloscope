@@ -6,7 +6,7 @@ use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
 use tokio::{select, sync::{broadcast, watch}, time::sleep};
-use common::{frame::FrameData, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
+use common::{frame::{FrameData, FrontendFrameData}, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
@@ -167,6 +167,14 @@ async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
 async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
     let mut serial_tx_broadcast = get_serial_tx_broadcast().subscribe();
 
+    // Now that we've connected, send heartbeat. This will likely fail to be deserialized since
+    // there is garbage data in the buffer, but this message will clear it allowing future messages
+    // to send successfully.
+
+    let message = Message::Heartbeat;
+    let data = postcard::to_stdvec_cobs(&message).expect("Serialization failed");
+    serial.write_all(&data).await?;
+
     loop {
         let message = serial_tx_broadcast.recv().await;
         if let Ok(message) = message {
@@ -179,13 +187,13 @@ async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
 
 #[tauri::command(async)]
 #[specta::specta]
-pub async fn receive_frames(app: AppHandle, on_event: Channel<FrameData>) {
+pub async fn receive_frames(app: AppHandle, on_event: Channel<FrontendFrameData>) {
     let mut frame_watch = get_frame_watch().subscribe();
     let serial_status_watch = get_serial_status_watch().subscribe();
     while serial_status_watch.borrow().clone() == SerialStatus::Connected {
         let frame = frame_watch.changed().await;
         if frame.is_ok() {
-            on_event.send(frame_watch.borrow_and_update().clone()).ok();
+            on_event.send(FrontendFrameData::from(frame_watch.borrow_and_update().clone())).ok();
         }
     }
 }

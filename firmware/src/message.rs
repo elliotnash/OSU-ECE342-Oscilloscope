@@ -79,13 +79,13 @@ async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
     let message_receiver = MESSAGE_TX.receiver();
     loop {
         let message = message_receiver.receive().await;
-        info!("Sending message: {:?}", &message);
+        // info!("Sending message: {:?}", &message);
 
         let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 
-        // Send in chunks of USB_PACKET_SIZE
         for chunk in bytes.chunks(USB_PACKET_SIZE) {
             tx.write_packet(chunk).await?;
-        }
+        }// Send in chunks of USB_PACKET_SIZE
+        
     }
 }

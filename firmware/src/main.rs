@@ -156,13 +156,13 @@ async fn main(spawner: Spawner) {
     dac.ping().await.expect("DAC ping failed");
     dac.set_vref(
         driver::mcp47feb::DacChannel::Dac0,
-        driver::mcp47feb::VrefSource::ExternalUnbuffered,
+        driver::mcp47feb::VrefSource::ExternalBuffered,
     )
     .await
     .expect("Failed to set VREF on channel A");
     dac.set_vref(
         driver::mcp47feb::DacChannel::Dac1,
-        driver::mcp47feb::VrefSource::ExternalUnbuffered,
+        driver::mcp47feb::VrefSource::ExternalBuffered,
     )
     .await
     .expect("Failed to set VREF on channel B");
@@ -171,7 +171,7 @@ async fn main(spawner: Spawner) {
     dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128).await;
 
     // trigger input pin
-    let mut trigger_pin = Flex::new(p.PIN_5);
+    let mut trigger_pin = Flex::new(p.PIN_21);
     trigger_pin.set_as_input();
     trigger_pin.set_pull(Pull::None);
 
@@ -235,7 +235,7 @@ async fn start_dac_test(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger_pin: &mut 
         .await
         .expect("Failed to write DAC value");
     Timer::after_millis(100).await;
-    dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128)
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 128)
         .await
         .expect("Failed to write DAC value");
     Timer::after_nanos(100).await;
@@ -254,7 +254,7 @@ async fn read_adc_task(
     mut adc_dma: Peri<'static, peripherals::DMA_CH0>,
     mut adc_pins: [adc::Channel<'static>; 2],
 ) -> ! {
-    let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666 * 60));
+    let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));
     let message_sender = MESSAGE_TX.sender();
     const BLOCK_SIZE: usize = 100;
     const NUM_CHANNELS: usize = 2;
@@ -266,7 +266,7 @@ async fn read_adc_task(
 
         let mut buf = [0_u16; { BLOCK_SIZE * NUM_CHANNELS }];
         let div = (48_000_000_u32 / (sample_rate * 2) - 1) as u16;
-        debug!("Sampling with div: {}", div);
+        // debug!("Sampling with div: {}", div);
         adc.read_many_multichannel(&mut adc_pins, &mut buf, div, adc_dma.reborrow())
             .await
             .expect("Failed to read ADC samples");

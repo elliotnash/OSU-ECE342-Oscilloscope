@@ -14,7 +14,7 @@ async getTitlebarLayout() : Promise<TitlebarLayout> {
 async getSerialStatus() : Promise<SerialStatus> {
     return await TAURI_INVOKE("get_serial_status");
 },
-async receiveFrames(onEvent: TAURI_CHANNEL<FrameData>) : Promise<void> {
+async receiveFrames(onEvent: TAURI_CHANNEL<FrontendFrameData>) : Promise<void> {
     await TAURI_INVOKE("receive_frames", { onEvent });
 },
 async receiveVerificationMessages(onEvent: TAURI_CHANNEL<VerificationMessage>) : Promise<void> {
@@ -41,7 +41,7 @@ serialStatus: "serial-status"
 /** user-defined types **/
 
 export type Color = { red: number; green: number; blue: number; alpha: number }
-export type FrameData = { data: number[]; center: number; timestep_ms: number; voltage_scale: number; channel: ScopeChannel }
+export type FrontendFrameData = { data: number[]; center: number; timestep_ms: number; voltage_scale: number; channel: ScopeChannel }
 export type OscopeTheme = { primary: Color | null; primary_fg: Color | null; bg: Color | null; fg: Color | null; secondary: Color | null; secondary_fg: Color | null; ring: Color | null }
 export type ScopeChannel = "A" | "B"
 export type SerialStatus = "Connected" | "Disconnected"

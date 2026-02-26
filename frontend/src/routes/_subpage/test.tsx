@@ -1,7 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Channel } from '@tauri-apps/api/core'
 import { useEffect, useState } from 'react'
-import { commands, VerificationMessage, type FrameData } from '~/bindings'
+import { commands, type VerificationMessage, type FrontendFrameData } from '~/bindings'
 import { Button } from '~/components/button'
 
 export const Route = createFileRoute('/_subpage/test')({
@@ -9,22 +9,35 @@ export const Route = createFileRoute('/_subpage/test')({
 })
 
 function RouteComponent() {
-  const [frameData, setFrameData] = useState<FrameData|null>(null);
+  const [frameData, setFrameData] = useState<FrontendFrameData|null>(null);
   const [verificationMessage, setVerificationMessage] = useState<VerificationMessage|null>(null);
   useEffect(() => {
-    const onEvent = new Channel<FrameData>();
+    const onEvent = new Channel<FrontendFrameData>();
+    let frameCount = 0;
     onEvent.onmessage = (message) => {
-      setFrameData(message);
+      frameCount++;
+      if (frameCount > 60) {
+        setFrameData(message);
+        frameCount = 0;
+      }
     }
     commands.receiveFrames(onEvent);
-  })
+
+    return () => {
+      onEvent.onmessage = () => {};
+    }
+  }, [])
   useEffect(() => {
     const onEvent = new Channel<VerificationMessage>();
     onEvent.onmessage = (message) => {
       setVerificationMessage(message);
     }
     commands.receiveVerificationMessages(onEvent);
-  })
+
+    return () => {
+      onEvent.onmessage = () => {};
+    }
+  }, [])
   return <>
   <h1 className="text-xl">Frame Data</h1>
   <p>Center: {frameData?.center}</p>
