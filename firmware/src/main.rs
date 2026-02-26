@@ -4,13 +4,13 @@
 extern crate alloc;
 
 use common::frame::{FrameData, ScopeChannel};
-use common::message::Message;
+use common::message::{Message, VerificationMessage};
 use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
 use embassy_rp::adc::Adc;
 use embassy_rp::gpio::{Flex, Pull};
 use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
-use embassy_time::{Duration, Ticker};
+use embassy_time::{Duration, Ticker, Timer};
 use embedded_alloc::TlsfHeap as Heap;
 
 use crate::driver::mcp47feb::Mcp47feb;
@@ -170,7 +170,12 @@ async fn main(spawner: Spawner) {
     dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 128).await;
     dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128).await;
 
-    let _ = spawner.spawn(handle_messages_task(dac));
+    // trigger input pin
+    let mut trigger_pin = Flex::new(p.PIN_5);
+    trigger_pin.set_as_input();
+    trigger_pin.set_pull(Pull::None);
+
+    let _ = spawner.spawn(handle_messages_task(dac, trigger_pin));
 
     // Initialize the ADC and frame sender
 
@@ -185,7 +190,7 @@ async fn main(spawner: Spawner) {
 }
 
 #[embassy_executor::task]
-async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>) -> ! {
+async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>, mut trigger_pin: Flex<'static>) -> ! {
     let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
     loop {
@@ -199,6 +204,14 @@ async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>) -> ! {
             }
             Message::SetChannelOptions(_channel) => {}
             Message::SetSampleRate(_sample_rate) => {}
+            Message::Verification(verification_message) => {
+                match verification_message {
+                    VerificationMessage::StartDacTest => {
+                        start_dac_test(&mut dac, &mut trigger_pin).await;
+                    },
+                    _ => {}
+                }
+            }
             _ => {
                 error!("Received unexpected message: {:?}", message);
             }
@@ -215,6 +228,24 @@ async fn set_trigger_options(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger: &Tri
     dac.write_dac(dac_channel, trigger.value as u16)
         .await
         .expect("Failed to write DAC value");
+}
+
+async fn start_dac_test(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger_pin: &mut Flex<'static>) {
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 0)
+        .await
+        .expect("Failed to write DAC value");
+    Timer::after_millis(100).await;
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128)
+        .await
+        .expect("Failed to write DAC value");
+    Timer::after_nanos(100).await;
+
+    info!("DAC test complete");
+    if trigger_pin.is_low() {
+        info!("Trigger is low");
+    } else {
+        info!("Trigger is high");
+    }
 }
 
 #[embassy_executor::task]

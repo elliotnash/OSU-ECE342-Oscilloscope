@@ -19,6 +19,9 @@ async receiveFrames(onEvent: TAURI_CHANNEL<FrameData>) : Promise<void> {
 },
 async receiveVerificationMessages(onEvent: TAURI_CHANNEL<VerificationMessage>) : Promise<void> {
     await TAURI_INVOKE("receive_verification_messages", { onEvent });
+},
+async sendVerificationMessage(message: VerificationMessage) : Promise<void> {
+    await TAURI_INVOKE("send_verification_message", { message });
 }
 }
 

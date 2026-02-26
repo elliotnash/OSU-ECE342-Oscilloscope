@@ -5,7 +5,7 @@ use specta::{ Type };
 use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
-use tokio::{sync::{watch, broadcast}, time::sleep};
+use tokio::{select, sync::{broadcast, watch}, time::sleep};
 use common::{frame::FrameData, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
@@ -34,10 +34,19 @@ fn get_frame_watch() -> watch::Sender<FrameData> {
     }).clone()
 }
 
-static VERIFICATION_MPSC: OnceLock<broadcast::Sender<VerificationMessage>> = OnceLock::new();
+static VERIFICATION_BROADCAST: OnceLock<broadcast::Sender<VerificationMessage>> = OnceLock::new();
 
-fn get_verification_mpsc() -> broadcast::Sender<VerificationMessage> {
-    VERIFICATION_MPSC.get_or_init(|| {
+fn get_verification_broadcast() -> broadcast::Sender<VerificationMessage> {
+    VERIFICATION_BROADCAST.get_or_init(|| {
+        let (tx, _rx) = broadcast::channel(100);
+        tx
+    }).clone()
+}
+
+static SERIAL_TX_BROADCAST: OnceLock<broadcast::Sender<Message>> = OnceLock::new();
+
+fn get_serial_tx_broadcast() -> broadcast::Sender<Message> {
+    SERIAL_TX_BROADCAST.get_or_init(|| {
         let (tx, _rx) = broadcast::channel(100);
         tx
     }).clone()
@@ -81,7 +90,7 @@ pub async fn serial_task(app: AppHandle) {
         println!("Device found at {}! Connecting...", port_path);
 
         // Attempt to open port. If it fails we go back to searching.
-        let mut serial = match SerialPort::open(&port_path, 115200) {
+        let mut serial_tx = match SerialPort::open(&port_path, 115200) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Error opening port: {}. Retrying...", e);
@@ -90,12 +99,27 @@ pub async fn serial_task(app: AppHandle) {
             }
         };
 
+        let mut serial_rx = match serial_tx.try_clone() {
+            Ok(s) => s,
+            Err(e) => {
+                eprintln!("Error cloning port: {}. Retrying...", e);
+                sleep(Duration::from_secs(1)).await;
+                continue; 
+            }
+        };
+
+
         // Notify frontend that we are connected
         get_serial_status_watch().send_replace(SerialStatus::Connected);
         app.emit("serial-status", SerialStatus::Connected).unwrap();
 
+        let serial_res = select! {
+            res = handle_serial_receive(&mut serial_tx) => res,
+            res = handle_serial_send(&mut serial_rx) => res,
+        };
+
         // Spawn the connection handler. If this returns, it means the connection died.
-        if let Err(e) = handle_connection(&mut serial).await {
+        if let Err(e) = serial_res {
             eprintln!("Connection lost: {}. returning to search mode...", e);
         }        
         // Loop triggers again immediately to search for the device
@@ -105,10 +129,13 @@ pub async fn serial_task(app: AppHandle) {
 // Tokio channel for sending frames to the frontend.
 
 /// Handles the actual data transmission over the serial port.
-async fn handle_connection(serial: &mut SerialPort) -> std::io::Result<()> {
+async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
     let mut buffer = [0u8; 1024];
 
     loop {
+        // Check if there are any messages to send.
+
+
         let read_len = serial.read(&mut buffer).await?; 
 
         if read_len > 0 {
@@ -122,7 +149,7 @@ async fn handle_connection(serial: &mut SerialPort) -> std::io::Result<()> {
                             get_frame_watch().send(frame).ok();
                         }
                         Message::Verification(verification_message) => {
-                            get_verification_mpsc().send(verification_message).ok();
+                            get_verification_broadcast().send(verification_message).ok();
                         }
                         _ => {
                             println!("Message type not implemented yet: {:?}", message);
@@ -133,6 +160,19 @@ async fn handle_connection(serial: &mut SerialPort) -> std::io::Result<()> {
                     println!("Error deserializing message: {:?}", e);
                 }
             }
+        }
+    }
+}
+
+async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
+    let mut serial_tx_broadcast = get_serial_tx_broadcast().subscribe();
+
+    loop {
+        let message = serial_tx_broadcast.recv().await;
+        if let Ok(message) = message {
+            println!("Sending message over USB-CDC: {:?}", message);
+            let data = postcard::to_stdvec_cobs(&message).expect("Serialization failed");
+            serial.write_all(&data).await?;
         }
     }
 }
@@ -154,12 +194,20 @@ pub async fn receive_frames(app: AppHandle, on_event: Channel<FrameData>) {
 #[tauri::command(async)]
 #[specta::specta]
 pub async fn receive_verification_messages(app: AppHandle, on_event: Channel<VerificationMessage>) {
-    let mut verification_mpsc = get_verification_mpsc().subscribe();
+    let mut verification_broadcast = get_verification_broadcast().subscribe();
     let serial_status_watch = get_serial_status_watch().subscribe();
     while serial_status_watch.borrow().clone() == SerialStatus::Connected {
-        let verification_message = verification_mpsc.recv().await;
+        let verification_message = verification_broadcast.recv().await;
         if let Ok(verification_message) = verification_message {
             on_event.send(verification_message).ok();
         }
     }
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn send_verification_message(message: VerificationMessage) {
+    let serial_tx_broadcast = get_serial_tx_broadcast();
+    let message = Message::Verification(message);
+    serial_tx_broadcast.send(message).ok();
 }
