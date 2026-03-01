@@ -4197,6 +4197,17 @@
 			(uuid "2cf04aa6-0c09-4a50-a903-064b633e50c6")
 		)
 		(embedded_fonts no)
+		(model "${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "MCP6572T_E_SN:SOIC127P600X175-8N"
 		(layer "F.Cu")
@@ -9043,6 +9054,17 @@
 			(uuid "3768c045-9504-4569-b7eb-1f9d1ddf052b")
 		)
 		(embedded_fonts no)
+		(model "${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "CustomTestPoints:TestPoint_0603_1608Metric"
 		(layer "F.Cu")
@@ -13720,6 +13742,17 @@
 			(uuid "d856bc0e-3d26-4d01-bed2-592d8debadae")
 		)
 		(embedded_fonts no)
+		(model "${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
 		(layer "F.Cu")
@@ -17901,6 +17934,17 @@
 			(uuid "72f59cf7-3b4a-4760-a285-d2396868a414")
 		)
 		(embedded_fonts no)
+		(model "${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Capacitor_SMD:C_0402_1005Metric"
 		(layer "F.Cu")
@@ -27111,6 +27155,17 @@
 			(uuid "268d9349-d8cd-40c1-a02b-82967c0e5392")
 		)
 		(embedded_fonts no)
+		(model "${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "PSRAM_Adafruit_4677:SOIC127P600X175-8N"
 		(layer "F.Cu")
@@ -31474,6 +31529,17 @@
 			(uuid "0a2cd9e2-6552-4789-8e73-ab01737e1be3")
 		)
 		(embedded_fonts no)
+		(model "${KICAD9_3DMODEL_DIR}/Package_TO_SOT_SMD.3dshapes/SOT-23-5.step"
+			(offset
+				(xyz 0 0 0)
+			)
+			(scale
+				(xyz 1 1 1)
+			)
+			(rotate
+				(xyz 0 0 0)
+			)
+		)
 	)
 	(footprint "Resistor_SMD:R_0402_1005Metric"
 		(layer "F.Cu")
@@ -45660,20 +45726,28 @@
 		(uuid "276ec296-83a4-44d6-b835-82bf525e1395")
 	)
 	(segment
+		(start 141.404233 138.124231)
+		(end 141.399232 138.129232)
+		(width 0.156464)
+		(layer "B.Cu")
+		(net 64)
+		(uuid "28b94fa8-55e9-4f3e-bb7e-0d739c63d430")
+	)
+	(segment
+		(start 177.143168 138.124231)
+		(end 141.404233 138.124231)
+		(width 0.156464)
+		(layer "B.Cu")
+		(net 64)
+		(uuid "9455fb8c-36a6-4717-b57c-36cfd656fe26")
+	)
+	(segment
 		(start 177.2724 137.994999)
 		(end 177.143168 138.124231)
 		(width 0.156464)
 		(layer "B.Cu")
 		(net 64)
-		(uuid "bbe6fa88-df23-4821-afb6-6613f58156b1")
-	)
-	(segment
-		(start 177.143168 138.124231)
-		(end 140.671632 138.124231)
-		(width 0.156464)
-		(layer "B.Cu")
-		(net 64)
-		(uuid "e1c24e68-04ee-4a7f-b4cd-586d25c52032")
+		(uuid "bda80058-4eb4-49b8-8109-030daf7ffbe4")
 	)
 	(segment
 		(start 167.029 132.220003)
