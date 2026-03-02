@@ -9,9 +9,12 @@ use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
 use embassy_rp::adc::Adc;
 use embassy_rp::gpio::{Flex, Pull};
+use embassy_rp::pio::{self, Pio};
+use embassy_rp::pio_programs::ws2812::{Grb, PioWs2812, PioWs2812Program};
 use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
 use embassy_time::{Duration, Ticker, Timer};
 use embedded_alloc::TlsfHeap as Heap;
+use smart_leds::RGB8;
 
 use crate::driver::mcp47feb::Mcp47feb;
 use crate::message::{MESSAGE_RX, MESSAGE_TX};
@@ -36,12 +39,18 @@ pub mod softi2c;
 static HEAP: Heap = Heap::empty();
 
 bind_interrupts!(struct Irqs {
+    // Neopixel PIO interrupts
+    PIO0_IRQ_0 => pio::InterruptHandler<peripherals::PIO0>;
+    // ADC interrupts
     ADC_IRQ_FIFO => adc::InterruptHandler;
+    // USB interrupts
     USBCTRL_IRQ => usb::InterruptHandler<peripherals::USB>;
+    // I2C interrupts
     I2C1_IRQ => i2c::InterruptHandler<peripherals::I2C1>;
 });
 
 const USB_PACKET_SIZE: usize = 64;
+const NUM_LEDS: usize = 1;
 
 type ScopeUsbDriver = Driver<'static, peripherals::USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -58,7 +67,29 @@ async fn main(spawner: Spawner) {
 
     let p = embassy_rp::init(Default::default());
 
-    // Create the driver, from the HAL.
+    // Create neopixel pio
+    let Pio {
+        mut common, sm0, ..
+    } = Pio::new(p.PIO0, Irqs);
+
+    let program = PioWs2812Program::new(&mut common);
+    let mut ws2812 =
+        PioWs2812::<_, _, NUM_LEDS, Grb>::new(&mut common, sm0, p.DMA_CH0, p.PIN_9, &program);
+
+    let _ = spawner.spawn(led_color_task(ws2812));
+
+    // let mut red: u8 = 100;
+    // let mut data = [RGB8::new(0, 0, 0)];
+    // loop {
+    //     red = red.wrapping_add(10);
+    //     // data[0] = RGB8::new(red, 0, 0);
+    //     data[0].r = red;
+    //     info!("Red: {}", red);
+    //     ws2812.write(&data).await;
+    //     Timer::after_millis(100).await;
+    // }
+
+    // Create the USB driver, from the HAL.
     let driver = Driver::new(p.USB, Irqs);
 
     // Create embassy-usb Config
@@ -107,8 +138,6 @@ async fn main(spawner: Spawner) {
 
     let _ = spawner.spawn(send_messages_task(tx));
     let _ = spawner.spawn(receive_messages_task(rx));
-
-    info!("Firmware started");
 
     // let mut psram_config = embassy_rp::psram::Config::aps6404l();
     // psram_config.max_mem_freq = 25_000_000;
@@ -167,8 +196,12 @@ async fn main(spawner: Spawner) {
     .await
     .expect("Failed to set VREF on channel B");
 
-    dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 128).await;
-    dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128).await;
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 128)
+        .await
+        .expect("Failed to write DAC value");
+    dac.write_dac(driver::mcp47feb::DacChannel::Dac1, 128)
+        .await
+        .expect("Failed to write DAC value");
 
     // trigger input pin
     let mut trigger_pin = Flex::new(p.PIN_21);
@@ -191,17 +224,49 @@ async fn main(spawner: Spawner) {
     // Initialize the ADC and frame sender
 
     let adc = Adc::new(p.ADC, Irqs, adc::Config::default());
-    let adc_dma = p.DMA_CH0;
+    let adc_dma = p.DMA_CH1;
     let adc_pins = [
         adc::Channel::new_pin(p.PIN_26, Pull::None),
         adc::Channel::new_pin(p.PIN_27, Pull::None),
     ];
 
     let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins));
+
+    info!("Firmware started");
+
+    loop {
+        Timer::after_secs(1).await;
+    }
 }
 
 #[embassy_executor::task]
-async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>, mut trigger_pin: Flex<'static>, mut switch_pins: [Flex<'static>; 3]) -> ! {
+async fn led_color_task(mut ws2812: PioWs2812<'static, peripherals::PIO0, 0, NUM_LEDS, Grb>) -> ! {
+    let mut red: u8 = 0;
+    let mut forwards = true;
+    let mut data = [RGB8::new(0, 0, 0)];
+    loop {
+        if red == 0 {
+            forwards = true;
+        } else if red == 255 {
+            forwards = false;
+        }
+        if forwards {
+            red += 1;
+        } else {
+            red -= 1;
+        }
+        data[0].r = red;
+        ws2812.write(&data).await;
+        Timer::after_millis(5).await;
+    }
+}
+
+#[embassy_executor::task]
+async fn handle_messages_task(
+    mut dac: Mcp47feb<SoftI2c<'static>>,
+    mut trigger_pin: Flex<'static>,
+    mut switch_pins: [Flex<'static>; 3],
+) -> ! {
     let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
     loop {
@@ -215,24 +280,22 @@ async fn handle_messages_task(mut dac: Mcp47feb<SoftI2c<'static>>, mut trigger_p
             }
             Message::SetChannelOptions(_channel) => {}
             Message::SetSampleRate(_sample_rate) => {}
-            Message::Verification(verification_message) => {
-                match verification_message {
-                    VerificationMessage::StartDacTest => {
-                        start_dac_test(&mut dac, &mut trigger_pin).await;
-                    },
-                    VerificationMessage::SetGpioHigh => {
-                        for pin in switch_pins.iter_mut() {
-                            pin.set_high();
-                        }
-                    },
-                    VerificationMessage::SetGpioLow => {
-                        for pin in switch_pins.iter_mut() {
-                            pin.set_low();
-                        }
-                    },
-                    _ => {}
+            Message::Verification(verification_message) => match verification_message {
+                VerificationMessage::StartDacTest => {
+                    start_dac_test(&mut dac, &mut trigger_pin).await;
                 }
-            }
+                VerificationMessage::SetGpioHigh => {
+                    for pin in switch_pins.iter_mut() {
+                        pin.set_high();
+                    }
+                }
+                VerificationMessage::SetGpioLow => {
+                    for pin in switch_pins.iter_mut() {
+                        pin.set_low();
+                    }
+                }
+                _ => {}
+            },
             _ => {
                 error!("Received unexpected message: {:?}", message);
             }
@@ -272,7 +335,7 @@ async fn start_dac_test(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger_pin: &mut 
 #[embassy_executor::task]
 async fn read_adc_task(
     mut adc: Adc<'static, adc::Async>,
-    mut adc_dma: Peri<'static, peripherals::DMA_CH0>,
+    mut adc_dma: Peri<'static, peripherals::DMA_CH1>,
     mut adc_pins: [adc::Channel<'static>; 2],
 ) -> ! {
     let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));

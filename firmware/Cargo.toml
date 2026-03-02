@@ -60,6 +60,8 @@ pio-proc = "0.3.0"
 pio = "0.3.0"
 rand = { version = "0.9.2", default-features = false }
 
+smart-leds = "0.4"
+
 postcard = { version = "1.1", features = ["postcard-derive", "alloc"]}
 
 [profile.release]
