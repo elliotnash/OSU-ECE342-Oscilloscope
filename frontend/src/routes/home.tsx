@@ -832,6 +832,7 @@ export default function Plot({
         name: "Math",
         data: mathPoints ? mathPoints.map((point) => [point.x, point.y]) : [],
         showSymbol: false,
+        symbol: "none",
         emphasis: { disabled: true },
         lineStyle: {
           color: mathColor,
