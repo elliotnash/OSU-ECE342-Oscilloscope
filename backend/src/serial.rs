@@ -228,7 +228,6 @@ async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
     loop {
         let message = serial_tx_broadcast.recv().await;
         if let Ok(message) = message {
-            println!("Sending message over USB-CDC: {:?}", message);
             let data = postcard::to_stdvec_cobs(&message).expect("Serialization failed");
             serial.write_all(&data).await?;
         }

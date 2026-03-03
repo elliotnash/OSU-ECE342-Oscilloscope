@@ -658,6 +658,7 @@ export default function Plot({
     },
     tooltip: {
       trigger: "axis",
+      // transitionDuration: 0,
       axisPointer: {
         type: "cross",
         lineStyle: {
@@ -799,6 +800,7 @@ export default function Plot({
         name: `Channel ${channel}`,
         data: points.map((point) => [point.x, point.y]),
         showSymbol: false,
+        emphasis: { disabled: true },
         lineStyle: {
           color: chartTheme.series[channel],
           width: 2,
@@ -811,6 +813,7 @@ export default function Plot({
               name: "Math",
               data: mathPoints.map((point) => [point.x, point.y]),
               showSymbol: false,
+              emphasis: { disabled: true },
               lineStyle: {
                 color: mathColor,
                 width: 2,
@@ -829,7 +832,7 @@ export default function Plot({
       <ReactECharts
         style={{ width: "100%", height: "100%" }}
         option={option}
-        notMerge={true}
+        notMerge={false}
         lazyUpdate={true}
       />
     </div>
