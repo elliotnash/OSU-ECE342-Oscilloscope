@@ -495,6 +495,8 @@ export default function Plot({
 }) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
+  const latestFramesRef = useRef<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
+  const channelVisibilityRef = useRef(channelVisibility);
   const frameTimesRef = useRef<number[]>([]);
   const [frameRate, setFrameRate] = useState(0);
   const [chartTheme, setChartTheme] = useState({
@@ -508,6 +510,10 @@ export default function Plot({
       B: "rgb(244, 114, 182)", // pink
     } as Record<ScopeChannel, string>,
   });
+
+  useEffect(() => {
+    channelVisibilityRef.current = channelVisibility;
+  }, [channelVisibility]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -535,19 +541,28 @@ export default function Plot({
   useEffect(() => {
     const onEvent = new Channel<FrontendFrameData>();
     onEvent.onmessage = (message) => {
-      setFrames((prev) => ({
-        ...prev,
+      latestFramesRef.current = {
+        ...latestFramesRef.current,
         [message.channel]: message,
-      }));
+      };
 
-      const now = performance.now();
-      const times = frameTimesRef.current;
-      times.push(now);
-      const cutoff = now - 1000;
-      while (times.length > 0 && times[0] < cutoff) {
-        times.shift();
+      const visibility = channelVisibilityRef.current;
+      const bothChannelsVisible = visibility.A && visibility.B;
+
+      const shouldUpdateFrames =
+        !bothChannelsVisible || message.channel === "B";
+
+      if (shouldUpdateFrames) {
+        setFrames(latestFramesRef.current);
+        const now = performance.now();
+        const times = frameTimesRef.current;
+        times.push(now);
+        const cutoff = now - 1000;
+        while (times.length > 0 && times[0] < cutoff) {
+          times.shift();
+        }
+        setFrameRate(times.length);
       }
-      setFrameRate(times.length);
     };
     void commands.receiveFrames(onEvent);
 
@@ -658,7 +673,6 @@ export default function Plot({
     },
     tooltip: {
       trigger: "axis",
-      // transitionDuration: 0,
       axisPointer: {
         type: "cross",
         lineStyle: {
@@ -800,6 +814,7 @@ export default function Plot({
         name: `Channel ${channel}`,
         data: points.map((point) => [point.x, point.y]),
         showSymbol: false,
+        symbol: "none",
         emphasis: { disabled: true },
         lineStyle: {
           color: chartTheme.series[channel],
