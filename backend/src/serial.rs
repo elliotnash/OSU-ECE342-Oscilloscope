@@ -5,7 +5,7 @@ use specta::{ Type };
 use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
-use tokio::{select, sync::{broadcast, watch}, time::sleep};
+use tokio::{select, sync::{broadcast, watch}, time::{Instant, sleep}};
 use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData}, message::{Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
@@ -16,7 +16,6 @@ pub enum SerialStatus {
 }
 
 static SERIAL_STATUS_WATCH: OnceLock<watch::Sender<SerialStatus>> = OnceLock::new();
-
 fn get_serial_status_watch() -> watch::Sender<SerialStatus> {
     SERIAL_STATUS_WATCH.get_or_init(|| {
         // Create the channel. Initial value is "init"
@@ -25,8 +24,15 @@ fn get_serial_status_watch() -> watch::Sender<SerialStatus> {
     }).clone()
 }
 
-static FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
+static LAST_HEARTBEAT_WATCH: OnceLock<watch::Sender<Instant>> = OnceLock::new();
+fn get_last_heartbeat_watch() -> watch::Sender<Instant> {
+    LAST_HEARTBEAT_WATCH.get_or_init(|| {
+        let (tx, _rx) = watch::channel(Instant::now());
+        tx
+    }).clone()
+}
 
+static FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
 fn get_frame_watch() -> watch::Sender<FrameData> {
     FRAME_WATCH.get_or_init(|| {
         let (tx, _rx) = watch::channel(FrameData::default());
@@ -35,7 +41,6 @@ fn get_frame_watch() -> watch::Sender<FrameData> {
 }
 
 static VERIFICATION_BROADCAST: OnceLock<broadcast::Sender<VerificationMessage>> = OnceLock::new();
-
 fn get_verification_broadcast() -> broadcast::Sender<VerificationMessage> {
     VERIFICATION_BROADCAST.get_or_init(|| {
         let (tx, _rx) = broadcast::channel(100);
@@ -44,7 +49,6 @@ fn get_verification_broadcast() -> broadcast::Sender<VerificationMessage> {
 }
 
 static SERIAL_TX_BROADCAST: OnceLock<broadcast::Sender<Message>> = OnceLock::new();
-
 fn get_serial_tx_broadcast() -> broadcast::Sender<Message> {
     SERIAL_TX_BROADCAST.get_or_init(|| {
         let (tx, _rx) = broadcast::channel(100);
@@ -116,6 +120,8 @@ pub async fn serial_task(app: AppHandle) {
         let serial_res = select! {
             res = handle_serial_receive(&mut serial_tx) => res,
             res = handle_serial_send(&mut serial_rx) => res,
+            res = handle_heartbeat_monitor() => res,
+            res = handle_send_heartbeat() => res,
         };
 
         // Spawn the connection handler. If this returns, it means the connection died.
@@ -126,27 +132,71 @@ pub async fn serial_task(app: AppHandle) {
     }
 }
 
-// Tokio channel for sending frames to the frontend.
+async fn handle_heartbeat_monitor() -> std::io::Result<()> {
+    let mut last = Instant::now();
+    let mut last_heartbeat_rx = get_last_heartbeat_watch().subscribe();
+
+    loop {
+        let deadline = last + Duration::from_millis(1100);
+
+        let timeout_fut = tokio::time::sleep_until(deadline);
+        let heartbeat_changed_fut = last_heartbeat_rx.changed();
+
+        select! {
+            // No heartbeat within 1100 ms of the last one: treat as disconnect
+            _ = timeout_fut => {
+                return Err(std::io::Error::new(
+                    std::io::ErrorKind::TimedOut,
+                    "Heartbeat timeout",
+                ));
+            }
+            // Heartbeat arrived before the timeout: update last and keep monitoring
+            res = heartbeat_changed_fut => {
+                if res.is_err() {
+                    // Sender dropped, consider this a disconnection as well
+                    return Err(std::io::Error::new(
+                        std::io::ErrorKind::BrokenPipe,
+                        "Heartbeat watch closed",
+                    ));
+                }
+                last = *last_heartbeat_rx.borrow();
+            }
+        }
+    }
+}
+
+async fn handle_send_heartbeat() -> std::io::Result<()> {
+    let mut next = Instant::now();
+
+    loop {
+        let serial_tx_broadcast = get_serial_tx_broadcast();
+        let message = Message::Heartbeat;
+        serial_tx_broadcast.send(message).ok();
+
+        next += Duration::from_secs(1);
+        tokio::time::sleep_until(next).await;
+    }
+}
 
 /// Handles the actual data transmission over the serial port.
 async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
     let mut buffer = [0u8; 1024];
 
     loop {
-        // Check if there are any messages to send.
-
-
         let read_len = serial.read(&mut buffer).await?; 
 
         if read_len > 0 {
-            // Process your oscilloscope data here
+            // Process oscilloscope data here
             let message = postcard::from_bytes_cobs::<Message>(&mut buffer[..read_len]);
             match message {
                 Ok(message) => {
                     // println!("Received message over USB-CDC: {:?}", message);
                     match message {
+                        Message::Heartbeat => {
+                            get_last_heartbeat_watch().send_replace(Instant::now());
+                        }
                         Message::Frame(frame) => {
-                            get_frame_watch().send(frame).ok();
+                            get_frame_watch().send_replace(frame);
                         }
                         Message::Verification(verification_message) => {
                             get_verification_broadcast().send(verification_message).ok();
