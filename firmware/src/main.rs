@@ -7,17 +7,21 @@ use common::frame::{FrameData, ScopeChannel};
 use common::message::{Message, VerificationMessage};
 use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
+use embassy_futures::select::{Either, select};
 use embassy_rp::adc::Adc;
 use embassy_rp::gpio::{Flex, Pull};
 use embassy_rp::pio::{self, Pio};
 use embassy_rp::pio_programs::ws2812::{Grb, PioWs2812, PioWs2812Program};
 use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
-use embassy_time::{Duration, Ticker, Timer};
+use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
+use embassy_sync::watch::Watch;
+use embassy_time::{Duration, Instant, Ticker, Timer};
 use embedded_alloc::TlsfHeap as Heap;
 use smart_leds::RGB8;
 
 use crate::driver::mcp47feb::Mcp47feb;
-use crate::message::{MESSAGE_RX, MESSAGE_TX};
+use crate::led::{LED_RX, LedPattern, NUM_LEDS, led_color_task};
+use crate::message::{MESSAGE_RX, MESSAGE_TX, USB_CONNECTED};
 use crate::softi2c::SoftI2c;
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::Spawner;
@@ -32,6 +36,7 @@ use static_cell::StaticCell;
 use {defmt_rtt as _, panic_probe as _};
 
 pub mod driver;
+pub mod led;
 pub mod message;
 pub mod softi2c;
 
@@ -50,7 +55,8 @@ bind_interrupts!(struct Irqs {
 });
 
 const USB_PACKET_SIZE: usize = 64;
-const NUM_LEDS: usize = 1;
+
+pub static LAST_HEARTBEAT_TIME: Watch<ThreadModeRawMutex, Instant, 1> = Watch::new();
 
 type ScopeUsbDriver = Driver<'static, peripherals::USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -73,21 +79,10 @@ async fn main(spawner: Spawner) {
     } = Pio::new(p.PIO0, Irqs);
 
     let program = PioWs2812Program::new(&mut common);
-    let mut ws2812 =
+    let ws2812 =
         PioWs2812::<_, _, NUM_LEDS, Grb>::new(&mut common, sm0, p.DMA_CH0, p.PIN_9, &program);
 
     let _ = spawner.spawn(led_color_task(ws2812));
-
-    // let mut red: u8 = 100;
-    // let mut data = [RGB8::new(0, 0, 0)];
-    // loop {
-    //     red = red.wrapping_add(10);
-    //     // data[0] = RGB8::new(red, 0, 0);
-    //     data[0].r = red;
-    //     info!("Red: {}", red);
-    //     ws2812.write(&data).await;
-    //     Timer::after_millis(100).await;
-    // }
 
     // Create the USB driver, from the HAL.
     let driver = Driver::new(p.USB, Irqs);
@@ -138,6 +133,7 @@ async fn main(spawner: Spawner) {
 
     let _ = spawner.spawn(send_messages_task(tx));
     let _ = spawner.spawn(receive_messages_task(rx));
+    let _ = spawner.spawn(heartbeat_monitor_task());
 
     // let mut psram_config = embassy_rp::psram::Config::aps6404l();
     // psram_config.max_mem_freq = 25_000_000;
@@ -240,24 +236,44 @@ async fn main(spawner: Spawner) {
 }
 
 #[embassy_executor::task]
-async fn led_color_task(mut ws2812: PioWs2812<'static, peripherals::PIO0, 0, NUM_LEDS, Grb>) -> ! {
-    let mut red: u8 = 0;
-    let mut forwards = true;
-    let mut data = [RGB8::new(0, 0, 0)];
+async fn heartbeat_monitor_task() -> ! {
+    let mut heartbeat_receiver = LAST_HEARTBEAT_TIME
+        .receiver()
+        .expect("Failed to get heartbeat receiver");
+
+    let mut usb_connected_receiver = USB_CONNECTED
+        .receiver()
+        .expect("Failed to get USB connected receiver");
+
+    let led_sender = LED_RX.sender();
+
+    let mut last = Instant::now();
+
     loop {
-        if red == 0 {
-            forwards = true;
-        } else if red == 255 {
-            forwards = false;
+        // Only consider disconnected if it is disconnected from client, but the USB is still connected
+        let usb_connected = usb_connected_receiver.get().await;
+        if !usb_connected {
+            usb_connected_receiver.changed().await;
+            continue;
         }
-        if forwards {
-            red += 1;
-        } else {
-            red -= 1;
+
+        // Wait for either a new heartbeat or for 1100 ms to elapse since `last`
+        let deadline = last + Duration::from_millis(1100);
+
+        match select(Timer::at(deadline), heartbeat_receiver.changed()).await {
+            // Timer fired first so no heartbeat in 1100 ms, disconnected
+            Either::First(_) => {
+                // Consider USB/client disconnected
+                // Blink pink LED when USB is connected (but the client app is not yet connected)
+                led_sender.send(LedPattern::Blink(RGB8::new(128, 20, 64), 1000));
+            }
+            // Heartbeat arrived first, so client is still connected
+            Either::Second(_) => {
+                last = heartbeat_receiver.get().await;
+                // Pulse green LED when client is connected
+                led_sender.send(LedPattern::Pulse(RGB8::new(50, 200, 0), 1000));
+            }
         }
-        data[0].r = red;
-        ws2812.write(&data).await;
-        Timer::after_millis(5).await;
     }
 }
 
@@ -267,6 +283,7 @@ async fn handle_messages_task(
     mut trigger_pin: Flex<'static>,
     mut switch_pins: [Flex<'static>; 3],
 ) -> ! {
+    let heartbeat_sender = LAST_HEARTBEAT_TIME.sender();
     let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
     loop {
@@ -274,6 +291,7 @@ async fn handle_messages_task(
         match message {
             Message::Heartbeat => {
                 let _ = message_sender.try_send(Message::Heartbeat);
+                heartbeat_sender.send(Instant::now());
             }
             Message::SetTriggerOptions(trigger) => {
                 set_trigger_options(&mut dac, &trigger).await;

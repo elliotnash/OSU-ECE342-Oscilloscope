@@ -1,19 +1,34 @@
+use crate::led::{LED_RX, LedPattern};
 use crate::{ScopeUsbReceiver, ScopeUsbSender, USB_PACKET_SIZE};
 use alloc::vec::Vec;
 use common::message::Message;
 use defmt::{error, info, panic};
 use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
 use embassy_sync::channel::Channel;
+use embassy_sync::watch::Watch;
 use embassy_usb::driver::EndpointError;
+use smart_leds::RGB8;
 
 pub static MESSAGE_RX: Channel<ThreadModeRawMutex, Message, 2> = Channel::new();
 pub static MESSAGE_TX: Channel<ThreadModeRawMutex, Message, 2> = Channel::new();
 
+pub static USB_CONNECTED: Watch<ThreadModeRawMutex, bool, 1> = Watch::new();
+
 #[embassy_executor::task]
 pub async fn send_messages_task(mut tx: ScopeUsbSender) -> ! {
+    let led_sender = LED_RX.sender();
     loop {
+        USB_CONNECTED.sender().send(false);
+        // Solid red LED when firmware starts (before USB is connected)
+        led_sender.send(LedPattern::Solid(RGB8::new(200, 20, 0)));
+
         tx.wait_connection().await;
         info!("USB Connected");
+
+        USB_CONNECTED.sender().send(true);
+        // Blink pink LED when USB is connected (but the client app is not yet connected)
+        led_sender.send(LedPattern::Blink(RGB8::new(128, 20, 64), 1000));
+
         let _ = send_messages(&mut tx).await;
         info!("USB Disconnected");
     }
@@ -85,7 +100,6 @@ async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
 
         for chunk in bytes.chunks(USB_PACKET_SIZE) {
             tx.write_packet(chunk).await?;
-        }// Send in chunks of USB_PACKET_SIZE
-        
+        } // Send in chunks of USB_PACKET_SIZE
     }
 }
