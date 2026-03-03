@@ -809,33 +809,35 @@ export default function Plot({
       },
     },
     series: [
-      ...plotDataByChannel.map(({ channel, points }) => ({
+      ...channelOrder.map((channel) => {
+        const entry = plotDataByChannel.find((e) => e.channel === channel);
+        const data = entry
+          ? entry.points.map((point) => [point.x, point.y])
+          : [];
+        return {
+          type: "line",
+          name: `Channel ${channel}`,
+          data,
+          showSymbol: false,
+          symbol: "none",
+          emphasis: { disabled: true },
+          lineStyle: {
+            color: chartTheme.series[channel],
+            width: 2,
+          },
+        };
+      }),
+      {
         type: "line",
-        name: `Channel ${channel}`,
-        data: points.map((point) => [point.x, point.y]),
+        name: "Math",
+        data: mathPoints ? mathPoints.map((point) => [point.x, point.y]) : [],
         showSymbol: false,
-        symbol: "none",
         emphasis: { disabled: true },
         lineStyle: {
-          color: chartTheme.series[channel],
+          color: mathColor,
           width: 2,
         },
-      })),
-      ...(mathPoints
-        ? [
-            {
-              type: "line",
-              name: "Math",
-              data: mathPoints.map((point) => [point.x, point.y]),
-              showSymbol: false,
-              emphasis: { disabled: true },
-              lineStyle: {
-                color: mathColor,
-                width: 2,
-              },
-            },
-          ]
-        : []),
+      },
     ],
   };
 
