@@ -299,4 +299,22 @@ mod tests {
         );
         assert_eq!(frame, deserialized);
     }
+    #[test]
+    fn frame_data_packing_random_data() {
+        let mut data = Vec::new();
+        for i in 0..1000 {
+            data.push(rand::random_range(0..4096));
+        }
+        let frame = FrameData {
+            data,
+            center: 2048,
+            timestep_ms: 1.0,
+            voltage_scale: 2.0,
+            channel: ScopeChannel::A,
+        };
+        let mut bytes = postcard::to_stdvec_cobs(&frame).expect("Serialization failed");
+        let deserialized =
+            postcard::from_bytes_cobs::<FrameData>(&mut bytes).expect("Deserialization failed");
+        assert_eq!(frame, deserialized);
+    }
 }

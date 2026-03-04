@@ -179,35 +179,49 @@ async fn handle_send_heartbeat() -> std::io::Result<()> {
 }
 
 /// Handles the actual data transmission over the serial port.
+/// Accumulates bytes into a message buffer until a null terminator (0x00) is received,
+/// then parses the buffer as a COBS-encoded message. This matches the firmware's
+/// receive_messages logic so messages split across multiple OS read() calls are handled.
 async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
-    let mut buffer = [0u8; 1024];
+    let mut read_buf = [0u8; 1024];
+    let mut message_buf = Vec::new();
 
     loop {
-        let read_len = serial.read(&mut buffer).await?; 
+        let read_len = serial.read(&mut read_buf).await?;
+
+        message_buf.reserve(128);
 
         if read_len > 0 {
-            // Process oscilloscope data here
-            let message = postcard::from_bytes_cobs::<Message>(&mut buffer[..read_len]);
-            match message {
-                Ok(message) => {
-                    // println!("Received message over USB-CDC: {:?}", message);
-                    match message {
-                        Message::Heartbeat => {
-                            get_last_heartbeat_watch().send_replace(Instant::now());
+            for i in 0..read_len {
+                let b = read_buf[i];
+                if b == 0x00 {
+                    // If the null terminator is encountered, then we've received a complete message.
+                    // Parse the message and handle it.
+                    match postcard::from_bytes_cobs::<Message>(&mut message_buf) {
+                        Ok(message) => {
+                            match message {
+                                Message::Heartbeat => {
+                                    get_last_heartbeat_watch().send_replace(Instant::now());
+                                }
+                                Message::Frame(frame) => {
+                                    get_frame_watch().send_replace(frame);
+                                }
+                                Message::Verification(verification_message) => {
+                                    get_verification_broadcast().send(verification_message).ok();
+                                }
+                                _ => {
+                                    println!("Message type not implemented yet: {:?}", message);
+                                }
+                            }
                         }
-                        Message::Frame(frame) => {
-                            get_frame_watch().send_replace(frame);
-                        }
-                        Message::Verification(verification_message) => {
-                            get_verification_broadcast().send(verification_message).ok();
-                        }
-                        _ => {
-                            println!("Message type not implemented yet: {:?}", message);
+                        Err(e) => {
+                            println!("Error deserializing message: {:?}", e);
                         }
                     }
-                }
-                Err(e) => {
-                    println!("Error deserializing message: {:?}", e);
+                    message_buf.clear();
+                } else {
+                    // Otherwise, this is part of the message, add it to the buffer.
+                    message_buf.push(b);
                 }
             }
         }

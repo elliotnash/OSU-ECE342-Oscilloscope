@@ -21,3 +21,4 @@ specta = { version = "2.0.0-rc.22", features = ["serde"], optional = true }
 
 [dev-dependencies]
 postcard = { version = "1.1", features = ["postcard-derive", "use-std"]}
+rand = "0.10"
