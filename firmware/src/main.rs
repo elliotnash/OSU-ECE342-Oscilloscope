@@ -10,6 +10,7 @@ use defmt::{debug, error, info};
 use embassy_futures::select::{Either, select};
 use embassy_rp::adc::Adc;
 use embassy_rp::gpio::{Flex, Pull};
+use embassy_rp::i2c::I2c;
 use embassy_rp::pio::{self, Pio};
 use embassy_rp::pio_programs::ws2812::{Grb, PioWs2812, PioWs2812Program};
 use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
@@ -22,7 +23,6 @@ use smart_leds::RGB8;
 use crate::driver::mcp47feb::Mcp47feb;
 use crate::led::{LED_RX, LedPattern, NUM_LEDS, led_color_task};
 use crate::message::{MESSAGE_RX, MESSAGE_TX, USB_CONNECTED};
-use crate::softi2c::SoftI2c;
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::Spawner;
 use embassy_rp::usb::{self, Driver};
@@ -38,7 +38,6 @@ use {defmt_rtt as _, panic_probe as _};
 pub mod driver;
 pub mod led;
 pub mod message;
-pub mod softi2c;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -135,46 +134,12 @@ async fn main(spawner: Spawner) {
     let _ = spawner.spawn(receive_messages_task(rx));
     let _ = spawner.spawn(heartbeat_monitor_task());
 
-    // let mut psram_config = embassy_rp::psram::Config::aps6404l();
-    // psram_config.max_mem_freq = 25_000_000;
-    // psram_config.init_clkdiv = 30;
-    // let psram = embassy_rp::psram::Psram::new(
-    //     embassy_rp::qmi_cs1::QmiCs1::new(p.QMI_CS1, p.PIN_8),
-    //     psram_config,
-    // );
-
-    // let Ok(psram) = psram else {
-    //     error!("PSRAM not found");
-    //     loop {
-    //         Timer::after_secs(1).await;
-    //     }
-    // };
-
-    // let psram_slice = unsafe {
-    //     let psram_ptr = psram.base_address();
-    //     let slice: &'static mut [u8] =
-    //         core::slice::from_raw_parts_mut(psram_ptr, psram.size() as usize);
-    //     slice
-    // };
-
-    // psram_slice.fill(0x55);
-    // // psram_slice[0x100] = 0x55;
-    // info!("PSRAM filled with 0x55");
-    // let at_addr = psram_slice[0x100];
-    // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
-    // Timer::after_secs(1).await;
-
-    // // psram_slice.fill(0xAA);
-    // // info!("PSRAM filled with 0xAA");
-    // // let at_addr = psram_slice[0x100];
-    // // info!("Read from PSRAM at address 0x100: 0x{:02x}", at_addr);
-    // // Timer::after_secs(1).await;
-
     // Initialize the DAC and message handler
 
-    let sda = Flex::new(p.PIN_7);
-    let scl = Flex::new(p.PIN_6);
-    let i2c = SoftI2c::new(sda, scl);
+    let sda = p.PIN_6;
+    let scl = p.PIN_7;
+    let config = embassy_rp::i2c::Config::default();
+    let i2c = I2c::new_async(p.I2C1, scl, sda, Irqs, config);
 
     let mut dac = Mcp47feb::new(i2c, driver::mcp47feb::default_address::A0);
 
@@ -279,7 +244,7 @@ async fn heartbeat_monitor_task() -> ! {
 
 #[embassy_executor::task]
 async fn handle_messages_task(
-    mut dac: Mcp47feb<SoftI2c<'static>>,
+    mut dac: Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
     mut trigger_pin: Flex<'static>,
     mut switch_pins: [Flex<'static>; 3],
 ) -> ! {
@@ -321,7 +286,10 @@ async fn handle_messages_task(
     }
 }
 
-async fn set_trigger_options(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger: &TriggerOptions) {
+async fn set_trigger_options(
+    dac: &mut Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
+    trigger: &TriggerOptions,
+) {
     let dac_channel = match trigger.channel {
         ScopeChannel::A => driver::mcp47feb::DacChannel::Dac0,
         ScopeChannel::B => driver::mcp47feb::DacChannel::Dac1,
@@ -332,7 +300,10 @@ async fn set_trigger_options(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger: &Tri
         .expect("Failed to write DAC value");
 }
 
-async fn start_dac_test(dac: &mut Mcp47feb<SoftI2c<'static>>, trigger_pin: &mut Flex<'static>) {
+async fn start_dac_test(
+    dac: &mut Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
+    trigger_pin: &mut Flex<'static>,
+) {
     dac.write_dac(driver::mcp47feb::DacChannel::Dac0, 0)
         .await
         .expect("Failed to write DAC value");
