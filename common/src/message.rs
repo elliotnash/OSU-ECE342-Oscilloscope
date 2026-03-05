@@ -1,8 +1,8 @@
 use serde::{Deserialize, Serialize};
 
+use crate::channel::ChannelOptions;
 use crate::frame::FrameData;
 use crate::log::SerializableLogRecord;
-use crate::channel::ChannelOptions;
 use crate::trigger::TriggerOptions;
 #[cfg(feature = "std")]
 use specta::Type;
@@ -16,7 +16,7 @@ pub enum Message {
     Frame(FrameData),
     /// Log message with log level and string content
     Log(SerializableLogRecord),
-    SetSampleRate(f32),
+    SetSampleRate(u32),
     SetChannelOptions(ChannelOptions),
     SetTriggerOptions(TriggerOptions),
     Verification(VerificationMessage),

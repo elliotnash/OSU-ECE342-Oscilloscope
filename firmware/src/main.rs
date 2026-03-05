@@ -3,13 +3,14 @@
 
 extern crate alloc;
 
+use common::channel::{ChannelOptions, ScopeCoupling, ScopeGain};
 use common::frame::{FrameData, ScopeChannel};
 use common::message::{Message, VerificationMessage};
 use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
 use embassy_futures::select::{Either, select};
 use embassy_rp::adc::Adc;
-use embassy_rp::gpio::{Flex, Pull};
+use embassy_rp::gpio::{Flex, Level, Pull};
 use embassy_rp::i2c::I2c;
 use embassy_rp::pio::{self, Pio};
 use embassy_rp::pio_programs::ws2812::{Grb, PioWs2812, PioWs2812Program};
@@ -56,6 +57,7 @@ bind_interrupts!(struct Irqs {
 const USB_PACKET_SIZE: usize = 64;
 
 pub static LAST_HEARTBEAT_TIME: Watch<ThreadModeRawMutex, Instant, 1> = Watch::new();
+pub static SAMPLE_RATE: Watch<ThreadModeRawMutex, u32, 1> = Watch::new();
 
 type ScopeUsbDriver = Driver<'static, peripherals::USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -170,17 +172,26 @@ async fn main(spawner: Spawner) {
     trigger_pin.set_pull(Pull::None);
 
     // Output pins
-    let mut switch_pins = [
-        Flex::new(p.PIN_10),
-        Flex::new(p.PIN_11),
-        Flex::new(p.PIN_12),
-    ];
-    for pin in switch_pins.iter_mut() {
+    let mut coupling_pins = [Flex::new(p.PIN_10), Flex::new(p.PIN_13)];
+    let mut sel1_pins = [Flex::new(p.PIN_11), Flex::new(p.PIN_14)];
+    let mut sel2_pins = [Flex::new(p.PIN_12), Flex::new(p.PIN_15)];
+
+    for pin in coupling_pins
+        .iter_mut()
+        .chain(sel1_pins.iter_mut())
+        .chain(sel2_pins.iter_mut())
+    {
         pin.set_as_output();
         pin.set_low();
     }
 
-    let _ = spawner.spawn(handle_messages_task(dac, trigger_pin, switch_pins));
+    let _ = spawner.spawn(handle_messages_task(
+        dac,
+        trigger_pin,
+        coupling_pins,
+        sel1_pins,
+        sel2_pins,
+    ));
 
     // Initialize the ADC and frame sender
 
@@ -246,11 +257,14 @@ async fn heartbeat_monitor_task() -> ! {
 async fn handle_messages_task(
     mut dac: Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
     mut trigger_pin: Flex<'static>,
-    mut switch_pins: [Flex<'static>; 3],
+    mut coupling_pins: [Flex<'static>; 2],
+    mut sel1_pins: [Flex<'static>; 2],
+    mut sel2_pins: [Flex<'static>; 2],
 ) -> ! {
     let heartbeat_sender = LAST_HEARTBEAT_TIME.sender();
     let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
+    let sample_rate_sender = SAMPLE_RATE.sender();
     loop {
         let message = message_receiver.receive().await;
         match message {
@@ -261,19 +275,32 @@ async fn handle_messages_task(
             Message::SetTriggerOptions(trigger) => {
                 set_trigger_options(&mut dac, &trigger).await;
             }
-            Message::SetChannelOptions(_channel) => {}
-            Message::SetSampleRate(_sample_rate) => {}
+            Message::SetChannelOptions(channel) => {
+                set_channel_options(&mut coupling_pins, &mut sel1_pins, &mut sel2_pins, &channel)
+                    .await;
+            }
+            Message::SetSampleRate(sample_rate) => {
+                sample_rate_sender.send(sample_rate);
+            }
             Message::Verification(verification_message) => match verification_message {
                 VerificationMessage::StartDacTest => {
                     start_dac_test(&mut dac, &mut trigger_pin).await;
                 }
                 VerificationMessage::SetGpioHigh => {
-                    for pin in switch_pins.iter_mut() {
+                    for pin in coupling_pins
+                        .iter_mut()
+                        .chain(sel1_pins.iter_mut())
+                        .chain(sel2_pins.iter_mut())
+                    {
                         pin.set_high();
                     }
                 }
                 VerificationMessage::SetGpioLow => {
-                    for pin in switch_pins.iter_mut() {
+                    for pin in coupling_pins
+                        .iter_mut()
+                        .chain(sel1_pins.iter_mut())
+                        .chain(sel2_pins.iter_mut())
+                    {
                         pin.set_low();
                     }
                 }
@@ -284,6 +311,35 @@ async fn handle_messages_task(
             }
         }
     }
+}
+
+async fn set_channel_options(
+    coupling_pins: &mut [Flex<'static>; 2],
+    sel1_pins: &mut [Flex<'static>; 2],
+    sel2_pins: &mut [Flex<'static>; 2],
+    channel: &ChannelOptions,
+) {
+    let channel_index = channel.channel.clone() as usize;
+    // Set the coupling pin
+    coupling_pins[channel_index].set_level(if channel.coupling == ScopeCoupling::DC {
+        Level::High
+    } else {
+        Level::Low
+    });
+
+    // Set the sel1 pin
+    sel1_pins[channel_index].set_level(if channel.voltage_gain == ScopeGain::Four {
+        Level::High
+    } else {
+        Level::Low
+    });
+
+    // Set the sel2 pin
+    sel2_pins[channel_index].set_level(if channel.voltage_gain == ScopeGain::Twenty {
+        Level::High
+    } else {
+        Level::Low
+    });
 }
 
 async fn set_trigger_options(
@@ -329,13 +385,21 @@ async fn read_adc_task(
 ) -> ! {
     let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));
     let message_sender = MESSAGE_TX.sender();
+    let mut sample_rate_receiver = SAMPLE_RATE
+        .receiver()
+        .expect("Failed to get sample rate receiver");
+    let mut sample_rate = 250_000;
     const BLOCK_SIZE: usize = 100;
     const NUM_CHANNELS: usize = 2;
     loop {
         // Send frames at 60 Hz
         frame_ticker.next().await;
 
-        let sample_rate = 250_000;
+        if let Some(new_rate) = sample_rate_receiver.try_changed() {
+            frame_ticker.reset();
+            sample_rate = new_rate;
+            info!("Sample rate changed to {}", sample_rate);
+        }
 
         let mut buf = [0_u16; { BLOCK_SIZE * NUM_CHANNELS }];
         let div = (48_000_000_u32 / (sample_rate * 2) - 1) as u16;
