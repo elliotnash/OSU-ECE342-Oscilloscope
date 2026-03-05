@@ -2,7 +2,9 @@ MEMORY {
     /*
      * External flash at XIP base. This board has 16 MiB.
      */
-    FLASH : ORIGIN = 0x10000000, LENGTH = 16384K
+    FLASH : ORIGIN = 0x10000000, LENGTH = 16384K - 4K
+    NVS : ORIGIN = 0x10FFF000, LENGTH = 4K
+    
     /*
      * RAM consists of 8 banks, SRAM0-SRAM7, with a striped mapping.
      * This is usually good for performance, as it distributes load on

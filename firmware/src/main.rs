@@ -10,6 +10,7 @@ use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
 use embassy_futures::select::{Either, select};
 use embassy_rp::adc::Adc;
+use embassy_rp::flash::{Async, ERASE_SIZE, FLASH_BASE};
 use embassy_rp::gpio::{Flex, Level, Pull};
 use embassy_rp::i2c::I2c;
 use embassy_rp::pio::{self, Pio};
@@ -24,6 +25,7 @@ use smart_leds::RGB8;
 use crate::driver::mcp47feb::Mcp47feb;
 use crate::led::{LED_RX, LedPattern, NUM_LEDS, led_color_task};
 use crate::message::{MESSAGE_RX, MESSAGE_TX, USB_CONNECTED};
+use crate::nvs::{FLASH_SIZE, NvsProperties, get_nvs_properties};
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::Spawner;
 use embassy_rp::usb::{self, Driver};
@@ -39,6 +41,7 @@ use {defmt_rtt as _, panic_probe as _};
 pub mod driver;
 pub mod led;
 pub mod message;
+pub mod nvs;
 
 #[global_allocator]
 static HEAP: Heap = Heap::empty();
@@ -66,13 +69,19 @@ type ScopeUsbSender = CdcSender<'static, ScopeUsbDriver>;
 type ScopeUsbReceiver = CdcReceiver<'static, ScopeUsbDriver>;
 
 #[embassy_executor::main]
-async fn main(spawner: Spawner) {
+async fn main(spawner: Spawner) -> ! {
     // Initialize the heap allocator
     unsafe {
         embedded_alloc::init!(HEAP, 1024 * 64);
     }
 
     let p = embassy_rp::init(Default::default());
+
+    // add some delay to give an attached debug probe time to parse the
+    // defmt RTT header. Reading that header might touch flash memory, which
+    // interferes with flash write operations.
+    // https://github.com/knurling-rs/defmt/pull/683
+    Timer::after_millis(10).await;
 
     // Create neopixel pio
     let Pio {
@@ -84,6 +93,10 @@ async fn main(spawner: Spawner) {
         PioWs2812::<_, _, NUM_LEDS, Grb>::new(&mut common, sm0, p.DMA_CH0, p.PIN_9, &program);
 
     let _ = spawner.spawn(led_color_task(ws2812));
+
+    // Create the NVS
+    let mut flash = embassy_rp::flash::Flash::<_, Async, FLASH_SIZE>::new(p.FLASH, p.DMA_CH2);
+    let nvs_properties = get_nvs_properties(&mut flash);
 
     // Create the USB driver, from the HAL.
     let driver = Driver::new(p.USB, Irqs);
@@ -191,6 +204,7 @@ async fn main(spawner: Spawner) {
         coupling_pins,
         sel1_pins,
         sel2_pins,
+        nvs_properties.clone(),
     ));
 
     // Initialize the ADC and frame sender
@@ -202,7 +216,7 @@ async fn main(spawner: Spawner) {
         adc::Channel::new_pin(p.PIN_27, Pull::None),
     ];
 
-    let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins));
+    let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins, nvs_properties));
 
     info!("Firmware started");
 
@@ -260,6 +274,7 @@ async fn handle_messages_task(
     mut coupling_pins: [Flex<'static>; 2],
     mut sel1_pins: [Flex<'static>; 2],
     mut sel2_pins: [Flex<'static>; 2],
+    calibration: NvsProperties,
 ) -> ! {
     let heartbeat_sender = LAST_HEARTBEAT_TIME.sender();
     let message_receiver = MESSAGE_RX.receiver();
@@ -273,7 +288,7 @@ async fn handle_messages_task(
                 heartbeat_sender.send(Instant::now());
             }
             Message::SetTriggerOptions(trigger) => {
-                set_trigger_options(&mut dac, &trigger).await;
+                set_trigger_options(&mut dac, &trigger, &calibration).await;
             }
             Message::SetChannelOptions(channel) => {
                 set_channel_options(&mut coupling_pins, &mut sel1_pins, &mut sel2_pins, &channel)
@@ -345,6 +360,7 @@ async fn set_channel_options(
 async fn set_trigger_options(
     dac: &mut Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
     trigger: &TriggerOptions,
+    calibration: &NvsProperties,
 ) {
     let dac_channel = match trigger.channel {
         ScopeChannel::A => driver::mcp47feb::DacChannel::Dac0,
@@ -382,6 +398,7 @@ async fn read_adc_task(
     mut adc: Adc<'static, adc::Async>,
     mut adc_dma: Peri<'static, peripherals::DMA_CH1>,
     mut adc_pins: [adc::Channel<'static>; 2],
+    calibration: NvsProperties,
 ) -> ! {
     let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));
     let message_sender = MESSAGE_TX.sender();
