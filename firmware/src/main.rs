@@ -5,12 +5,12 @@ extern crate alloc;
 
 use common::channel::{ChannelOptions, ScopeCoupling, ScopeGain};
 use common::frame::{FrameData, ScopeChannel};
-use common::message::{Message, VerificationMessage};
+use common::message::{CalibrationMessage, Message, VerificationMessage};
 use common::trigger::TriggerOptions;
 use defmt::{debug, error, info};
 use embassy_futures::select::{Either, select};
 use embassy_rp::adc::Adc;
-use embassy_rp::flash::{Async, ERASE_SIZE, FLASH_BASE};
+use embassy_rp::flash::{Async, ERASE_SIZE, FLASH_BASE, Flash};
 use embassy_rp::gpio::{Flex, Level, Pull};
 use embassy_rp::i2c::I2c;
 use embassy_rp::pio::{self, Pio};
@@ -25,7 +25,7 @@ use smart_leds::RGB8;
 use crate::driver::mcp47feb::Mcp47feb;
 use crate::led::{LED_RX, LedPattern, NUM_LEDS, led_color_task};
 use crate::message::{MESSAGE_RX, MESSAGE_TX, USB_CONNECTED};
-use crate::nvs::{FLASH_SIZE, NvsProperties, get_nvs_properties};
+use crate::nvs::{FLASH_SIZE, NvsProperties, get_nvs_properties, write_nvs_properties};
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::Spawner;
 use embassy_rp::usb::{self, Driver};
@@ -200,6 +200,7 @@ async fn main(spawner: Spawner) -> ! {
 
     let _ = spawner.spawn(handle_messages_task(
         dac,
+        flash,
         trigger_pin,
         coupling_pins,
         sel1_pins,
@@ -270,11 +271,12 @@ async fn heartbeat_monitor_task() -> ! {
 #[embassy_executor::task]
 async fn handle_messages_task(
     mut dac: Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
+    mut flash: Flash<'static, peripherals::FLASH, Async, FLASH_SIZE>,
     mut trigger_pin: Flex<'static>,
     mut coupling_pins: [Flex<'static>; 2],
     mut sel1_pins: [Flex<'static>; 2],
     mut sel2_pins: [Flex<'static>; 2],
-    calibration: NvsProperties,
+    mut calibration: NvsProperties,
 ) -> ! {
     let heartbeat_sender = LAST_HEARTBEAT_TIME.sender();
     let message_receiver = MESSAGE_RX.receiver();
@@ -296,6 +298,20 @@ async fn handle_messages_task(
             }
             Message::SetSampleRate(sample_rate) => {
                 sample_rate_sender.send(sample_rate);
+            }
+            Message::Calibration(calibration_message) => {
+                match calibration_message {
+                    CalibrationMessage::CalibrateCenter(channel, value) => {
+                        calibration.centers[channel as usize] = value;
+                    }
+                    CalibrationMessage::CalibrateMax(channel, value) => {
+                        calibration.maxes[channel as usize] = value;
+                    }
+                    CalibrationMessage::CalibrateMin(channel, value) => {
+                        calibration.mins[channel as usize] = value;
+                    }
+                }
+                write_nvs_properties(&mut flash, &calibration);
             }
             Message::Verification(verification_message) => match verification_message {
                 VerificationMessage::StartDacTest => {

@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 
 use crate::channel::ChannelOptions;
-use crate::frame::FrameData;
+use crate::frame::{FrameData, ScopeChannel};
 use crate::log::SerializableLogRecord;
 use crate::trigger::TriggerOptions;
 #[cfg(feature = "std")]
@@ -37,9 +37,9 @@ pub enum VerificationMessage {
 #[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub enum CalibrationMessage {
-    CalibrateCenter,
-    CalibrateMax,
-    CalibrateMin,
+    CalibrateCenter(ScopeChannel, u16),
+    CalibrateMax(ScopeChannel, u16),
+    CalibrateMin(ScopeChannel, u16),
 }
 
 #[cfg(test)]

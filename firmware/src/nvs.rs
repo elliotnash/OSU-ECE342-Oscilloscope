@@ -82,19 +82,41 @@ fn init_nvs(flash: &mut Flash<'static, FLASH, Async, FLASH_SIZE>) {
         .blocking_erase(NVS_OFFSET, FLASH_SIZE as u32)
         .expect("Failed to erase NVS");
 
-    let mut buf = [0u8; 17];
+    let mut buf = [0u8; 5];
     buf[0..4].copy_from_slice(&MAGIC_NUMBER.to_ne_bytes());
     buf[4] = VERSION;
-    buf[5..7].copy_from_slice(&DEFAULT_CENTER.to_ne_bytes());
-    buf[7..9].copy_from_slice(&DEFAULT_CENTER.to_ne_bytes());
-    buf[9..11].copy_from_slice(&DEFAULT_MAX.to_ne_bytes());
-    buf[11..13].copy_from_slice(&DEFAULT_MAX.to_ne_bytes());
-    buf[13..15].copy_from_slice(&DEFAULT_MIN.to_ne_bytes());
-    buf[15..17].copy_from_slice(&DEFAULT_MIN.to_ne_bytes());
 
     flash
         .blocking_write(NVS_OFFSET, &buf)
         .expect("Failed to write NVS defaults");
 
+    write_nvs_properties(
+        flash,
+        &NvsProperties {
+            centers: [DEFAULT_CENTER, DEFAULT_CENTER],
+            maxes: [DEFAULT_MAX, DEFAULT_MAX],
+            mins: [DEFAULT_MIN, DEFAULT_MIN],
+        },
+    );
+
     info!("NVS Initialized");
+}
+
+pub fn write_nvs_properties(
+    flash: &mut Flash<'static, FLASH, Async, FLASH_SIZE>,
+    properties: &NvsProperties,
+) {
+    let mut buf = [0u8; 12];
+    buf[0..2].copy_from_slice(&properties.centers[0].to_ne_bytes());
+    buf[2..4].copy_from_slice(&properties.centers[1].to_ne_bytes());
+    buf[4..6].copy_from_slice(&properties.maxes[0].to_ne_bytes());
+    buf[6..8].copy_from_slice(&properties.maxes[1].to_ne_bytes());
+    buf[8..10].copy_from_slice(&properties.mins[0].to_ne_bytes());
+    buf[10..12].copy_from_slice(&properties.mins[1].to_ne_bytes());
+
+    flash
+        .blocking_write(NVS_OFFSET + CENTER_LOCATION, &buf)
+        .expect("Failed to write NVS properties");
+
+    info!("NVS Properties written");
 }
