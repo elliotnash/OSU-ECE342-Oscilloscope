@@ -20,6 +20,7 @@ pub enum Message {
     SetChannelOptions(ChannelOptions),
     SetTriggerOptions(TriggerOptions),
     Verification(VerificationMessage),
+    Calibration(CalibrationMessage),
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
@@ -30,6 +31,15 @@ pub enum VerificationMessage {
     StartDacTest,
     SetGpioHigh,
     SetGpioLow,
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
+#[cfg_attr(feature = "std", derive(Type))]
+pub enum CalibrationMessage {
+    CalibrateCenter,
+    CalibrateMax,
+    CalibrateMin,
 }
 
 #[cfg(test)]
