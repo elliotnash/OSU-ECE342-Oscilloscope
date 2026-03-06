@@ -31,6 +31,58 @@ export const Route = createFileRoute('/home')({
   component: Index,
 })
 
+type ChannelStats = {
+  name: string;
+  color: string;
+  amplitude: number;
+  center: number;
+  stdDev: number;
+};
+
+function StatsBar({ stats }: { stats: ChannelStats[] }) {
+  if (stats.length === 0) {
+    return (
+      <div className="bg-secondary/25 border rounded-xl p-4 flex items-center justify-center text-fg/50 text-sm">
+        No channels enabled
+      </div>
+    );
+  }
+  return (
+    <div className="bg-secondary/25 border rounded-xl p-4">
+      <div className="flex flex-col gap-2">
+        {stats.map((s) => (
+          <div
+            key={s.name}
+            className="flex flex-wrap items-center gap-4 gap-y-1 text-sm"
+          >
+            <div className="flex items-center gap-2 min-w-16">
+              <div
+                className="w-3 h-0.5 shrink-0 rounded-full"
+                style={{ backgroundColor: s.color }}
+              />
+              <span className="font-medium text-fg/90">{s.name}</span>
+            </div>
+            <div className="flex-1 min-w-0 flex justify-evenly gap-6 text-fg/80">
+              <span className="shrink-0">
+                Amplitude{" "}
+                <span className="tabular-nums">{s.amplitude.toPrecision(4)}V</span>
+              </span>
+              <span className="shrink-0">
+                Center{" "}
+                <span className="tabular-nums">{s.center.toPrecision(4)}V</span>
+              </span>
+              <span className="shrink-0">
+                Std Dev{" "}
+                <span className="tabular-nums">{s.stdDev.toPrecision(4)}V</span>
+              </span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 const defaultScale = {
   xDomain: [0, 1] as [number, number],
   yDomain: [-1, 1] as [number, number],
@@ -66,6 +118,11 @@ function Index() {
   const [channelVoltageScaleConfig, setChannelVoltageScaleConfig] = useState<
     Record<ScopeChannel, number>
   >({ A: 1.5, B: 1.5 });
+
+  const [channelStats, setChannelStats] = useState<ChannelStats[]>([]);
+  const handleStatsChange = useCallback((stats: ChannelStats[]) => {
+    setChannelStats(stats);
+  }, []);
 
   useEffect(() => {
     setChannelVoltageScale((prev) => {
@@ -160,6 +217,7 @@ function Index() {
                 channelVoltageScale={channelVoltageScale}
                 onChannelVoltageScaleChange={handleChannelVoltageScaleChange}
                 onVoltageScaleFromFrames={setChannelVoltageScaleConfig}
+                onStatsChange={handleStatsChange}
               />
             </div>
             <div className="flex gap-3 items-stretch px-2 py-2 shrink-0 min-h-0">
@@ -187,7 +245,7 @@ function Index() {
               />
             </div>
           </div>
-          <div className="bg-secondary/25 border rounded-xl p-4"></div>
+          <StatsBar stats={channelStats} />
         </div>
           <ScrollArea scrollFade className="landscape:w-max portrait:h-max bg-secondary/25 border rounded-xl">
             <div className="flex flex-row p-4 landscape:flex-col w-max h-max gap-4">
@@ -569,6 +627,23 @@ function timeAxisPrefix(stepMs: number): { factor: number; unit: string } {
   return TIME_PREFIXES[3];                       // s
 }
 
+function computeChannelStats(
+  points: PlotPoint[],
+): { amplitude: number; center: number; stdDev: number } {
+  if (points.length === 0) {
+    return { amplitude: 0, center: 0, stdDev: 0 };
+  }
+  const ys = points.map(getY);
+  const min = Math.min(...ys);
+  const max = Math.max(...ys);
+  const center = ys.reduce((a, b) => a + b, 0) / ys.length;
+  const variance =
+    ys.reduce((acc, y) => acc + (y - center) ** 2, 0) / ys.length;
+  const stdDev = Math.sqrt(variance);
+  const amplitude = (max - min) / 2;
+  return { amplitude, center, stdDev };
+}
+
 function alignDomainToGrid(
   dataMin: number,
   dataMax: number,
@@ -592,8 +667,9 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   channelVoltageScale: Record<ScopeChannel, { min: number; max: number }>;
   onChannelVoltageScaleChange: (channel: ScopeChannel, min: number, max: number) => void;
   onVoltageScaleFromFrames?: (config: Record<ScopeChannel, number>) => void;
+  onStatsChange?: (stats: ChannelStats[]) => void;
 }>(function Plot(
-  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames },
+  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames, onStatsChange },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -603,6 +679,7 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   const frameTimesRef = useRef<number[]>([]);
   const [frameRate, setFrameRate] = useState(0);
   const suggestedChannelScalesRef = useRef<Record<ScopeChannel, { min: number; max: number }> | null>(null);
+  const statsRef = useRef<ChannelStats[]>([]);
   const initialScaleSetRef = useRef(false);
   const [chartTheme, setChartTheme] = useState({
     bg: "transparent",
@@ -672,6 +749,14 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     };
     onVoltageScaleFromFrames(config);
   }, [frames.A?.voltage_scale, frames.B?.voltage_scale, onVoltageScaleFromFrames]);
+
+  useEffect(() => {
+    // Stats are computed in render and stored in statsRef; run when data or visibility changes
+    void frames;
+    void channelVisibility;
+    void mathState;
+    onStatsChange?.(statsRef.current);
+  }, [frames, channelVisibility, mathState, onStatsChange]);
 
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
 
@@ -766,6 +851,31 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     suggestedChannelScales.B = shared;
   }
   suggestedChannelScalesRef.current = suggestedChannelScales;
+
+  // Build stats for StatsBar (channels + math)
+  const channelStatsList: ChannelStats[] = [];
+  for (const { channel, points } of plotDataByChannel) {
+    if (points.length === 0) continue;
+    const { amplitude, center, stdDev } = computeChannelStats(points);
+    channelStatsList.push({
+      name: `Channel ${channel}`,
+      color: chartTheme.series[channel],
+      amplitude,
+      center,
+      stdDev,
+    });
+  }
+  if (mathPoints && mathPoints.length > 0) {
+    const { amplitude, center, stdDev } = computeChannelStats(mathPoints);
+    channelStatsList.push({
+      name: "Math",
+      color: mathColor,
+      amplitude,
+      center,
+      stdDev,
+    });
+  }
+  statsRef.current = channelStatsList;
 
   let xDomain: [number, number] = defaultScale.xDomain;
   let yDomain: [number, number] = defaultScale.yDomain;
