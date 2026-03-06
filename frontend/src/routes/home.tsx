@@ -1,6 +1,6 @@
 import { Button } from "~/components/button";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useRef, forwardRef, useImperativeHandle } from "react";
 
 import { extent } from "@visx/vendor/d3-array";
 import { scaleLinear } from "@visx/scale";
@@ -31,7 +31,15 @@ export const Route = createFileRoute('/home')({
   component: Index,
 })
 
+const defaultScale = {
+  xDomain: [0, 1] as [number, number],
+  yDomain: [-1, 1] as [number, number],
+  xStep: 0.1,
+  yStep: 0.5,
+};
+
 function Index() {
+  const plotRef = useRef<{ captureScale: () => void } | null>(null);
   const [channelVisibility, setChannelVisibility] = useState<Record<ScopeChannel, boolean>>({
     A: true,
     B: true,
@@ -103,6 +111,7 @@ function Index() {
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
           <div className="flex-1 min-w-0 min-h-0 w-full h-full flex">
             <Plot
+              ref={plotRef}
               channelVisibility={channelVisibility}
               channelAttenuation={channelAttenuation}
               mathState={mathState}
@@ -121,6 +130,7 @@ function Index() {
                 onMathEnabledChange={handleMathEnabledChange}
                 onMathModeChange={handleMathModeChange}
                 onMathPresetChange={handleMathPresetChange}
+                onAutoScale={() => plotRef.current?.captureScale()}
               />
             </div>
           </ScrollArea>
@@ -140,6 +150,7 @@ function ControlPanel({
   onMathEnabledChange,
   onMathModeChange,
   onMathPresetChange,
+  onAutoScale,
 }: {
   channelVisibility: Record<ScopeChannel, boolean>;
   channelAttenuation: Record<ScopeChannel, Key>;
@@ -149,6 +160,7 @@ function ControlPanel({
   onMathEnabledChange: (enabled: boolean) => void;
   onMathModeChange: (mode: "preset" | "custom") => void;
   onMathPresetChange: (presetId: string) => void;
+  onAutoScale: () => void;
 }) {
   return (
     <>
@@ -170,7 +182,7 @@ function ControlPanel({
           onChannelAttenuationChange("B", attenuation)
         }
       />
-      <CommondCard />
+      <CommondCard onAutoScale={onAutoScale} />
       <MathChannelCard
         state={mathState}
         onEnabledChange={onMathEnabledChange}
@@ -294,7 +306,7 @@ const sampleRateOptions = [
   { id: "8", value: 10_000, label: "10 kHz" },
 ]
 
-function CommondCard() {
+function CommondCard({ onAutoScale }: { onAutoScale: () => void }) {
   const [sampleRate, setSampleRate] = useState(sampleRateOptions[0]);
   const handleSampleRateChange = useCallback((key: Key | null) => {
     if (key) {
@@ -309,8 +321,8 @@ function CommondCard() {
       <CardHeader>
         <CardTitle>All Channels</CardTitle>
       </CardHeader>
-      <CardContent>
-        <div className="flex flex-col gap-2">
+      <CardContent className="h-full">
+        <div className="flex flex-col gap-2 h-full justify-between">
           <div className="flex flex-row gap-4">
             <div className="w-full">
               <Label>Sample Rate</Label>
@@ -322,6 +334,7 @@ function CommondCard() {
               </Select>
             </div>
           </div>
+          <Button onPress={onAutoScale}>Auto Scale</Button>
         </div>
       </CardContent>
     </Card>
@@ -484,21 +497,30 @@ function alignDomainToGrid(
   return { domain: [domainMin, domainMax], step };
 }
 
-export default function Plot({
-  channelVisibility,
-  channelAttenuation,
-  mathState,
-}: {
+type FixedScale = {
+  xDomain: [number, number];
+  yDomain: [number, number];
+  xStep: number;
+  yStep: number;
+};
+
+export const Plot = forwardRef<{ captureScale: () => void }, {
   channelVisibility: Record<ScopeChannel, boolean>;
   channelAttenuation: Record<ScopeChannel, Key>;
   mathState: MathState;
-}) {
+}>(function Plot(
+  { channelVisibility, channelAttenuation, mathState },
+  ref,
+) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
   const latestFramesRef = useRef<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
   const channelVisibilityRef = useRef(channelVisibility);
   const frameTimesRef = useRef<number[]>([]);
   const [frameRate, setFrameRate] = useState(0);
+  const [fixedScale, setFixedScale] = useState<FixedScale | null>(null);
+  const suggestedScaleRef = useRef<FixedScale | null>(null);
+  const initialScaleSetRef = useRef(false);
   const [chartTheme, setChartTheme] = useState({
     bg: "transparent",
     card: "rgba(255, 255, 255, 0.05)",
@@ -522,7 +544,6 @@ export default function Plot({
     const bg = styles.getPropertyValue("--bg").trim();
     const fg = styles.getPropertyValue("--fg").trim();
     const border = styles.getPropertyValue("--border").trim();
-    const primary = styles.getPropertyValue("--primary").trim();
     const secondary = styles.getPropertyValue("--secondary").trim();
 
     setChartTheme((prev) => ({
@@ -638,10 +659,10 @@ export default function Plot({
     ...(mathPoints ?? []),
   ];
 
-  let xDomain: [number, number] = [0, 1];
-  let yDomain: [number, number] = [-1, 1];
-  let xStep = 0.1;
-  let yStep = 0.5;
+  let xDomain: [number, number] = defaultScale.xDomain;
+  let yDomain: [number, number] = defaultScale.yDomain;
+  let xStep = defaultScale.xStep;
+  let yStep = defaultScale.yStep;
 
   if (allPoints.length > 0) {
     const xDataExtent = extent(allPoints, getX) as [number, number];
@@ -657,7 +678,34 @@ export default function Plot({
     yDomain = yAligned.domain;
     xStep = xAligned.step;
     yStep = yAligned.step;
+    suggestedScaleRef.current = { xDomain, yDomain, xStep, yStep };
+  } else {
+    suggestedScaleRef.current = null;
   }
+
+  // Set initial scale once when we first receive data (suggestedScaleRef is updated in render)
+  useEffect(() => {
+    if (initialScaleSetRef.current) return;
+    const hasData = Object.keys(frames).length > 0;
+    if (hasData && suggestedScaleRef.current) {
+      setFixedScale(suggestedScaleRef.current);
+      initialScaleSetRef.current = true;
+    }
+  }, [frames]);
+
+  useImperativeHandle(ref, () => ({
+    captureScale() {
+      if (suggestedScaleRef.current) {
+        setFixedScale(suggestedScaleRef.current);
+      }
+    },
+  }), []);
+
+  const scale = fixedScale ?? defaultScale;
+  const axisXDomain = scale.xDomain;
+  const axisYDomain = scale.yDomain;
+  const axisXStep = scale.xStep;
+  const axisYStep = scale.yStep;
 
   // commands
 
@@ -730,9 +778,9 @@ export default function Plot({
     },
     xAxis: {
       type: "value",
-      min: xDomain[0],
-      max: xDomain[1],
-      interval: xStep,
+      min: axisXDomain[0],
+      max: axisXDomain[1],
+      interval: axisXStep,
       axisLine: {
         lineStyle: {
           color: chartTheme.axisLine,
@@ -770,9 +818,9 @@ export default function Plot({
     },
     yAxis: {
       type: "value",
-      min: yDomain[0],
-      max: yDomain[1],
-      interval: yStep,
+      min: axisYDomain[0],
+      max: axisYDomain[1],
+      interval: axisYStep,
       axisLine: {
         lineStyle: {
           color: chartTheme.axisLine,
@@ -855,4 +903,4 @@ export default function Plot({
       />
     </div>
   );
-}
+});

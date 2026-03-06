@@ -28,6 +28,9 @@ async sendChannelOptions(channelOptions: ChannelOptions) : Promise<void> {
 },
 async sendSampleRate(sampleRate: number) : Promise<void> {
     await TAURI_INVOKE("send_sample_rate", { sampleRate });
+},
+async sendCalibrationMessage(message: CalibrationMessage) : Promise<void> {
+    await TAURI_INVOKE("send_calibration_message", { message });
 }
 }
 
@@ -46,6 +49,8 @@ serialStatus: "serial-status"
 
 /** user-defined types **/
 
+export type CalibrationData = { channel: ScopeChannel; value: number }
+export type CalibrationMessage = { CalibrateCenter: CalibrationData } | { CalibrateMax: CalibrationData } | { CalibrateMin: CalibrationData }
 export type ChannelOptions = { channel: ScopeChannel; enabled: boolean; voltage_gain: ScopeGain; coupling: ScopeCoupling }
 export type Color = { red: number; green: number; blue: number; alpha: number }
 export type FrontendFrameData = { data: number[]; center: number; timestep_ms: number; voltage_scale: number; channel: ScopeChannel }
