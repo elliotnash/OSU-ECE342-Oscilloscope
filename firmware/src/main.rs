@@ -64,8 +64,8 @@ static EXECUTOR1: StaticCell<Executor> = StaticCell::new();
 const USB_PACKET_SIZE: usize = 64;
 
 pub static LAST_HEARTBEAT_TIME: Watch<CriticalSectionRawMutex, Instant, 1> = Watch::new();
-// SAMPLE_RATE is written on core 0 (handle_messages_task) and read on core 1 (read_adc_task).
 pub static SAMPLE_RATE: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
+pub static TRIGGER_OPTIONS: Watch<CriticalSectionRawMutex, TriggerOptions, 2> = Watch::new();
 
 type ScopeUsbDriver = Driver<'static, peripherals::USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -184,10 +184,12 @@ async fn main(spawner: Spawner) -> ! {
         .await
         .expect("Failed to write DAC value");
 
-    // trigger input pin
-    let mut trigger_pin = Flex::new(p.PIN_21);
-    trigger_pin.set_as_input();
-    trigger_pin.set_pull(Pull::None);
+    // trigger input pins
+    let mut trigger_pins = [Flex::new(p.PIN_21), Flex::new(p.PIN_20)];
+    for pin in trigger_pins.iter_mut() {
+        pin.set_as_input();
+        pin.set_pull(Pull::None);
+    }
 
     // Output pins
     let mut coupling_pins = [Flex::new(p.PIN_10), Flex::new(p.PIN_13)];
@@ -204,14 +206,13 @@ async fn main(spawner: Spawner) -> ! {
     }
 
     let _ = spawner.spawn(handle_messages_task(
-        dac,
         flash,
-        trigger_pin,
         coupling_pins,
         sel1_pins,
         sel2_pins,
         nvs_properties.clone(),
     ));
+    let _ = spawner.spawn(set_trigger_task(dac, nvs_properties.clone()));
 
     // Initialize the ADC and frame sender
 
@@ -222,25 +223,66 @@ async fn main(spawner: Spawner) -> ! {
         adc::Channel::new_pin(p.PIN_27, Pull::None),
     ];
 
-    let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins, nvs_properties));
+    // let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins, nvs_properties));
 
-    // spawn_core1(
-    //     p.CORE1,
-    //     unsafe { &mut *core::ptr::addr_of_mut!(CORE1_STACK) },
-    //     move || {
-    //         let executor1 = EXECUTOR1.init(Executor::new());
-    //         executor1.run(|spawner| {
-    //             spawner
-    //                 .spawn(read_adc_task(adc, adc_dma, adc_pins, nvs_properties))
-    //                 .expect("Failed to spawn read_adc_task");
-    //         });
-    //     },
-    // );
+    spawn_core1(
+        p.CORE1,
+        unsafe { &mut *core::ptr::addr_of_mut!(CORE1_STACK) },
+        move || {
+            let executor1 = EXECUTOR1.init(Executor::new());
+            executor1.run(|spawner| {
+                spawner
+                    .spawn(read_adc_task(
+                        adc,
+                        adc_dma,
+                        adc_pins,
+                        trigger_pins,
+                        nvs_properties,
+                    ))
+                    .expect("Failed to spawn read_adc_task");
+            });
+        },
+    );
+
+    // Send default trigger options
+    TRIGGER_OPTIONS.sender().send(TriggerOptions {
+        channel: ScopeChannel::A,
+        enabled: false,
+        value: 128,
+    });
 
     info!("Firmware started");
 
     loop {
         Timer::after_secs(1).await;
+    }
+}
+
+#[embassy_executor::task]
+async fn set_trigger_task(
+    mut dac: Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
+    calibration: NvsProperties,
+) -> ! {
+    let mut trigger_options_receiver = TRIGGER_OPTIONS
+        .receiver()
+        .expect("Failed to get trigger options receiver");
+    loop {
+        let trigger = trigger_options_receiver.changed().await;
+
+        if trigger.enabled {
+            info!(
+                "Setting trigger to channel {} with value {}",
+                trigger.channel, trigger.value
+            );
+            let dac_channel = match trigger.channel {
+                ScopeChannel::A => driver::mcp47feb::DacChannel::Dac0,
+                ScopeChannel::B => driver::mcp47feb::DacChannel::Dac1,
+            };
+
+            dac.write_dac(dac_channel, trigger.value as u16)
+                .await
+                .expect("Failed to write DAC value");
+        }
     }
 }
 
@@ -288,9 +330,7 @@ async fn heartbeat_monitor_task() -> ! {
 
 #[embassy_executor::task]
 async fn handle_messages_task(
-    mut dac: Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
     mut flash: Flash<'static, peripherals::FLASH, Async, FLASH_SIZE>,
-    mut trigger_pin: Flex<'static>,
     mut coupling_pins: [Flex<'static>; 2],
     mut sel1_pins: [Flex<'static>; 2],
     mut sel2_pins: [Flex<'static>; 2],
@@ -308,7 +348,7 @@ async fn handle_messages_task(
                 heartbeat_sender.send(Instant::now());
             }
             Message::SetTriggerOptions(trigger) => {
-                set_trigger_options(&mut dac, &trigger, &calibration).await;
+                TRIGGER_OPTIONS.sender().send(trigger);
             }
             Message::SetChannelOptions(channel) => {
                 set_channel_options(&mut coupling_pins, &mut sel1_pins, &mut sel2_pins, &channel)
@@ -332,9 +372,6 @@ async fn handle_messages_task(
                 write_nvs_properties(&mut flash, &calibration);
             }
             Message::Verification(verification_message) => match verification_message {
-                VerificationMessage::StartDacTest => {
-                    start_dac_test(&mut dac, &mut trigger_pin).await;
-                }
                 VerificationMessage::SetGpioHigh => {
                     for pin in coupling_pins
                         .iter_mut()
@@ -392,21 +429,6 @@ async fn set_channel_options(
     });
 }
 
-async fn set_trigger_options(
-    dac: &mut Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
-    trigger: &TriggerOptions,
-    calibration: &NvsProperties,
-) {
-    let dac_channel = match trigger.channel {
-        ScopeChannel::A => driver::mcp47feb::DacChannel::Dac0,
-        ScopeChannel::B => driver::mcp47feb::DacChannel::Dac1,
-    };
-
-    dac.write_dac(dac_channel, trigger.value as u16)
-        .await
-        .expect("Failed to write DAC value");
-}
-
 async fn start_dac_test(
     dac: &mut Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
     trigger_pin: &mut Flex<'static>,
@@ -433,6 +455,7 @@ async fn read_adc_task(
     mut adc: Adc<'static, adc::Async>,
     mut adc_dma: Peri<'static, peripherals::DMA_CH1>,
     mut adc_pins: [adc::Channel<'static>; 2],
+    mut trigger_pins: [Flex<'static>; 2],
     calibration: NvsProperties,
 ) -> ! {
     let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));
@@ -440,12 +463,22 @@ async fn read_adc_task(
     let mut sample_rate_receiver = SAMPLE_RATE
         .receiver()
         .expect("Failed to get sample rate receiver");
+    let mut trigger_options_receiver = TRIGGER_OPTIONS
+        .receiver()
+        .expect("Failed to get trigger options receiver");
     let mut sample_rate = 250_000;
     const BLOCK_SIZE: usize = 1000;
     const NUM_CHANNELS: usize = 2;
     loop {
         // Send frames at 60 Hz
         frame_ticker.next().await;
+
+        let trigger_options = trigger_options_receiver.get().await;
+        if trigger_options.enabled {
+            trigger_pins[trigger_options.channel as usize]
+                .wait_for_falling_edge()
+                .await;
+        }
 
         // Don't send frames if there's a backlog
         if message_sender.len() >= 2 {
@@ -471,7 +504,7 @@ async fn read_adc_task(
             center: calibration.centers[0],
             voltage_scale: 6.6,
             channel: ScopeChannel::A,
-            timestep_ms: 1.0 / (sample_rate as f32 * 1000.0), // This should be timestep of 200kHz
+            timestep_ms: 1000.0 / (sample_rate as f32),
         };
         let _ = message_sender.try_send(Message::Frame(ch_a_frame));
 
@@ -481,7 +514,7 @@ async fn read_adc_task(
             center: calibration.centers[1],
             voltage_scale: 6.6,
             channel: ScopeChannel::B,
-            timestep_ms: 1.0 / (sample_rate as f32 * 1000.0), // This should be timestep of 200kHz
+            timestep_ms: 1000.0 / (sample_rate as f32),
         };
         let _ = message_sender.try_send(Message::Frame(ch_b_frame));
     }
