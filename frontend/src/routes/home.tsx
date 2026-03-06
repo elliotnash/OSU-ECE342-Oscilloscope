@@ -25,6 +25,7 @@ import { ScrollArea } from "~/components/scroll-area";
 import { Switch } from "~/components/switch";
 import { Tabs, Tab, TabList, TabPanel } from "~/components/tabs";
 import { Input } from "~/components/input";
+import { VoltageScaleSlider } from "~/components/voltage-scale-slider";
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -54,6 +55,47 @@ function Index() {
     mode: "preset",
     presetId: mathChannelPresets[0]?.id ?? "1",
   });
+
+  const [channelVoltageScale, setChannelVoltageScale] = useState<
+    Record<ScopeChannel, { min: number; max: number }>
+  >({
+    A: { min: -1, max: 1 },
+    B: { min: -1, max: 1 },
+  });
+
+  const [channelVoltageScaleConfig, setChannelVoltageScaleConfig] = useState<
+    Record<ScopeChannel, number>
+  >({ A: 1.5, B: 1.5 });
+
+  useEffect(() => {
+    setChannelVoltageScale((prev) => {
+      const clampChannel = (ch: ScopeChannel) => {
+        const vs = channelVoltageScaleConfig[ch];
+        const half = vs > 0 ? vs / 2 : 0.75;
+        const minVal = -half;
+        const maxVal = half;
+        const minRange = vs / 20;
+        let newMin = Math.max(minVal, Math.min(prev[ch].min, maxVal - minRange));
+        let newMax = Math.min(maxVal, Math.max(prev[ch].max, newMin + minRange));
+        if (newMax - newMin < minRange) {
+          newMax = Math.min(maxVal, newMin + minRange);
+          newMin = Math.max(minVal, newMax - minRange);
+        }
+        return { min: newMin, max: newMax };
+      };
+      return { A: clampChannel("A"), B: clampChannel("B") };
+    });
+  }, [channelVoltageScaleConfig]);
+
+  const handleChannelVoltageScaleChange = useCallback(
+    (channel: ScopeChannel, min: number, max: number) => {
+      setChannelVoltageScale((prev) => ({
+        ...prev,
+        [channel]: { min, max },
+      }));
+    },
+    [],
+  );
 
   const handleChannelEnabledChange = useCallback((channel: ScopeChannel, enabled: boolean) => {
     setChannelVisibility((prev) => ({
@@ -109,12 +151,41 @@ function Index() {
       <div className="flex-1 min-h-0 overflow-auto flex flex-col landscape:flex-row p-4 gap-4 landscape:gap-6">
         <div className="flex-1 flex flex-col min-w-0 min-h-0 w-full h-full overflow-hidden">
           <div className="flex-1 min-w-0 min-h-0 w-full h-full flex">
-            <Plot
-              ref={plotRef}
-              channelVisibility={channelVisibility}
-              channelAttenuation={channelAttenuation}
-              mathState={mathState}
-            />
+            <div className="flex-1 min-w-0 min-h-0">
+              <Plot
+                ref={plotRef}
+                channelVisibility={channelVisibility}
+                channelAttenuation={channelAttenuation}
+                mathState={mathState}
+                channelVoltageScale={channelVoltageScale}
+                onChannelVoltageScaleChange={handleChannelVoltageScaleChange}
+                onVoltageScaleFromFrames={setChannelVoltageScaleConfig}
+              />
+            </div>
+            <div className="flex gap-3 items-stretch px-2 py-2 shrink-0 min-h-0">
+              <VoltageScaleSlider
+                channel="A"
+                voltageScale={channelVoltageScaleConfig.A}
+                min={channelVoltageScale.A.min}
+                max={channelVoltageScale.A.max}
+                onChange={(min, max) =>
+                  handleChannelVoltageScaleChange("A", min, max)
+                }
+                color="rgb(190, 114, 250)"
+                disabled={!channelVisibility.A}
+              />
+              <VoltageScaleSlider
+                channel="B"
+                voltageScale={channelVoltageScaleConfig.B}
+                min={channelVoltageScale.B.min}
+                max={channelVoltageScale.B.max}
+                onChange={(min, max) =>
+                  handleChannelVoltageScaleChange("B", min, max)
+                }
+                color="rgb(244, 50, 100)"
+                disabled={!channelVisibility.B}
+              />
+            </div>
           </div>
           <div className="bg-secondary/25 border rounded-xl p-4"></div>
         </div>
@@ -507,8 +578,11 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   channelVisibility: Record<ScopeChannel, boolean>;
   channelAttenuation: Record<ScopeChannel, Key>;
   mathState: MathState;
+  channelVoltageScale: Record<ScopeChannel, { min: number; max: number }>;
+  onChannelVoltageScaleChange: (channel: ScopeChannel, min: number, max: number) => void;
+  onVoltageScaleFromFrames?: (config: Record<ScopeChannel, number>) => void;
 }>(function Plot(
-  { channelVisibility, channelAttenuation, mathState },
+  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -519,6 +593,7 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   const [frameRate, setFrameRate] = useState(0);
   const [fixedScale, setFixedScale] = useState<FixedScale | null>(null);
   const suggestedScaleRef = useRef<FixedScale | null>(null);
+  const suggestedChannelScalesRef = useRef<Record<ScopeChannel, { min: number; max: number }> | null>(null);
   const initialScaleSetRef = useRef(false);
   const [chartTheme, setChartTheme] = useState({
     bg: "transparent",
@@ -579,6 +654,15 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     rafId = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(rafId);
   }, []);
+
+  useEffect(() => {
+    if (!onVoltageScaleFromFrames) return;
+    const config: Record<ScopeChannel, number> = {
+      A: frames.A?.voltage_scale ?? 1.5,
+      B: frames.B?.voltage_scale ?? 1.5,
+    };
+    onVoltageScaleFromFrames(config);
+  }, [frames.A?.voltage_scale, frames.B?.voltage_scale, onVoltageScaleFromFrames]);
 
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };
 
@@ -647,6 +731,25 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     ...(mathPoints ?? []),
   ];
 
+  // Update suggested per-channel scales for Auto Scale
+  const channelOrderForScale: ScopeChannel[] = ["A", "B"];
+  const suggestedChannelScales: Record<ScopeChannel, { min: number; max: number }> = {
+    A: channelVoltageScale.A,
+    B: channelVoltageScale.B,
+  };
+  for (const ch of channelOrderForScale) {
+    const entry = plotDataByChannel.find((e) => e.channel === ch);
+    if (entry && entry.points.length > 0) {
+      const yMin = Math.min(...entry.points.map(getY));
+      const yMax = Math.max(...entry.points.map(getY));
+      const maxAbs = Math.max(Math.abs(yMin), Math.abs(yMax));
+      const aligned =
+        maxAbs > 0 ? alignDomainToGrid(-maxAbs, maxAbs) : { domain: [-1, 1] as [number, number] };
+      suggestedChannelScales[ch] = { min: aligned.domain[0], max: aligned.domain[1] };
+    }
+  }
+  suggestedChannelScalesRef.current = suggestedChannelScales;
+
   let xDomain: [number, number] = defaultScale.xDomain;
   let yDomain: [number, number] = defaultScale.yDomain;
   let xStep = defaultScale.xStep;
@@ -686,14 +789,28 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
       if (suggestedScaleRef.current) {
         setFixedScale(suggestedScaleRef.current);
       }
+      if (suggestedChannelScalesRef.current) {
+        const scales = suggestedChannelScalesRef.current;
+        onChannelVoltageScaleChange("A", scales.A.min, scales.A.max);
+        onChannelVoltageScaleChange("B", scales.B.min, scales.B.max);
+      }
     },
-  }), []);
+  }), [onChannelVoltageScaleChange]);
 
   const scale = fixedScale ?? defaultScale;
   const axisXDomain = scale.xDomain;
-  const axisYDomain = scale.yDomain;
   const axisXStep = scale.xStep;
-  const axisYStep = scale.yStep;
+
+  const axisYStepA = alignDomainToGrid(
+    channelVoltageScale.A.min,
+    channelVoltageScale.A.max,
+    8,
+  ).step;
+  const axisYStepB = alignDomainToGrid(
+    channelVoltageScale.B.min,
+    channelVoltageScale.B.max,
+    8,
+  ).step;
 
   // commands
 
@@ -804,56 +921,73 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
         },
       },
     },
-    yAxis: {
-      type: "value",
-      min: axisYDomain[0],
-      max: axisYDomain[1],
-      interval: axisYStep,
-      axisLine: {
-        lineStyle: {
-          color: chartTheme.axisLine,
+    yAxis: [
+      {
+        type: "value",
+        min: channelVoltageScale.A.min,
+        max: channelVoltageScale.A.max,
+        interval: axisYStepA,
+        position: "left",
+        axisLine: {
+          lineStyle: { color: chartTheme.series.A },
         },
-      },
-      axisLabel: {
-        color: chartTheme.axisLabel,
-        formatter: (value: number) => {
-          if (!Number.isFinite(value)) return "";
-          // 4 significant figures, avoid floating-point noise like 0.9999999999
-          return Number(value.toPrecision(4)).toString();
+        axisLabel: {
+          color: chartTheme.axisLabel,
+          formatter: (value: number) =>
+            Number.isFinite(value) ? Number(value.toPrecision(4)).toString() : "",
         },
-      },
-      axisPointer: {
-        lineStyle: {
-          color: chartTheme.axisLine,
-        },
-        label: {
-          formatter: (params: { value: number | string }) => {
-            const value = params.value;
-            if (typeof value === "number" && Number.isFinite(value)) {
-              return Number(value.toPrecision(4)).toString();
-            }
-            return value?.toString() || "";
+        axisPointer: {
+          lineStyle: { color: chartTheme.axisLine },
+          label: {
+            formatter: (params: { value: number | string }) =>
+              typeof params.value === "number" && Number.isFinite(params.value)
+                ? Number(params.value.toPrecision(4)).toString()
+                : String(params.value ?? ""),
           },
         },
-      },
-      splitLine: {
-        show: true,
-        lineStyle: {
-          color: chartTheme.gridLine,
-          width: 1,
+        splitLine: {
+          show: true,
+          lineStyle: { color: chartTheme.gridLine, width: 1 },
         },
       },
-    },
+      {
+        type: "value",
+        min: channelVoltageScale.B.min,
+        max: channelVoltageScale.B.max,
+        interval: axisYStepB,
+        position: "right",
+        axisLine: {
+          lineStyle: { color: chartTheme.series.B },
+        },
+        axisLabel: {
+          color: chartTheme.axisLabel,
+          formatter: (value: number) =>
+            Number.isFinite(value) ? Number(value.toPrecision(4)).toString() : "",
+        },
+        axisPointer: {
+          lineStyle: { color: chartTheme.axisLine },
+          label: {
+            formatter: (params: { value: number | string }) =>
+              typeof params.value === "number" && Number.isFinite(params.value)
+                ? Number(params.value.toPrecision(4)).toString()
+                : String(params.value ?? ""),
+          },
+        },
+        splitLine: { show: false },
+      },
+    ],
     series: [
       ...channelOrder.map((channel) => {
         const entry = plotDataByChannel.find((e) => e.channel === channel);
         const data = entry
           ? entry.points.map((point) => [point.x, point.y])
           : [];
+        const yAxisIndex = channel === "A" ? 0 : 1;
         return {
           type: "line",
           name: `Channel ${channel}`,
           data,
+          yAxisIndex,
           showSymbol: false,
           symbol: "none",
           emphasis: { disabled: true },
@@ -867,6 +1001,7 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
         type: "line",
         name: "Math",
         data: mathPoints ? mathPoints.map((point) => [point.x, point.y]) : [],
+        yAxisIndex: 0,
         showSymbol: false,
         symbol: "none",
         emphasis: { disabled: true },
