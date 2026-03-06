@@ -551,6 +551,24 @@ type PlotPoint = { x: number; y: number };
 const getX = (d: PlotPoint) => d.x;
 const getY = (d: PlotPoint) => d.y;
 
+// Time axis is in ms; pick metric prefix so tick values are readable (e.g. 10, 20, 30 μs)
+const TIME_PREFIXES = [
+  { factor: 1e6, unit: "ns" },
+  { factor: 1e3, unit: "μs" },
+  { factor: 1, unit: "ms" },
+  { factor: 1e-3, unit: "s" },
+] as const;
+
+function timeAxisPrefix(stepMs: number): { factor: number; unit: string } {
+  if (!Number.isFinite(stepMs) || stepMs <= 0) return TIME_PREFIXES[2];
+  const stepScaled = stepMs * 1e3; // step in μs for comparison
+  if (stepScaled < 0.1) return TIME_PREFIXES[0]; // ns
+  if (stepScaled < 1) return TIME_PREFIXES[1];   // μs
+  if (stepMs < 1) return TIME_PREFIXES[1];      // μs
+  if (stepMs < 1e3) return TIME_PREFIXES[2];   // ms
+  return TIME_PREFIXES[3];                       // s
+}
+
 function alignDomainToGrid(
   dataMin: number,
   dataMax: number,
@@ -566,13 +584,6 @@ function alignDomainToGrid(
   const domainMax = Math.ceil(dataMax / step) * step;
   return { domain: [domainMin, domainMax], step };
 }
-
-type FixedScale = {
-  xDomain: [number, number];
-  yDomain: [number, number];
-  xStep: number;
-  yStep: number;
-};
 
 export const Plot = forwardRef<{ captureScale: () => void }, {
   channelVisibility: Record<ScopeChannel, boolean>;
@@ -591,8 +602,6 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   const channelVisibilityRef = useRef(channelVisibility);
   const frameTimesRef = useRef<number[]>([]);
   const [frameRate, setFrameRate] = useState(0);
-  const [fixedScale, setFixedScale] = useState<FixedScale | null>(null);
-  const suggestedScaleRef = useRef<FixedScale | null>(null);
   const suggestedChannelScalesRef = useRef<Record<ScopeChannel, { min: number; max: number }> | null>(null);
   const initialScaleSetRef = useRef(false);
   const [chartTheme, setChartTheme] = useState({
@@ -731,22 +740,30 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     ...(mathPoints ?? []),
   ];
 
-  // Update suggested per-channel scales for Auto Scale
-  const channelOrderForScale: ScopeChannel[] = ["A", "B"];
+  // Suggested scales for Auto Scale: combined range for both channels, centered, min range = voltage_scale/20
   const suggestedChannelScales: Record<ScopeChannel, { min: number; max: number }> = {
     A: channelVoltageScale.A,
     B: channelVoltageScale.B,
   };
-  for (const ch of channelOrderForScale) {
-    const entry = plotDataByChannel.find((e) => e.channel === ch);
-    if (entry && entry.points.length > 0) {
-      const yMin = Math.min(...entry.points.map(getY));
-      const yMax = Math.max(...entry.points.map(getY));
-      const maxAbs = Math.max(Math.abs(yMin), Math.abs(yMax));
-      const aligned =
-        maxAbs > 0 ? alignDomainToGrid(-maxAbs, maxAbs) : { domain: [-1, 1] as [number, number] };
-      suggestedChannelScales[ch] = { min: aligned.domain[0], max: aligned.domain[1] };
-    }
+  if (allPoints.length > 0) {
+    const combinedYMin = Math.min(...allPoints.map(getY));
+    const combinedYMax = Math.max(...allPoints.map(getY));
+    const center = (combinedYMin + combinedYMax) / 2;
+    const dataSpan = combinedYMax - combinedYMin;
+    const voltageScaleForMin = Math.max(
+      frames.A?.voltage_scale ?? 1.5,
+      frames.B?.voltage_scale ?? 1.5,
+    );
+    const minRange = voltageScaleForMin / 20;
+    const range = Math.max(dataSpan, minRange);
+    const halfRange = range / 2;
+    const low = center - halfRange;
+    const high = center + halfRange;
+    const aligned =
+      range > 0 ? alignDomainToGrid(low, high) : { domain: [center - 0.5, center + 0.5] as [number, number] };
+    const shared = { min: aligned.domain[0], max: aligned.domain[1] };
+    suggestedChannelScales.A = shared;
+    suggestedChannelScales.B = shared;
   }
   suggestedChannelScalesRef.current = suggestedChannelScales;
 
@@ -769,26 +786,22 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     yDomain = yAligned.domain;
     xStep = xAligned.step;
     yStep = yAligned.step;
-    suggestedScaleRef.current = { xDomain, yDomain, xStep, yStep };
-  } else {
-    suggestedScaleRef.current = null;
   }
 
-  // Set initial scale once when we first receive data (suggestedScaleRef is updated in render)
+  // Set initial channel scale once when we first receive data
   useEffect(() => {
     if (initialScaleSetRef.current) return;
     const hasData = Object.keys(frames).length > 0;
-    if (hasData && suggestedScaleRef.current) {
-      setFixedScale(suggestedScaleRef.current);
+    if (hasData && suggestedChannelScalesRef.current) {
+      const s = suggestedChannelScalesRef.current;
+      onChannelVoltageScaleChange("A", s.A.min, s.A.max);
+      onChannelVoltageScaleChange("B", s.B.min, s.B.max);
       initialScaleSetRef.current = true;
     }
-  }, [frames]);
+  }, [frames, onChannelVoltageScaleChange]);
 
   useImperativeHandle(ref, () => ({
     captureScale() {
-      if (suggestedScaleRef.current) {
-        setFixedScale(suggestedScaleRef.current);
-      }
       if (suggestedChannelScalesRef.current) {
         const scales = suggestedChannelScalesRef.current;
         onChannelVoltageScaleChange("A", scales.A.min, scales.A.max);
@@ -797,9 +810,10 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     },
   }), [onChannelVoltageScaleChange]);
 
-  const scale = fixedScale ?? defaultScale;
-  const axisXDomain = scale.xDomain;
-  const axisXStep = scale.xStep;
+  // Time axis always follows current data extent (timestep_ms / sample rate) so we always see every point
+  const axisXDomain = xDomain;
+  const axisXStep = xStep;
+  const timePrefix = timeAxisPrefix(axisXStep);
 
   const axisYStepA = alignDomainToGrid(
     channelVoltageScale.A.min,
@@ -854,11 +868,11 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
         const xRaw = items[0].axisValue;
         const x =
           typeof xRaw === "number" && Number.isFinite(xRaw)
-            ? Number(xRaw.toPrecision(4))
+            ? Number((xRaw * timePrefix.factor).toPrecision(4))
             : xRaw;
 
         const lines = [
-          `<div>t: ${x}</div>`,
+          `<div>t: ${x} ${timePrefix.unit}</div>`,
           ...items.map((item) => {
             const raw = item.value as [number, number] | number | undefined;
             const yRaw = Array.isArray(raw) ? raw[1] : raw;
@@ -886,6 +900,12 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
       min: axisXDomain[0],
       max: axisXDomain[1],
       interval: axisXStep,
+      name: timePrefix.unit,
+      nameLocation: "end",
+      nameGap: 8,
+      nameTextStyle: {
+        color: chartTheme.axisLabel,
+      },
       axisLine: {
         lineStyle: {
           color: chartTheme.axisLine,
@@ -895,8 +915,8 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
         color: chartTheme.axisLabel,
         formatter: (value: number) => {
           if (!Number.isFinite(value)) return "";
-          // 4 significant figures, avoid floating-point noise
-          return Number(value.toPrecision(4)).toString();
+          const scaled = value * timePrefix.factor;
+          return Number(scaled.toPrecision(4)).toString();
         },
       },
       axisPointer: {
@@ -907,7 +927,8 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
           formatter: (params: { value: number | string }) => {
             const value = params.value;
             if (typeof value === "number" && Number.isFinite(value)) {
-              return Number(value.toPrecision(4)).toString();
+              const scaled = value * timePrefix.factor;
+              return Number(scaled.toPrecision(4)).toString();
             }
             return value?.toString() || "";
           },
