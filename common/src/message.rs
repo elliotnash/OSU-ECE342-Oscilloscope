@@ -40,6 +40,7 @@ pub enum CalibrationMessage {
     CalibrateCenter(CalibrationData),
     CalibrateMax(CalibrationData),
     CalibrateMin(CalibrationData),
+    SaveCalibration,
 }
 
 #[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]

@@ -3,7 +3,6 @@ use serde::{Deserialize, Deserializer, Serialize, Serializer};
 #[cfg(feature = "std")]
 use specta::Type;
 
-
 /// Serialize a Vec<u16> of 12-bit values by packing two values into 3 bytes.
 /// Each u16 value is clamped to 12 bits (0-4095).
 #[allow(dead_code)]
@@ -164,11 +163,11 @@ where
     Ok(data)
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub enum ScopeChannel {
-    #[default] 
+    #[default]
     A,
     B,
 }

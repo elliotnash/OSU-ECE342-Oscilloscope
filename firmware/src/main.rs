@@ -26,7 +26,10 @@ use smart_leds::RGB8;
 use crate::driver::mcp47feb::Mcp47feb;
 use crate::led::{LED_RX, LedPattern, NUM_LEDS, led_color_task};
 use crate::message::{MESSAGE_RX, MESSAGE_TX, USB_CONNECTED};
-use crate::nvs::{FLASH_SIZE, NvsProperties, get_nvs_properties, write_nvs_properties};
+use crate::nvs::{
+    FLASH_SIZE, NVS_PROPERTIES_WATCH, NvsProperties, get_nvs_properties, nvs_properties_task,
+    write_nvs_properties,
+};
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
 use embassy_executor::{Executor, Spawner};
 use embassy_rp::usb::{self, Driver};
@@ -101,7 +104,7 @@ async fn main(spawner: Spawner) -> ! {
 
     // Create the NVS
     let mut flash = embassy_rp::flash::Flash::<_, Async, FLASH_SIZE>::new(p.FLASH, p.DMA_CH2);
-    let nvs_properties = get_nvs_properties(&mut flash);
+    let _ = spawner.spawn(nvs_properties_task(flash));
 
     // Create the USB driver, from the HAL.
     let driver = Driver::new(p.USB, Irqs);
@@ -205,14 +208,8 @@ async fn main(spawner: Spawner) -> ! {
         pin.set_low();
     }
 
-    let _ = spawner.spawn(handle_messages_task(
-        flash,
-        coupling_pins,
-        sel1_pins,
-        sel2_pins,
-        nvs_properties.clone(),
-    ));
-    let _ = spawner.spawn(set_trigger_task(dac, nvs_properties.clone()));
+    let _ = spawner.spawn(handle_messages_task(coupling_pins, sel1_pins, sel2_pins));
+    let _ = spawner.spawn(set_trigger_task(dac));
 
     // Initialize the ADC and frame sender
 
@@ -232,13 +229,7 @@ async fn main(spawner: Spawner) -> ! {
             let executor1 = EXECUTOR1.init(Executor::new());
             executor1.run(|spawner| {
                 spawner
-                    .spawn(read_adc_task(
-                        adc,
-                        adc_dma,
-                        adc_pins,
-                        trigger_pins,
-                        nvs_properties,
-                    ))
+                    .spawn(read_adc_task(adc, adc_dma, adc_pins, trigger_pins))
                     .expect("Failed to spawn read_adc_task");
             });
         },
@@ -261,7 +252,6 @@ async fn main(spawner: Spawner) -> ! {
 #[embassy_executor::task]
 async fn set_trigger_task(
     mut dac: Mcp47feb<I2c<'static, peripherals::I2C1, embassy_rp::i2c::Async>>,
-    calibration: NvsProperties,
 ) -> ! {
     let mut trigger_options_receiver = TRIGGER_OPTIONS
         .receiver()
@@ -330,16 +320,15 @@ async fn heartbeat_monitor_task() -> ! {
 
 #[embassy_executor::task]
 async fn handle_messages_task(
-    mut flash: Flash<'static, peripherals::FLASH, Async, FLASH_SIZE>,
     mut coupling_pins: [Flex<'static>; 2],
     mut sel1_pins: [Flex<'static>; 2],
     mut sel2_pins: [Flex<'static>; 2],
-    mut calibration: NvsProperties,
 ) -> ! {
     let heartbeat_sender = LAST_HEARTBEAT_TIME.sender();
     let message_receiver = MESSAGE_RX.receiver();
     let message_sender = MESSAGE_TX.sender();
     let sample_rate_sender = SAMPLE_RATE.sender();
+    let nvs_properties_sender = NVS_PROPERTIES_WATCH.sender();
     loop {
         let message = message_receiver.receive().await;
         match message {
@@ -357,20 +346,36 @@ async fn handle_messages_task(
             Message::SetSampleRate(sample_rate) => {
                 sample_rate_sender.send(sample_rate);
             }
-            Message::Calibration(calibration_message) => {
-                match calibration_message {
-                    CalibrationMessage::CalibrateCenter(data) => {
-                        calibration.centers[data.channel as usize] = data.value;
-                    }
-                    CalibrationMessage::CalibrateMax(data) => {
-                        calibration.maxes[data.channel as usize] = data.value;
-                    }
-                    CalibrationMessage::CalibrateMin(data) => {
-                        calibration.mins[data.channel as usize] = data.value;
-                    }
+            Message::Calibration(calibration_message) => match calibration_message {
+                CalibrationMessage::CalibrateCenter(data) => {
+                    nvs_properties_sender.send_modify(|val| {
+                        if let Some((properties, _)) = val {
+                            properties.centers[data.channel as usize] = data.value;
+                        }
+                    });
                 }
-                write_nvs_properties(&mut flash, &calibration);
-            }
+                CalibrationMessage::CalibrateMax(data) => {
+                    nvs_properties_sender.send_modify(|val| {
+                        if let Some((properties, _)) = val {
+                            properties.maxes[data.channel as usize] = data.value;
+                        }
+                    });
+                }
+                CalibrationMessage::CalibrateMin(data) => {
+                    nvs_properties_sender.send_modify(|val| {
+                        if let Some((properties, _)) = val {
+                            properties.mins[data.channel as usize] = data.value;
+                        }
+                    });
+                }
+                CalibrationMessage::SaveCalibration => {
+                    nvs_properties_sender.send_modify(|val| {
+                        if let Some((_, save)) = val {
+                            *save = true;
+                        }
+                    });
+                }
+            },
             Message::Verification(verification_message) => match verification_message {
                 VerificationMessage::SetGpioHigh => {
                     for pin in coupling_pins
@@ -456,7 +461,6 @@ async fn read_adc_task(
     mut adc_dma: Peri<'static, peripherals::DMA_CH1>,
     mut adc_pins: [adc::Channel<'static>; 2],
     mut trigger_pins: [Flex<'static>; 2],
-    calibration: NvsProperties,
 ) -> ! {
     let mut frame_ticker = Ticker::every(Duration::from_micros_floor(16_666));
     let message_sender = MESSAGE_TX.sender();
@@ -466,6 +470,10 @@ async fn read_adc_task(
     let mut trigger_options_receiver = TRIGGER_OPTIONS
         .receiver()
         .expect("Failed to get trigger options receiver");
+    let mut nvs_properties_receiver = NVS_PROPERTIES_WATCH
+        .receiver()
+        .expect("Failed to get NVS properties receiver");
+
     let mut sample_rate = 250_000;
     const BLOCK_SIZE: usize = 1000;
     const NUM_CHANNELS: usize = 2;
@@ -484,6 +492,8 @@ async fn read_adc_task(
         if message_sender.len() >= 2 {
             continue;
         }
+
+        let (calibration, _) = nvs_properties_receiver.get().await;
 
         if let Some(new_rate) = sample_rate_receiver.try_changed() {
             frame_ticker.reset();

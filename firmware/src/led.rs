@@ -1,4 +1,3 @@
-use defmt::info;
 use embassy_rp::peripherals;
 use embassy_rp::pio_programs::ws2812::{Grb, PioWs2812};
 use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
