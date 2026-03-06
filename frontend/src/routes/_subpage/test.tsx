@@ -1,6 +1,6 @@
 import { createFileRoute } from '@tanstack/react-router'
 import { Channel } from '@tauri-apps/api/core'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { commands, type VerificationMessage, type FrontendFrameData } from '~/bindings'
 import { Button } from '~/components/button'
 
@@ -12,31 +12,7 @@ function RouteComponent() {
   const [frameDataA, setFrameDataA] = useState<FrontendFrameData|null>(null);
   const [frameDataB, setFrameDataB] = useState<FrontendFrameData|null>(null);
   const [verificationMessage, setVerificationMessage] = useState<VerificationMessage|null>(null);
-  useEffect(() => {
-    const onEvent = new Channel<FrontendFrameData>();
-    let frameCountA = 0;
-    let frameCountB = 0;
-    onEvent.onmessage = (message) => {
-      if (message.channel === "A") {
-        frameCountA++;
-        if (frameCountA > 60) {
-          setFrameDataA(message);
-          frameCountA = 0;
-        }
-      } else if (message.channel === "B") {
-        frameCountB++;
-        if (frameCountB > 60) {
-          setFrameDataB(message);
-          frameCountB = 0;
-        }
-      }
-    }
-    commands.receiveFrames(onEvent);
 
-    return () => {
-      onEvent.onmessage = () => {};
-    }
-  }, [])
   useEffect(() => {
     const onEvent = new Channel<VerificationMessage>();
     onEvent.onmessage = (message) => {
@@ -48,6 +24,12 @@ function RouteComponent() {
       onEvent.onmessage = () => {};
     }
   }, [])
+
+  const fetchFrameData = useCallback(async () => {
+    const [frameDataA, frameDataB] = await commands.getCurrentFrame();
+    setFrameDataA(frameDataA);
+    setFrameDataB(frameDataB);
+  }, []);
 
   const avgA = useMemo(() => {
     if (!frameDataA) return 0;
@@ -72,6 +54,7 @@ function RouteComponent() {
     <Button className="m-4" onClick={() => commands.sendVerificationMessage("SetGpioHigh")}>Set GPIO High</Button>
     <Button className="m-4" onClick={() => commands.sendVerificationMessage("SetGpioLow")}>Set GPIO Low</Button>
     <h1 className="text-xl">Frame Data</h1>
+    <Button className="m-4" onClick={fetchFrameData}>Fetch Frame Data</Button>
     <p>Avg, CH A: {avgA}, CH B: {avgB}</p>
     <p>Center: {frameDataA?.center}</p>
     <p>Timestep: {frameDataA?.timestep_ms}</p>

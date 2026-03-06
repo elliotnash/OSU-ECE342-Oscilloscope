@@ -198,26 +198,38 @@ pub struct FrontendFrameData {
     pub channel: ScopeChannel,
 }
 
-impl From<FrameData> for FrontendFrameData {
-    fn from(frame: FrameData) -> Self {
+impl AsRef<FrameData> for FrameData {
+    fn as_ref(&self) -> &FrameData {
+        self
+    }
+}
+
+impl AsRef<FrontendFrameData> for FrontendFrameData {
+    fn as_ref(&self) -> &FrontendFrameData {
+        self
+    }
+}
+
+impl<T: AsRef<FrameData>> From<T> for FrontendFrameData {
+    fn from(frame: T) -> Self {
         Self {
-            data: frame.data,
-            center: frame.center,
-            timestep_ms: frame.timestep_ms,
-            voltage_scale: frame.voltage_scale,
-            channel: frame.channel,
+            data: frame.as_ref().data.clone(),
+            center: frame.as_ref().center,
+            timestep_ms: frame.as_ref().timestep_ms,
+            voltage_scale: frame.as_ref().voltage_scale,
+            channel: frame.as_ref().channel.clone(),
         }
     }
 }
 
-impl From<FrontendFrameData> for FrameData {
-    fn from(frame: FrontendFrameData) -> Self {
+impl<T: AsRef<FrontendFrameData>> From<T> for FrameData {
+    fn from(frame: T) -> Self {
         Self {
-            data: frame.data,
-            center: frame.center,
-            timestep_ms: frame.timestep_ms,
-            voltage_scale: frame.voltage_scale,
-            channel: frame.channel,
+            data: frame.as_ref().data.clone(),
+            center: frame.as_ref().center,
+            timestep_ms: frame.as_ref().timestep_ms,
+            voltage_scale: frame.as_ref().voltage_scale,
+            channel: frame.as_ref().channel.clone(),
         }
     }
 }

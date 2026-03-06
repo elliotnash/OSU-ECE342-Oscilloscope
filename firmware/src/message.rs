@@ -3,16 +3,16 @@ use crate::{ScopeUsbReceiver, ScopeUsbSender, USB_PACKET_SIZE};
 use alloc::vec::Vec;
 use common::message::Message;
 use defmt::{error, info, panic};
-use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::channel::Channel;
 use embassy_sync::watch::Watch;
 use embassy_usb::driver::EndpointError;
 use smart_leds::RGB8;
 
-pub static MESSAGE_RX: Channel<ThreadModeRawMutex, Message, 2> = Channel::new();
-pub static MESSAGE_TX: Channel<ThreadModeRawMutex, Message, 2> = Channel::new();
+pub static MESSAGE_RX: Channel<CriticalSectionRawMutex, Message, 2> = Channel::new();
+pub static MESSAGE_TX: Channel<CriticalSectionRawMutex, Message, 4> = Channel::new();
 
-pub static USB_CONNECTED: Watch<ThreadModeRawMutex, bool, 1> = Watch::new();
+pub static USB_CONNECTED: Watch<CriticalSectionRawMutex, bool, 1> = Watch::new();
 
 #[embassy_executor::task]
 pub async fn send_messages_task(mut tx: ScopeUsbSender) -> ! {
@@ -94,7 +94,6 @@ async fn send_messages(tx: &mut ScopeUsbSender) -> Result<(), Disconnected> {
     let message_receiver = MESSAGE_TX.receiver();
     loop {
         let message = message_receiver.receive().await;
-        // info!("Sending message: {:?}", &message);
 
         let bytes = postcard::to_allocvec_cobs(&message).expect("Serialization failed");
 

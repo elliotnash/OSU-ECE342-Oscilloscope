@@ -5,7 +5,6 @@ import { useState, useCallback, useEffect, useRef, forwardRef, useImperativeHand
 import { extent } from "@visx/vendor/d3-array";
 import { scaleLinear } from "@visx/scale";
 import ReactECharts from "echarts-for-react";
-import { Channel } from "@tauri-apps/api/core";
 import {
   commands,
   type ScopeChannel,
@@ -560,21 +559,13 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   }, []);
 
   useEffect(() => {
-    const onEvent = new Channel<FrontendFrameData>();
-    onEvent.onmessage = (message) => {
-      latestFramesRef.current = {
-        ...latestFramesRef.current,
-        [message.channel]: message,
-      };
-
-      const visibility = channelVisibilityRef.current;
-      const bothChannelsVisible = visibility.A && visibility.B;
-
-      const shouldUpdateFrames =
-        !bothChannelsVisible || message.channel === "B";
-
-      if (shouldUpdateFrames) {
-        setFrames(latestFramesRef.current);
+    let rafId: number;
+    function tick() {
+      rafId = requestAnimationFrame(tick);
+      void commands.getCurrentFrame().then(([frameA, frameB]) => {
+        const next = { A: frameA, B: frameB };
+        latestFramesRef.current = next;
+        setFrames(next);
         const now = performance.now();
         const times = frameTimesRef.current;
         times.push(now);
@@ -583,13 +574,10 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
           times.shift();
         }
         setFrameRate(times.length);
-      }
-    };
-    void commands.receiveFrames(onEvent);
-
-    return () => {
-      onEvent.onmessage = () => {};
+      });
     }
+    rafId = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(rafId);
   }, []);
 
   const axisPadding = { top: 20, right: 20, bottom: 20, left: 20 };

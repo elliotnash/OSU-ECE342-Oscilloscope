@@ -13,10 +13,11 @@ use embassy_rp::adc::Adc;
 use embassy_rp::flash::{Async, ERASE_SIZE, FLASH_BASE, Flash};
 use embassy_rp::gpio::{Flex, Level, Pull};
 use embassy_rp::i2c::I2c;
+use embassy_rp::multicore::{Stack, spawn_core1};
 use embassy_rp::pio::{self, Pio};
 use embassy_rp::pio_programs::ws2812::{Grb, PioWs2812, PioWs2812Program};
 use embassy_rp::{Peri, adc, bind_interrupts, i2c, peripherals};
-use embassy_sync::blocking_mutex::raw::ThreadModeRawMutex;
+use embassy_sync::blocking_mutex::raw::CriticalSectionRawMutex;
 use embassy_sync::watch::Watch;
 use embassy_time::{Duration, Instant, Ticker, Timer};
 use embedded_alloc::TlsfHeap as Heap;
@@ -27,7 +28,7 @@ use crate::led::{LED_RX, LedPattern, NUM_LEDS, led_color_task};
 use crate::message::{MESSAGE_RX, MESSAGE_TX, USB_CONNECTED};
 use crate::nvs::{FLASH_SIZE, NvsProperties, get_nvs_properties, write_nvs_properties};
 use common::usb::{OSCOPE_PID, OSCOPE_VID};
-use embassy_executor::Spawner;
+use embassy_executor::{Executor, Spawner};
 use embassy_rp::usb::{self, Driver};
 use embassy_usb::UsbDevice;
 use embassy_usb::class::cdc_acm::{
@@ -57,10 +58,14 @@ bind_interrupts!(struct Irqs {
     I2C1_IRQ => i2c::InterruptHandler<peripherals::I2C1>;
 });
 
+static mut CORE1_STACK: Stack<65536> = Stack::new();
+static EXECUTOR1: StaticCell<Executor> = StaticCell::new();
+
 const USB_PACKET_SIZE: usize = 64;
 
-pub static LAST_HEARTBEAT_TIME: Watch<ThreadModeRawMutex, Instant, 1> = Watch::new();
-pub static SAMPLE_RATE: Watch<ThreadModeRawMutex, u32, 1> = Watch::new();
+pub static LAST_HEARTBEAT_TIME: Watch<CriticalSectionRawMutex, Instant, 1> = Watch::new();
+// SAMPLE_RATE is written on core 0 (handle_messages_task) and read on core 1 (read_adc_task).
+pub static SAMPLE_RATE: Watch<CriticalSectionRawMutex, u32, 1> = Watch::new();
 
 type ScopeUsbDriver = Driver<'static, peripherals::USB>;
 type ScopeUsbDevice = UsbDevice<'static, ScopeUsbDriver>;
@@ -72,7 +77,7 @@ type ScopeUsbReceiver = CdcReceiver<'static, ScopeUsbDriver>;
 async fn main(spawner: Spawner) -> ! {
     // Initialize the heap allocator
     unsafe {
-        embedded_alloc::init!(HEAP, 1024 * 64);
+        embedded_alloc::init!(HEAP, 1024 * 256);
     }
 
     let p = embassy_rp::init(Default::default());
@@ -218,6 +223,19 @@ async fn main(spawner: Spawner) -> ! {
     ];
 
     let _ = spawner.spawn(read_adc_task(adc, adc_dma, adc_pins, nvs_properties));
+
+    // spawn_core1(
+    //     p.CORE1,
+    //     unsafe { &mut *core::ptr::addr_of_mut!(CORE1_STACK) },
+    //     move || {
+    //         let executor1 = EXECUTOR1.init(Executor::new());
+    //         executor1.run(|spawner| {
+    //             spawner
+    //                 .spawn(read_adc_task(adc, adc_dma, adc_pins, nvs_properties))
+    //                 .expect("Failed to spawn read_adc_task");
+    //         });
+    //     },
+    // );
 
     info!("Firmware started");
 
@@ -423,11 +441,16 @@ async fn read_adc_task(
         .receiver()
         .expect("Failed to get sample rate receiver");
     let mut sample_rate = 250_000;
-    const BLOCK_SIZE: usize = 100;
+    const BLOCK_SIZE: usize = 1000;
     const NUM_CHANNELS: usize = 2;
     loop {
         // Send frames at 60 Hz
         frame_ticker.next().await;
+
+        // Don't send frames if there's a backlog
+        if message_sender.len() >= 2 {
+            continue;
+        }
 
         if let Some(new_rate) = sample_rate_receiver.try_changed() {
             frame_ticker.reset();
@@ -445,20 +468,20 @@ async fn read_adc_task(
         let ch_a_samples = buf.iter().step_by(2);
         let ch_a_frame = FrameData {
             data: ch_a_samples.copied().collect(),
-            center: 2048,
+            center: calibration.centers[0],
             voltage_scale: 6.6,
             channel: ScopeChannel::A,
-            timestep_ms: 0.005, // This should be timestep of 200kHz
+            timestep_ms: 1.0 / (sample_rate as f32 * 1000.0), // This should be timestep of 200kHz
         };
         let _ = message_sender.try_send(Message::Frame(ch_a_frame));
 
         let ch_b_samples = buf.iter().skip(1).step_by(2);
         let ch_b_frame = FrameData {
             data: ch_b_samples.copied().collect(),
-            center: 2048,
+            center: calibration.centers[1],
             voltage_scale: 6.6,
             channel: ScopeChannel::B,
-            timestep_ms: 0.005, // This should be timestep of 200kHz
+            timestep_ms: 1.0 / (sample_rate as f32 * 1000.0), // This should be timestep of 200kHz
         };
         let _ = message_sender.try_send(Message::Frame(ch_b_frame));
     }

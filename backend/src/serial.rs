@@ -6,7 +6,7 @@ use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
 use tokio::{select, sync::{broadcast, watch}, time::{Instant, sleep}};
-use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData}, message::{CalibrationMessage, Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
+use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData, ScopeChannel}, message::{CalibrationMessage, Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
@@ -32,9 +32,17 @@ fn get_last_heartbeat_watch() -> watch::Sender<Instant> {
     }).clone()
 }
 
-static FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
-fn get_frame_watch() -> watch::Sender<FrameData> {
-    FRAME_WATCH.get_or_init(|| {
+static CHA_FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
+fn get_cha_frame_watch() -> watch::Sender<FrameData> {
+    CHA_FRAME_WATCH.get_or_init(|| {
+        let (tx, _rx) = watch::channel(FrameData::default());
+        tx
+    }).clone()
+}
+
+static CHB_FRAME_WATCH: OnceLock<watch::Sender<FrameData>> = OnceLock::new();
+fn get_chb_frame_watch() -> watch::Sender<FrameData> {
+    CHB_FRAME_WATCH.get_or_init(|| {
         let (tx, _rx) = watch::channel(FrameData::default());
         tx
     }).clone()
@@ -137,7 +145,7 @@ async fn handle_heartbeat_monitor() -> std::io::Result<()> {
     let mut last_heartbeat_rx = get_last_heartbeat_watch().subscribe();
 
     loop {
-        let deadline = last + Duration::from_millis(1100);
+        let deadline = last + Duration::from_millis(15000);
 
         let timeout_fut = tokio::time::sleep_until(deadline);
         let heartbeat_changed_fut = last_heartbeat_rx.changed();
@@ -204,7 +212,14 @@ async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
                                     get_last_heartbeat_watch().send_replace(Instant::now());
                                 }
                                 Message::Frame(frame) => {
-                                    get_frame_watch().send_replace(frame);
+                                    match frame.channel {
+                                        ScopeChannel::A => {
+                                            get_cha_frame_watch().send_replace(frame);
+                                        }
+                                        ScopeChannel::B => {
+                                            get_chb_frame_watch().send_replace(frame);
+                                        }
+                                    }
                                 }
                                 Message::Verification(verification_message) => {
                                     get_verification_broadcast().send(verification_message).ok();
@@ -251,14 +266,22 @@ async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
 #[tauri::command(async)]
 #[specta::specta]
 pub async fn receive_frames(app: AppHandle, on_event: Channel<FrontendFrameData>) {
-    let mut frame_watch = get_frame_watch().subscribe();
-    let serial_status_watch = get_serial_status_watch().subscribe();
-    while serial_status_watch.borrow().clone() == SerialStatus::Connected {
-        let frame = frame_watch.changed().await;
-        if frame.is_ok() {
-            on_event.send(FrontendFrameData::from(frame_watch.borrow_and_update().clone())).ok();
-        }
-    }
+//     let mut cha_frame_watch = get_cha_frame_watch().subscribe();
+//     let serial_status_watch = get_serial_status_watch().subscribe();
+//     while serial_status_watch.borrow().clone() == SerialStatus::Connected {
+//         let frame = frame_watch.changed().await;
+//         if frame.is_ok() {
+//             on_event.send(FrontendFrameData::from(frame_watch.borrow_and_update().clone())).ok();
+//         }
+//     }
+}
+
+#[tauri::command(async)]
+#[specta::specta]
+pub async fn get_current_frame() -> (FrontendFrameData, FrontendFrameData) {
+    let cha = FrontendFrameData::from(get_cha_frame_watch().borrow().as_ref());
+    let chb = FrontendFrameData::from(get_chb_frame_watch().borrow().as_ref());
+    (cha, chb)
 }
 
 

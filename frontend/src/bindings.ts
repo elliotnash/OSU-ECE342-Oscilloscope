@@ -14,8 +14,8 @@ async getTitlebarLayout() : Promise<TitlebarLayout> {
 async getSerialStatus() : Promise<SerialStatus> {
     return await TAURI_INVOKE("get_serial_status");
 },
-async receiveFrames(onEvent: TAURI_CHANNEL<FrontendFrameData>) : Promise<void> {
-    await TAURI_INVOKE("receive_frames", { onEvent });
+async getCurrentFrame() : Promise<[FrontendFrameData, FrontendFrameData]> {
+    return await TAURI_INVOKE("get_current_frame");
 },
 async receiveVerificationMessages(onEvent: TAURI_CHANNEL<VerificationMessage>) : Promise<void> {
     await TAURI_INVOKE("receive_verification_messages", { onEvent });
