@@ -130,31 +130,33 @@ function Index() {
 
   const handleTimeExtent = useCallback((min: number, max: number) => {
     const newExtent = { min, max };
-    setTimeExtent((prev) => {
-      if (prev === null) {
-        const span = max - min;
-        if (span > 0) {
-          const quarter = span * 0.25;
-          setTimeScale({ min: min + quarter, max: max - quarter });
-        } else {
-          setTimeScale({ min, max });
-        }
-        prevTimeExtentRef.current = newExtent;
-        return newExtent;
+    const newSpan = max - min;
+    const prev = prevTimeExtentRef.current;
+
+    setTimeExtent(newExtent);
+    prevTimeExtentRef.current = newExtent;
+
+    if (prev === null) {
+      if (newSpan > 0) {
+        const quarter = newSpan * 0.25;
+        setTimeScale({ min: min + quarter, max: max - quarter });
+      } else {
+        setTimeScale({ min, max });
       }
-      const oldSpan = prev.max - prev.min;
-      const newSpan = max - min;
-      if (oldSpan <= 0 || newSpan <= 0) return newExtent;
-      const ratio = newSpan / oldSpan;
-      setTimeScale((scale) => {
-        const scaledMin = scale.min * ratio;
-        const scaledMax = scale.max * ratio;
-        const clampedMin = Math.max(min, Math.min(max - 1e-9, scaledMin));
-        const clampedMax = Math.min(max, Math.max(min + 1e-9, scaledMax));
-        return { min: clampedMin, max: clampedMax };
-      });
-      prevTimeExtentRef.current = newExtent;
-      return newExtent;
+      return;
+    }
+
+    const oldSpan = prev.max - prev.min;
+    if (oldSpan <= 0 || newSpan <= 0) return;
+
+    setTimeScale((scale) => {
+      const viewportProportion = (scale.max - scale.min) / oldSpan;
+      const startProportion = (scale.min - prev.min) / oldSpan;
+      const newViewportSpan = viewportProportion * newSpan;
+      const newStart = min + startProportion * newSpan;
+      const newMin = Math.max(min, Math.min(max - 1e-9, newStart));
+      const newMax = Math.max(min + 1e-9, Math.min(max, newStart + newViewportSpan));
+      return { min: newMin, max: newMax };
     });
   }, []);
 
