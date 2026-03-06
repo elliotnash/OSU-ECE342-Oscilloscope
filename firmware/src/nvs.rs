@@ -118,5 +118,5 @@ pub fn write_nvs_properties(
         .blocking_write(NVS_OFFSET + CENTER_LOCATION, &buf)
         .expect("Failed to write NVS properties");
 
-    info!("NVS Properties written");
+    info!("NVS Properties written {:?}", properties);
 }

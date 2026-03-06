@@ -37,9 +37,17 @@ pub enum VerificationMessage {
 #[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub enum CalibrationMessage {
-    CalibrateCenter(ScopeChannel, u16),
-    CalibrateMax(ScopeChannel, u16),
-    CalibrateMin(ScopeChannel, u16),
+    CalibrateCenter(CalibrationData),
+    CalibrateMax(CalibrationData),
+    CalibrateMin(CalibrationData),
+}
+
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[cfg_attr(feature = "alloc", derive(defmt::Format))]
+#[cfg_attr(feature = "std", derive(Type))]
+pub struct CalibrationData {
+    pub channel: ScopeChannel,
+    pub value: u16,
 }
 
 #[cfg(test)]

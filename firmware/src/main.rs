@@ -301,14 +301,14 @@ async fn handle_messages_task(
             }
             Message::Calibration(calibration_message) => {
                 match calibration_message {
-                    CalibrationMessage::CalibrateCenter(channel, value) => {
-                        calibration.centers[channel as usize] = value;
+                    CalibrationMessage::CalibrateCenter(data) => {
+                        calibration.centers[data.channel as usize] = data.value;
                     }
-                    CalibrationMessage::CalibrateMax(channel, value) => {
-                        calibration.maxes[channel as usize] = value;
+                    CalibrationMessage::CalibrateMax(data) => {
+                        calibration.maxes[data.channel as usize] = data.value;
                     }
-                    CalibrationMessage::CalibrateMin(channel, value) => {
-                        calibration.mins[channel as usize] = value;
+                    CalibrationMessage::CalibrateMin(data) => {
+                        calibration.mins[data.channel as usize] = data.value;
                     }
                 }
                 write_nvs_properties(&mut flash, &calibration);
@@ -350,6 +350,7 @@ async fn set_channel_options(
     sel2_pins: &mut [Flex<'static>; 2],
     channel: &ChannelOptions,
 ) {
+    info!("Setting channel options: {:?}", channel);
     let channel_index = channel.channel.clone() as usize;
     // Set the coupling pin
     coupling_pins[channel_index].set_level(if channel.coupling == ScopeCoupling::DC {
