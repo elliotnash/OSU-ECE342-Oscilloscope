@@ -25,7 +25,7 @@ import { ScrollArea } from "~/components/scroll-area";
 import { Switch } from "~/components/switch";
 import { Tabs, Tab, TabList, TabPanel } from "~/components/tabs";
 import { Input } from "~/components/input";
-import { VoltageScaleSlider } from "~/components/voltage-scale-slider";
+import { RangeScaleSlider } from "~/components/range-scale-slider";
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -55,7 +55,7 @@ function StatsBar({ stats }: { stats: ChannelStats[] }) {
             key={s.name}
             className="flex flex-wrap items-center gap-4 gap-y-1 text-sm"
           >
-            <div className="flex items-center gap-2 min-w-16">
+            <div className="flex items-center gap-2 min-w-22">
               <div
                 className="w-3 h-0.5 shrink-0 rounded-full"
                 style={{ backgroundColor: s.color }}
@@ -122,6 +122,44 @@ function Index() {
   const [channelStats, setChannelStats] = useState<ChannelStats[]>([]);
   const handleStatsChange = useCallback((stats: ChannelStats[]) => {
     setChannelStats(stats);
+  }, []);
+
+  const [timeScale, setTimeScale] = useState<{ min: number; max: number }>({ min: 0, max: 1 });
+  const [timeExtent, setTimeExtent] = useState<{ min: number; max: number } | null>(null);
+  const prevTimeExtentRef = useRef<{ min: number; max: number } | null>(null);
+
+  const handleTimeExtent = useCallback((min: number, max: number) => {
+    const newExtent = { min, max };
+    setTimeExtent((prev) => {
+      if (prev === null) {
+        const span = max - min;
+        if (span > 0) {
+          const quarter = span * 0.25;
+          setTimeScale({ min: min + quarter, max: max - quarter });
+        } else {
+          setTimeScale({ min, max });
+        }
+        prevTimeExtentRef.current = newExtent;
+        return newExtent;
+      }
+      const oldSpan = prev.max - prev.min;
+      const newSpan = max - min;
+      if (oldSpan <= 0 || newSpan <= 0) return newExtent;
+      const ratio = newSpan / oldSpan;
+      setTimeScale((scale) => {
+        const scaledMin = scale.min * ratio;
+        const scaledMax = scale.max * ratio;
+        const clampedMin = Math.max(min, Math.min(max - 1e-9, scaledMin));
+        const clampedMax = Math.min(max, Math.max(min + 1e-9, scaledMax));
+        return { min: clampedMin, max: clampedMax };
+      });
+      prevTimeExtentRef.current = newExtent;
+      return newExtent;
+    });
+  }, []);
+
+  const handleTimeScaleChange = useCallback((min: number, max: number) => {
+    setTimeScale({ min, max });
   }, []);
 
   useEffect(() => {
@@ -218,12 +256,17 @@ function Index() {
                 onChannelVoltageScaleChange={handleChannelVoltageScaleChange}
                 onVoltageScaleFromFrames={setChannelVoltageScaleConfig}
                 onStatsChange={handleStatsChange}
+                timeScale={timeScale}
+                onTimeScaleChange={handleTimeScaleChange}
+                onTimeExtent={handleTimeExtent}
               />
             </div>
             <div className="flex gap-3 items-stretch px-2 py-2 shrink-0 min-h-0">
-              <VoltageScaleSlider
-                channel="A"
-                voltageScale={channelVoltageScaleConfig.A}
+              <RangeScaleSlider
+                orientation="vertical"
+                fullMin={-channelVoltageScaleConfig.A / 2}
+                fullMax={channelVoltageScaleConfig.A / 2}
+                minRange={channelVoltageScaleConfig.A / 20}
                 min={channelVoltageScale.A.min}
                 max={channelVoltageScale.A.max}
                 onChange={(min, max) =>
@@ -232,9 +275,11 @@ function Index() {
                 color="rgb(190, 114, 250)"
                 disabled={!channelVisibility.A}
               />
-              <VoltageScaleSlider
-                channel="B"
-                voltageScale={channelVoltageScaleConfig.B}
+              <RangeScaleSlider
+                orientation="vertical"
+                fullMin={-channelVoltageScaleConfig.B / 2}
+                fullMax={channelVoltageScaleConfig.B / 2}
+                minRange={channelVoltageScaleConfig.B / 20}
                 min={channelVoltageScale.B.min}
                 max={channelVoltageScale.B.max}
                 onChange={(min, max) =>
@@ -245,6 +290,21 @@ function Index() {
               />
             </div>
           </div>
+          {timeExtent && (
+            <div className="flex items-center gap-2 px-2 py-2 shrink-0">
+              <RangeScaleSlider
+                orientation="horizontal"
+                fullMin={timeExtent.min}
+                fullMax={timeExtent.max}
+                minRange={(timeExtent.max - timeExtent.min) / 20}
+                min={timeScale.min}
+                max={timeScale.max}
+                onChange={handleTimeScaleChange}
+                color="rgb(96, 165, 250)"
+                ariaLabel="Time axis scale"
+              />
+            </div>
+          )}
           <StatsBar stats={channelStats} />
         </div>
           <ScrollArea scrollFade className="landscape:w-max portrait:h-max bg-secondary/25 border rounded-xl">
@@ -258,7 +318,19 @@ function Index() {
                 onMathEnabledChange={handleMathEnabledChange}
                 onMathModeChange={handleMathModeChange}
                 onMathPresetChange={handleMathPresetChange}
-                onAutoScale={() => plotRef.current?.captureScale()}
+                onAutoScale={() => {
+                  plotRef.current?.captureScale();
+                  if (timeExtent) {
+                    const span = timeExtent.max - timeExtent.min;
+                    if (span > 0) {
+                      const quarter = span * 0.25;
+                      setTimeScale({
+                        min: timeExtent.min + quarter,
+                        max: timeExtent.max - quarter,
+                      });
+                    }
+                  }
+                }}
               />
             </div>
           </ScrollArea>
@@ -668,8 +740,11 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   onChannelVoltageScaleChange: (channel: ScopeChannel, min: number, max: number) => void;
   onVoltageScaleFromFrames?: (config: Record<ScopeChannel, number>) => void;
   onStatsChange?: (stats: ChannelStats[]) => void;
+  timeScale?: { min: number; max: number };
+  onTimeScaleChange?: (min: number, max: number) => void;
+  onTimeExtent?: (min: number, max: number) => void;
 }>(function Plot(
-  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames, onStatsChange },
+  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames, onStatsChange, timeScale: timeScaleProp, onTimeExtent },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -877,13 +952,14 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   }
   statsRef.current = channelStatsList;
 
+  const xDataExtent = allPoints.length > 0 ? (extent(allPoints, getX) as [number, number]) : null;
+
   let xDomain: [number, number] = defaultScale.xDomain;
   let yDomain: [number, number] = defaultScale.yDomain;
   let xStep = defaultScale.xStep;
   let yStep = defaultScale.yStep;
 
-  if (allPoints.length > 0) {
-    const xDataExtent = extent(allPoints, getX) as [number, number];
+  if (xDataExtent) {
     const yMin = Math.min(...allPoints.map(getY));
     const yMax = Math.max(...allPoints.map(getY));
     const xAligned = alignDomainToGrid(xDataExtent[0], xDataExtent[1]);
@@ -920,8 +996,15 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     },
   }), [onChannelVoltageScaleChange]);
 
-  // Time axis always follows current data extent (timestep_ms / sample rate) so we always see every point
-  const axisXDomain = xDomain;
+  useEffect(() => {
+    if (onTimeExtent && xDataExtent) {
+      onTimeExtent(xDataExtent[0], xDataExtent[1]);
+    }
+  }, [onTimeExtent, xDataExtent?.[0], xDataExtent?.[1]]);
+
+  const axisXDomain: [number, number] = timeScaleProp
+    ? [timeScaleProp.min, timeScaleProp.max]
+    : xDomain;
   const axisXStep = xStep;
   const timePrefix = timeAxisPrefix(axisXStep);
 
