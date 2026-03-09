@@ -242,6 +242,8 @@
      */
     scrollbar-width: thin;
     scrollbar-color: var(--border) transparent;
+    -webkit-user-select: none;
+    user-select: none;
   }
 
   body {

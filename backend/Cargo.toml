@@ -43,3 +43,7 @@ linux_theme = "0.2.1"
 cssparser-color = "0.1.0"
 gio = "0.18"
 glib = "0.18"
+
+# Mac only dependencies
+[target.'cfg(target_os = "macos")'.dependencies]
+cocoa = "0.26"

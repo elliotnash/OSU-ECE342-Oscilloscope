@@ -28,6 +28,30 @@ pub fn run() {
         .invoke_handler(builder.invoke_handler())
         .setup(move |app| {
             builder.mount_events(app);
+
+            // Create main window in Rust so we can set decorations per platform:
+            // macOS: decorations true (native titlebar with Overlay style); others: false.
+            let win_builder = tauri::WebviewWindowBuilder::new(
+                app,
+                "main",
+                tauri::WebviewUrl::default(),
+            )
+            .title("oscope-tauri")
+            .inner_size(800.0, 600.0)
+            .min_inner_size(640.0, 480.0)
+            .visible(false)
+            .closable(true)
+            .hidden_title(true)
+            .title_bar_style(tauri::TitleBarStyle::Overlay)
+            .decorations(cfg!(target_os = "macos"));
+
+            // On macOS, inset the traffic light buttons (e.g. 22, 26 = a few px in from default).
+            #[cfg(target_os = "macos")]
+            let win_builder = win_builder
+                .traffic_light_position(tauri::LogicalPosition::new(18.0, 26.0));
+
+            win_builder.build()?;
+
             let app_handle = app.handle().clone();
             tauri::async_runtime::spawn(async move {
                 serial_task(app_handle).await;

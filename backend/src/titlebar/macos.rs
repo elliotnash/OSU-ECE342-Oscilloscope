@@ -2,11 +2,7 @@ use crate::titlebar::{TitlebarButton, TitlebarLayout};
 
 pub fn get_titlebar_layout() -> TitlebarLayout {
     TitlebarLayout {
-        left: vec![
-            TitlebarButton::Close,
-            TitlebarButton::Minimize,
-            TitlebarButton::Maximize,
-        ],
+        left: vec![],
         right: vec![TitlebarButton::Menu],
     }
 }

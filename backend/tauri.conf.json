@@ -10,19 +10,6 @@
     "frontendDist": "../frontend/dist"
   },
   "app": {
-    "windows": [
-      {
-        "title": "oscope-tauri",
-        "label": "main",
-        "visible": false,
-        "decorations": false,
-        "closable": true,
-        "width": 800,
-        "height": 600,
-        "minWidth": 640,
-        "minHeight": 480
-      }
-    ],
     "security": {
       "csp": null
     }
