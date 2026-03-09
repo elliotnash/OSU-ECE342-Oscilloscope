@@ -31,6 +31,9 @@ async sendSampleRate(sampleRate: number) : Promise<void> {
 },
 async sendCalibrationMessage(message: CalibrationMessage) : Promise<void> {
     await TAURI_INVOKE("send_calibration_message", { message });
+},
+async sendTriggerOptions(triggerOptions: TriggerOptions) : Promise<void> {
+    await TAURI_INVOKE("send_trigger_options", { triggerOptions });
 }
 }
 
@@ -50,7 +53,7 @@ serialStatus: "serial-status"
 /** user-defined types **/
 
 export type CalibrationData = { channel: ScopeChannel; value: number }
-export type CalibrationMessage = { CalibrateCenter: CalibrationData } | { CalibrateMax: CalibrationData } | { CalibrateMin: CalibrationData }
+export type CalibrationMessage = { CalibrateCenter: CalibrationData } | { CalibrateMax: CalibrationData } | { CalibrateMin: CalibrationData } | "SaveCalibration"
 export type ChannelOptions = { channel: ScopeChannel; enabled: boolean; voltage_gain: ScopeGain; coupling: ScopeCoupling }
 export type Color = { red: number; green: number; blue: number; alpha: number }
 export type FrontendFrameData = { data: number[]; center: number; timestep_ms: number; voltage_scale: number; channel: ScopeChannel }
@@ -61,6 +64,7 @@ export type ScopeGain = "One" | "Four" | "Twenty"
 export type SerialStatus = "Connected" | "Disconnected"
 export type TitlebarButton = "Menu" | "Minimize" | "Maximize" | "Close"
 export type TitlebarLayout = { left: TitlebarButton[]; right: TitlebarButton[] }
+export type TriggerOptions = { channel: ScopeChannel; enabled: boolean; value: number }
 export type VerificationMessage = { TriggerState: boolean } | "StartDacTest" | "SetGpioHigh" | "SetGpioLow"
 
 /** tauri-specta globals **/

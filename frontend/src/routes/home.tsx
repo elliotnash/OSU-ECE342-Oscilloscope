@@ -223,6 +223,25 @@ function Index() {
     setMathState((prev) => ({ ...prev, presetId: presetId as MathPresetId }));
   }, []);
 
+  const [triggerPlacingChannel, setTriggerPlacingChannel] = useState<ScopeChannel | null>(null);
+
+  const onSetTriggerPlacing = useCallback((channel: ScopeChannel | null) => {
+    setTriggerPlacingChannel(channel);
+  }, []);
+
+  const onClearTrigger = useCallback(() => {
+    if (triggerPlacingChannel !== null) {
+      setTriggerPlacingChannel(null);
+    } else {
+      void commands.sendTriggerOptions({ channel: "A", enabled: false, value: 0 });
+    }
+  }, [triggerPlacingChannel]);
+
+  const onTriggerPlaced = useCallback((channel: ScopeChannel, value: number) => {
+    void commands.sendTriggerOptions({ channel, enabled: true, value });
+    setTriggerPlacingChannel(null);
+  }, []);
+
   return (
     <>
       <Titlebar menuButton={
@@ -261,6 +280,8 @@ function Index() {
                 timeScale={timeScale}
                 onTimeScaleChange={handleTimeScaleChange}
                 onTimeExtent={handleTimeExtent}
+                triggerPlacingChannel={triggerPlacingChannel}
+                onTriggerPlaced={onTriggerPlaced}
               />
             </div>
             <div className="flex gap-3 items-stretch px-2 py-2 shrink-0 min-h-0">
@@ -333,6 +354,9 @@ function Index() {
                     }
                   }
                 }}
+                triggerPlacingChannel={triggerPlacingChannel}
+                onSetTriggerPlacing={onSetTriggerPlacing}
+                onClearTrigger={onClearTrigger}
               />
             </div>
           </ScrollArea>
@@ -340,6 +364,60 @@ function Index() {
       </div>
     </>
    
+  );
+}
+
+function TriggerCard({
+  triggerPlacingChannel,
+  onSetTriggerPlacing,
+  onClearTrigger,
+}: {
+  triggerPlacingChannel: ScopeChannel | null;
+  onSetTriggerPlacing: (channel: ScopeChannel | null) => void;
+  onClearTrigger: () => void;
+}) {
+  const handleClear = useCallback(() => {
+    onClearTrigger();
+  }, [onClearTrigger]);
+
+  const handleSetA = useCallback(() => {
+    onSetTriggerPlacing("A");
+  }, [onSetTriggerPlacing]);
+
+  const handleSetB = useCallback(() => {
+    onSetTriggerPlacing("B");
+  }, [onSetTriggerPlacing]);
+
+  return (
+    <Card className="h-auto landscape:w-full min-w-0 gap-2">
+      <CardHeader>
+        <CardTitle>Trigger</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="flex flex-col gap-2">
+          <div className="flex flex-wrap flex-col gap-2">
+            <Button onPress={handleClear} intent={triggerPlacingChannel ? "secondary" : "outline"}>
+              Clear trigger
+            </Button>
+            <Button
+              onPress={handleSetA}
+              intent={triggerPlacingChannel === "A" ? "primary" : "outline"}
+            >
+              Set trigger A
+            </Button>
+            <Button
+              onPress={handleSetB}
+              intent={triggerPlacingChannel === "B" ? "primary" : "outline"}
+            >
+              Set trigger B
+            </Button>
+          </div>
+          {triggerPlacingChannel && (
+            <p className="text-sm text-fg/70">Click on the graph to set trigger level.</p>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }
 
@@ -353,6 +431,9 @@ function ControlPanel({
   onMathModeChange,
   onMathPresetChange,
   onAutoScale,
+  triggerPlacingChannel,
+  onSetTriggerPlacing,
+  onClearTrigger,
 }: {
   channelVisibility: Record<ScopeChannel, boolean>;
   channelAttenuation: Record<ScopeChannel, Key>;
@@ -363,6 +444,9 @@ function ControlPanel({
   onMathModeChange: (mode: "preset" | "custom") => void;
   onMathPresetChange: (presetId: string) => void;
   onAutoScale: () => void;
+  triggerPlacingChannel: ScopeChannel | null;
+  onSetTriggerPlacing: (channel: ScopeChannel | null) => void;
+  onClearTrigger: () => void;
 }) {
   return (
     <>
@@ -385,6 +469,11 @@ function ControlPanel({
         }
       />
       <CommondCard onAutoScale={onAutoScale} />
+      <TriggerCard
+        triggerPlacingChannel={triggerPlacingChannel}
+        onSetTriggerPlacing={onSetTriggerPlacing}
+        onClearTrigger={onClearTrigger}
+      />
       <MathChannelCard
         state={mathState}
         onEnabledChange={onMathEnabledChange}
@@ -745,11 +834,14 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
   timeScale?: { min: number; max: number };
   onTimeScaleChange?: (min: number, max: number) => void;
   onTimeExtent?: (min: number, max: number) => void;
+  triggerPlacingChannel?: ScopeChannel | null;
+  onTriggerPlaced?: (channel: ScopeChannel, value: number) => void;
 }>(function Plot(
-  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames, onStatsChange, timeScale: timeScaleProp, onTimeExtent },
+  { channelVisibility, channelAttenuation, mathState, channelVoltageScale, onChannelVoltageScaleChange, onVoltageScaleFromFrames, onStatsChange, timeScale: timeScaleProp, onTimeExtent, triggerPlacingChannel = null, onTriggerPlaced },
   ref,
 ) {
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const echartsRef = useRef<ReactECharts>(null);
   const [frames, setFrames] = useState<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
   const latestFramesRef = useRef<Partial<Record<ScopeChannel, FrontendFrameData>>>({});
   const channelVisibilityRef = useRef(channelVisibility);
@@ -795,6 +887,34 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
       },
     }));
   }, []);
+
+  useEffect(() => {
+    if (!triggerPlacingChannel || !onTriggerPlaced) return;
+    const chart = echartsRef.current?.getEchartsInstance?.();
+    if (!chart) return;
+    const scale = channelVoltageScale[triggerPlacingChannel];
+    const { min, max } = scale;
+    const zr = chart.getZr();
+    const handler = (event: { offsetX: number; offsetY: number }) => {
+      const pointInPixel = [event.offsetX, event.offsetY];
+      const yAxisIndex = triggerPlacingChannel === "A" ? 0 : 1;
+      const pointInGrid = chart.convertFromPixel(
+        { gridIndex: 0, xAxisIndex: 0, yAxisIndex },
+        pointInPixel,
+      );
+      if (Array.isArray(pointInGrid) && pointInGrid.length >= 2 && Number.isFinite(pointInGrid[1])) {
+        const voltageY = pointInGrid[1];
+        const range = max - min;
+        const normalized = range !== 0 ? (voltageY - min) / range : 0.5;
+        const value255 = Math.round(Math.max(0, Math.min(255, normalized * 255)));
+        onTriggerPlaced(triggerPlacingChannel, value255);
+      }
+    };
+    zr.on("click", handler);
+    return () => {
+      zr.off("click", handler);
+    };
+  }, [triggerPlacingChannel, onTriggerPlaced, channelVoltageScale]);
 
   useEffect(() => {
     let rafId: number;
@@ -1235,6 +1355,7 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
         {`FPS: ${frameRate.toFixed(0)}`}
       </div>
       <ReactECharts
+        ref={echartsRef}
         style={{ width: "100%", height: "100%" }}
         option={option}
         notMerge={false}

@@ -43,7 +43,7 @@ pub enum CalibrationMessage {
     SaveCalibration,
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[cfg_attr(feature = "alloc", derive(defmt::Format))]
 #[cfg_attr(feature = "std", derive(Type))]
 pub struct CalibrationData {

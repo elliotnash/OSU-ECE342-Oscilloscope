@@ -103,7 +103,7 @@ async fn main(spawner: Spawner) -> ! {
     let _ = spawner.spawn(led_color_task(ws2812));
 
     // Create the NVS
-    let mut flash = embassy_rp::flash::Flash::<_, Async, FLASH_SIZE>::new(p.FLASH, p.DMA_CH2);
+    let flash = embassy_rp::flash::Flash::<_, Async, FLASH_SIZE>::new(p.FLASH, p.DMA_CH2);
     let _ = spawner.spawn(nvs_properties_task(flash));
 
     // Create the USB driver, from the HAL.
@@ -199,11 +199,12 @@ async fn main(spawner: Spawner) -> ! {
     let mut sel1_pins = [Flex::new(p.PIN_11), Flex::new(p.PIN_14)];
     let mut sel2_pins = [Flex::new(p.PIN_12), Flex::new(p.PIN_15)];
 
-    for pin in coupling_pins
-        .iter_mut()
-        .chain(sel1_pins.iter_mut())
-        .chain(sel2_pins.iter_mut())
-    {
+    for pin in coupling_pins.iter_mut() {
+        pin.set_as_output();
+        pin.set_high();
+    }
+
+    for pin in sel1_pins.iter_mut().chain(sel2_pins.iter_mut()) {
         pin.set_as_output();
         pin.set_low();
     }
@@ -272,6 +273,11 @@ async fn set_trigger_task(
             dac.write_dac(dac_channel, trigger.value as u16)
                 .await
                 .expect("Failed to write DAC value");
+
+            let value = dac
+                .read_dac(dac_channel)
+                .await
+                .expect("Failed to read DAC value");
         }
     }
 }
@@ -482,11 +488,8 @@ async fn read_adc_task(
         frame_ticker.next().await;
 
         let trigger_options = trigger_options_receiver.get().await;
-        if trigger_options.enabled {
-            trigger_pins[trigger_options.channel as usize]
-                .wait_for_falling_edge()
-                .await;
-        }
+
+        info!("Trigger options: {:?}", trigger_options);
 
         // Don't send frames if there's a backlog
         if message_sender.len() >= 2 {
@@ -504,6 +507,15 @@ async fn read_adc_task(
         let mut buf = [0_u16; { BLOCK_SIZE * NUM_CHANNELS }];
         let div = (48_000_000_u32 / (sample_rate * 2) - 1) as u16;
         // debug!("Sampling with div: {}", div);
+
+        if trigger_options.enabled {
+            select(
+                trigger_pins[trigger_options.channel as usize].wait_for_falling_edge(),
+                Timer::after_millis(10),
+            )
+            .await;
+        }
+
         adc.read_many_multichannel(&mut adc_pins, &mut buf, div, adc_dma.reborrow())
             .await
             .expect("Failed to read ADC samples");
@@ -512,7 +524,7 @@ async fn read_adc_task(
         let ch_a_frame = FrameData {
             data: ch_a_samples.copied().collect(),
             center: calibration.centers[0],
-            voltage_scale: 6.6,
+            voltage_scale: 3.3,
             channel: ScopeChannel::A,
             timestep_ms: 1000.0 / (sample_rate as f32),
         };
@@ -522,7 +534,7 @@ async fn read_adc_task(
         let ch_b_frame = FrameData {
             data: ch_b_samples.copied().collect(),
             center: calibration.centers[1],
-            voltage_scale: 6.6,
+            voltage_scale: 3.3,
             channel: ScopeChannel::B,
             timestep_ms: 1000.0 / (sample_rate as f32),
         };

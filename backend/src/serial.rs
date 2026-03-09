@@ -6,7 +6,7 @@ use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
 use std::{sync::OnceLock, time::Duration};
 use tokio::{select, sync::{broadcast, watch}, time::{Instant, sleep}};
-use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData, ScopeChannel}, message::{CalibrationMessage, Message, VerificationMessage}, usb::{OSCOPE_PID, OSCOPE_VID}};
+use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData, ScopeChannel}, message::{CalibrationMessage, Message, VerificationMessage}, trigger::TriggerOptions, usb::{OSCOPE_PID, OSCOPE_VID}};
 
 
 #[derive(Debug, Clone, Serialize, Deserialize, Type, Event, PartialEq, Eq)]
@@ -329,5 +329,14 @@ pub fn send_sample_rate(sample_rate: u32) {
     let serial_tx_broadcast = get_serial_tx_broadcast();
     println!("Sending sample rate: {:?}", sample_rate);
     let message = Message::SetSampleRate(sample_rate);
+    serial_tx_broadcast.send(message).ok();
+}
+
+#[tauri::command]
+#[specta::specta]
+pub fn send_trigger_options(trigger_options: TriggerOptions) {
+    let serial_tx_broadcast = get_serial_tx_broadcast();
+    println!("Sending trigger options: {:?}", trigger_options);
+    let message = Message::SetTriggerOptions(trigger_options);
     serial_tx_broadcast.send(message).ok();
 }
