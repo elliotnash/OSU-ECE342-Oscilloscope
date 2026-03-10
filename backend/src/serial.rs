@@ -258,19 +258,6 @@ async fn handle_serial_send(serial: Arc<SerialPort>) -> std::io::Result<()> {
 
 #[tauri::command(async)]
 #[specta::specta]
-pub async fn receive_frames(app: AppHandle, on_event: Channel<FrontendFrameData>) {
-//     let mut cha_frame_watch = get_cha_frame_watch().subscribe();
-//     let serial_status_watch = get_serial_status_watch().subscribe();
-//     while serial_status_watch.borrow().clone() == SerialStatus::Connected {
-//         let frame = frame_watch.changed().await;
-//         if frame.is_ok() {
-//             on_event.send(FrontendFrameData::from(frame_watch.borrow_and_update().clone())).ok();
-//         }
-//     }
-}
-
-#[tauri::command(async)]
-#[specta::specta]
 pub async fn get_current_frame() -> (FrontendFrameData, FrontendFrameData) {
     let cha = FrontendFrameData::from(get_cha_frame_watch().borrow().as_ref());
     let chb = FrontendFrameData::from(get_chb_frame_watch().borrow().as_ref());
@@ -280,7 +267,7 @@ pub async fn get_current_frame() -> (FrontendFrameData, FrontendFrameData) {
 
 #[tauri::command(async)]
 #[specta::specta]
-pub async fn receive_verification_messages(app: AppHandle, on_event: Channel<VerificationMessage>) {
+pub async fn receive_verification_messages(_app: AppHandle, on_event: Channel<VerificationMessage>) {
     let mut verification_broadcast = get_verification_broadcast().subscribe();
     let serial_status_watch = get_serial_status_watch().subscribe();
     while serial_status_watch.borrow().clone() == SerialStatus::Connected {
