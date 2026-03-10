@@ -101,8 +101,7 @@ pub async fn serial_task(app: AppHandle) {
 
         println!("Device found at {}! Connecting...", port_path);
 
-        // Attempt to open port. If it fails we go back to searching.
-        let serial = match SerialPort::open(&port_path, KeepSettings) {
+        let serial_tx = match SerialPort::open(&port_path, KeepSettings) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Error opening port: {}. Retrying...", e);
@@ -110,17 +109,28 @@ pub async fn serial_task(app: AppHandle) {
                 continue; 
             }
         };
+        let serial_tx = Arc::new(serial_tx);
 
-        // Share the serial port so it can be used by both the receive and send tasks
-        let serial = Arc::new(serial);
+        #[cfg(not(target_os = "windows"))]
+        let serial_rx = match serial_tx.try_clone() {
+            Ok(s) => Arc::new(s),
+            Err(e) => {
+                eprintln!("Error cloning port: {}. Retrying...", e);
+                sleep(Duration::from_secs(1)).await;
+                continue; 
+            }
+        };
+
+        #[cfg(target_os = "windows")]
+        let serial_rx = serial_tx.clone();
 
         // Notify frontend that we are connected
         get_serial_status_watch().send_replace(SerialStatus::Connected);
         app.emit("serial-status", SerialStatus::Connected).unwrap();
 
         let serial_res = select! {
-            res = handle_serial_receive(serial.clone()) => res,
-            res = handle_serial_send(serial) => res,
+            res = handle_serial_receive(serial_tx) => res,
+            res = handle_serial_send(serial_rx) => res,
             res = handle_heartbeat_monitor() => res,
             res = handle_send_heartbeat() => res,
         };

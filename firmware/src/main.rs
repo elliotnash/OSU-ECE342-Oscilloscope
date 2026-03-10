@@ -489,8 +489,6 @@ async fn read_adc_task(
 
         let trigger_options = trigger_options_receiver.get().await;
 
-        info!("Trigger options: {:?}", trigger_options);
-
         // Don't send frames if there's a backlog
         if message_sender.len() >= 2 {
             continue;
