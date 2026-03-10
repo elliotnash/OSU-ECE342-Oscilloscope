@@ -4,6 +4,8 @@ View this project on [CADLAB.io](https://cadlab.io/project/29860).
 
 A Dual Channel USB Oscilloscope designed for OSU ECE342 Junior Design 2
 
+![Client App GUI](assets/gui.png)
+
 ## Project Structure
 
 - **`hardware/`** - Contains KiCad schematic and PCB design files for a RP2350 based oscilloscope board.
