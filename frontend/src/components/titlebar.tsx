@@ -23,17 +23,16 @@ export function Titlebar({ menuButton }: { menuButton?: React.ReactNode }) {
     return (
         <div data-tauri-drag-region className="relative flex items-center w-full h-12 border-b">
             {/* Left buttons */}
-        
-            <div className="flex items-center gap-2 flex-1 min-w-0 justify-start pl-2">
+            <div data-tauri-drag-region className="flex items-center gap-2 flex-1 min-w-0 justify-start pl-2">
                 {layout.left.map((button) => mapTitlebarButton(button, menuButton))}
             </div>
-            <div className="absolute left-[50vw] -translate-x-1/2 flex items-center gap-2 pointer-events-none">
+            <div data-tauri-drag-region className="absolute left-[50vw] -translate-x-1/2 flex items-center gap-2 pointer-events-none">
                 <div className="pointer-events-auto flex items-center gap-2 px-2 py-1 text-sm select-none">
                     <h1 data-tauri-drag-region>Oscope Client</h1>
                 </div>
             </div>
             {/* Right buttons */}
-            <div className="flex items-center gap-2 flex-1 min-w-0 justify-end pr-2">
+            <div data-tauri-drag-region className="flex items-center gap-2 flex-1 min-w-0 justify-end pr-2">
                 {layout.right.map((button) => mapTitlebarButton(button, menuButton))}
             </div>
         </div>

@@ -866,6 +866,19 @@ export const Plot = forwardRef<{ captureScale: () => void }, {
     channelVisibilityRef.current = channelVisibility;
   }, [channelVisibility]);
 
+  // Resize ECharts when the container size changes (e.g. window resize)
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      const chart = echartsRef.current?.getEchartsInstance?.();
+      chart?.resize();
+    });
+    resizeObserver.observe(container);
+    return () => resizeObserver.disconnect();
+  }, []);
+
   useEffect(() => {
     if (!containerRef.current) return;
     const styles = getComputedStyle(containerRef.current);
