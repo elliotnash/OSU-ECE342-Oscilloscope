@@ -246,6 +246,10 @@
     user-select: none;
   }
 
+  *[data-tauri-drag-region] {
+    app-region: drag;
+  }
+
   body {
     background-color: var(--bg);
     color: var(--fg);

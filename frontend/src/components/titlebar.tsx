@@ -21,18 +21,18 @@ export function Titlebar({ menuButton }: { menuButton?: React.ReactNode }) {
     }, []);
 
     return (
-        <div data-tauri-drag-region className="relative flex items-center w-full h-12 border-b">
+        <div data-tauri-drag-region className="relative flex items-center w-full h-10 border-b">
             {/* Left buttons */}
-            <div data-tauri-drag-region className="flex items-center gap-2 flex-1 min-w-0 justify-start pl-2">
+            <div data-tauri-drag-region className="h-full flex items-center flex-1 min-w-0 justify-start">
                 {layout.left.map((button) => mapTitlebarButton(button, menuButton))}
             </div>
-            <div data-tauri-drag-region className="absolute left-[50vw] -translate-x-1/2 flex items-center gap-2 pointer-events-none">
+            <div data-tauri-drag-region className="h-full absolute left-[50vw] -translate-x-1/2 flex items-center gap-2 pointer-events-none">
                 <div className="pointer-events-auto flex items-center gap-2 px-2 py-1 text-sm select-none">
                     <h1 data-tauri-drag-region>Oscope Client</h1>
                 </div>
             </div>
             {/* Right buttons */}
-            <div data-tauri-drag-region className="flex items-center gap-2 flex-1 min-w-0 justify-end pr-2">
+            <div data-tauri-drag-region className="h-full flex items-center flex-1 min-w-0 justify-end">
                 {layout.right.map((button) => mapTitlebarButton(button, menuButton))}
             </div>
         </div>
@@ -42,13 +42,13 @@ export function Titlebar({ menuButton }: { menuButton?: React.ReactNode }) {
 function mapTitlebarButton(button: TitlebarButton, menuButton?: React.ReactNode) {
     switch (button) {
         case "Menu":
-            return menuButton;
+            return <div className="px-1">{menuButton}</div>;
         case "Minimize":
             return <NativeMinimize/>;
         case "Maximize":
             return <NativeMaximize/>;
         case "Close":
-        return <NativeClose/>;
+            return <NativeClose/>;
     }
 }
 
@@ -56,8 +56,6 @@ function NativeMinimize() {
     switch (osType) {
         case "linux":
             return <LinuxMinimize/>;
-        case "macos":
-            return <MacosMinimize/>;
         case "windows":
             return <WindowsMinimize/>;
     }
@@ -67,8 +65,6 @@ function NativeMaximize() {
     switch (osType) {
         case "linux":
             return <LinuxMaximize/>;
-        case "macos":
-            return <MacosMaximize/>;
         case "windows":
             return <WindowsMaximize/>;
     }
@@ -78,27 +74,27 @@ function NativeClose() {
     switch (osType) {
         case "linux":
             return <LinuxClose/>;
-        case "macos":
-            return <MacosClose/>;
         case "windows":
             return <WindowsClose/>;
     }
+}
+
+type ControlProps = {
+    "aria-label": string;
+    onClick: () => void;
+    children: React.ReactNode;
 }
 
 function LinuxControl({
     "aria-label": ariaLabel,
     onClick,
     children,
-}: {
-    "aria-label": string;
-    onClick: () => void;
-    children: React.ReactNode;
-}) {
+}: ControlProps) {
     return (
         <RACButton
             aria-label={ariaLabel}
             onClick={onClick}
-            className="flex size-5 mx-1 shrink-0 items-center justify-center bg-fg/4 rounded-full text-navbar-fg opacity-80 
+            className="px-2 flex size-5 mx-1 shrink-0 items-center justify-center bg-fg/4 rounded-full text-navbar-fg opacity-80 
                 transition-colors hover:opacity-100 hover:bg-fg/8 focus:outline-none focus-visible:ring-2 focus-visible:ring-inset 
                 focus-visible:ring-primary/50 pressed:bg-fg/12 fill-current"
         >
@@ -144,115 +140,98 @@ function LinuxClose() {
     );
 }
 
-type MacosControlColor = "red" | "yellow" | "green";
-
-const macosDotClasses: Record<MacosControlColor, string> = {
-    red: "bg-[#ff5f57] border-[#e0443e]",
-    yellow: "bg-[#febc2e] border-[#dea123]",
-    green: "bg-[#28c840] border-[#1aab29]",
+type WindowsControlProps = ControlProps & {
+    variant?: "default" | "close";
 };
 
-function MacosControl({
+function WindowsControl({
     "aria-label": ariaLabel,
     onClick,
-    color,
     children,
-}: {
-    "aria-label": string;
-    onClick: () => void;
-    color: MacosControlColor;
-    children: React.ReactNode;
-}) {
+    variant = "default",
+}: WindowsControlProps) {
     return (
         <RACButton
             aria-label={ariaLabel}
             onClick={onClick}
-            className="group relative flex size-4 shrink-0 items-center justify-center focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50 pressed:opacity-90"
+            className={`
+                flex size-[46px] shrink-0 items-center justify-center h-full
+                transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50
+                ${variant === "close"
+                    ? "text-fg hover:bg-[#E81123] hover:text-white active:bg-[#C50F1F]"
+                    : "text-fg hover:bg-black/10 dark:hover:bg-white/10 active:bg-black/20 dark:active:bg-white/20"
+                }
+            `}
         >
-            <span
-                className={[
-                    "size-3 rounded-full border shadow-[inset_0_1px_0_rgba(255,255,255,0.35)] transition-[filter] group-hover:brightness-105 pressed:brightness-95",
-                    macosDotClasses[color],
-                ].join(" ")}
-            />
-            <span className="pointer-events-none absolute inset-0 flex items-center justify-center text-black/70 opacity-0 transition-opacity group-hover:opacity-100">
-                {children}
-            </span>
+            {children}
         </RACButton>
     );
 }
 
-function MacosGlyphMinus() {
+function WindowsMinimizeIcon() {
     return (
-        <span
-            aria-hidden="true"
-            className="h-[1.5px] w-2 rounded-full bg-black/70"
-        />
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" className="shrink-0">
+            <rect x="0" y="4" width="10" height="1" rx="0.5" />
+        </svg>
     );
 }
 
-function MacosGlyphPlus() {
+function WindowsMaximizeIcon() {
     return (
-        <span aria-hidden="true" className="relative size-2">
-            <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 rounded-full bg-black/70" />
-            <span className="absolute inset-y-0 left-1/2 w-[1.5px] -translate-x-1/2 rounded-full bg-black/70" />
-        </span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.25" className="shrink-0">
+            <rect x="0.5" y="0.5" width="9" height="9" rx="0.5" />
+        </svg>
     );
 }
 
-function MacosGlyphClose() {
+function WindowsRestoreIcon() {
     return (
-        <span aria-hidden="true" className="relative size-2">
-            <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 rotate-45 rounded-full bg-black/70" />
-            <span className="absolute inset-x-0 top-1/2 h-[1.5px] -translate-y-1/2 -rotate-45 rounded-full bg-black/70" />
-        </span>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.25" className="shrink-0">
+            <rect x="2" y="0" width="8" height="8" rx="0.5" />
+            <rect x="0" y="2" width="8" height="8" rx="0.5" />
+        </svg>
     );
 }
 
-function MacosMinimize() {
+function WindowsCloseIcon() {
     return (
-        <MacosControl
-            aria-label="Minimize"
-            color="yellow"
-            onClick={() => getCurrentWindow().minimize()}
-        >
-            <MacosGlyphMinus />
-        </MacosControl>
-    );
-}
-
-function MacosMaximize() {
-    return (
-        <MacosControl
-            aria-label="Maximize"
-            color="green"
-            onClick={() => getCurrentWindow().toggleMaximize()}
-        >
-            <MacosGlyphPlus />
-        </MacosControl>
-    );
-}
-
-function MacosClose() {
-    return (
-        <MacosControl
-            aria-label="Close"
-            color="red"
-            onClick={() => getCurrentWindow().close()}
-        >
-            <MacosGlyphClose />
-        </MacosControl>
+        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" className="shrink-0">
+            <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" />
+        </svg>
     );
 }
 
 function WindowsMinimize() {
-    return <div>WindowsMinimize</div>;
+    return (
+        <WindowsControl
+            aria-label="Minimize"
+            onClick={() => getCurrentWindow().minimize()}
+        >
+            <WindowsMinimizeIcon />
+        </WindowsControl>
+    );
 }
 
 function WindowsMaximize() {
-    return <div>WindowsMaximize</div>;
+    const { isMaximized } = useIsMaximized();
+    return (
+        <WindowsControl
+            aria-label="Maximize"
+            onClick={() => getCurrentWindow().toggleMaximize()}
+        >
+            {isMaximized ? <WindowsRestoreIcon /> : <WindowsMaximizeIcon />}
+        </WindowsControl>
+    );
 }
 
 function WindowsClose() {
-    return <div>WindowsClose</div>;
+    return (
+        <WindowsControl
+            aria-label="Close"
+            onClick={() => getCurrentWindow().close()}
+            variant="close"
+        >
+            <WindowsCloseIcon />
+        </WindowsControl>
+    );
 }
