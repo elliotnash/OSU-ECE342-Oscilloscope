@@ -4,10 +4,14 @@ import { useEffect } from "react";
 import { titlebarLayout } from "~/main";
 import { Button as RACButton } from "react-aria-components";
 import { type } from "@tauri-apps/plugin-os";
-import WindowMinimizeSymbolic from "~/assets/adwaita/window-minimize-symbolic.svg?react";
-import WindowMaximizeSymbolic from "~/assets/adwaita/window-maximize-symbolic.svg?react";
-import WindowRestoreSymbolic from "~/assets/adwaita/window-restore-symbolic.svg?react";
-import WindowCloseSymbolic from "~/assets/adwaita/window-close-symbolic.svg?react";
+import AdwaitaMinimizeSymbolic from "~/assets/adwaita/window-minimize-symbolic.svg?react";
+import AdwaitaMaximizeSymbolic from "~/assets/adwaita/window-maximize-symbolic.svg?react";
+import AdwaitaRestoreSymbolic from "~/assets/adwaita/window-restore-symbolic.svg?react";
+import AdwaitaCloseSymbolic from "~/assets/adwaita/window-close-symbolic.svg?react";
+import WindowsMinimizeSvg from "~/assets/windows/windows-minimize.svg?react";
+import WindowsMaximizeSvg from "~/assets/windows/windows-maximize.svg?react";
+import WindowsRestoreSvg from "~/assets/windows/windows-restore.svg?react";
+import WindowsCloseSvg from "~/assets/windows/windows-close.svg?react";
 import { useIsMaximized } from "~/hooks/use-is-maximized";
 import { commands, type TitlebarButton } from "~/bindings";
 
@@ -109,7 +113,7 @@ function LinuxMinimize() {
             aria-label="Minimize"
             onClick={() => getCurrentWindow().minimize()}
         >
-            <WindowMinimizeSymbolic className="size-3.5 shrink-0" />
+            <AdwaitaMinimizeSymbolic className="size-3.5 shrink-0" />
         </LinuxControl>
     );
 }
@@ -122,8 +126,8 @@ function LinuxMaximize() {
             onClick={() => getCurrentWindow().toggleMaximize()}
         >
             {isMaximized 
-                ? <WindowRestoreSymbolic className="size-3.5 shrink-0" /> 
-                : <WindowMaximizeSymbolic className="size-3.5 shrink-0" />}
+                ? <AdwaitaRestoreSymbolic className="size-3.5 shrink-0" /> 
+                : <AdwaitaMaximizeSymbolic className="size-3.5 shrink-0" />}
         </LinuxControl>
     );
 }
@@ -135,7 +139,7 @@ function LinuxClose() {
             onClick={() => getCurrentWindow().close()}
         >
             {/* <img src={windowCloseSymbolic} alt="Minimize" className="size-3.5 shrink-0" /> */}
-            <WindowCloseSymbolic className="size-3.5 shrink-0" />
+            <AdwaitaCloseSymbolic className="size-3.5 shrink-0" />
         </LinuxControl>
     );
 }
@@ -158,7 +162,7 @@ function WindowsControl({
                 flex size-[46px] shrink-0 items-center justify-center h-full
                 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary/50
                 ${variant === "close"
-                    ? "text-fg hover:bg-[#E81123] hover:text-white active:bg-[#C50F1F]"
+                    ? "text-fg hover:bg-[#E81123] hover:text-white active:bg-[#C50F1F] rounded-tr-md"
                     : "text-fg hover:bg-black/10 dark:hover:bg-white/10 active:bg-black/20 dark:active:bg-white/20"
                 }
             `}
@@ -168,46 +172,13 @@ function WindowsControl({
     );
 }
 
-function WindowsMinimizeIcon() {
-    return (
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" className="shrink-0">
-            <rect x="0" y="4" width="10" height="1" rx="0.5" />
-        </svg>
-    );
-}
-
-function WindowsMaximizeIcon() {
-    return (
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.25" className="shrink-0">
-            <rect x="0.5" y="0.5" width="9" height="9" rx="0.5" />
-        </svg>
-    );
-}
-
-function WindowsRestoreIcon() {
-    return (
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.25" className="shrink-0">
-            <rect x="2" y="0" width="8" height="8" rx="0.5" />
-            <rect x="0" y="2" width="8" height="8" rx="0.5" />
-        </svg>
-    );
-}
-
-function WindowsCloseIcon() {
-    return (
-        <svg width="10" height="10" viewBox="0 0 10 10" fill="none" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" className="shrink-0">
-            <path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" />
-        </svg>
-    );
-}
-
 function WindowsMinimize() {
     return (
         <WindowsControl
             aria-label="Minimize"
             onClick={() => getCurrentWindow().minimize()}
         >
-            <WindowsMinimizeIcon />
+            <WindowsMinimizeSvg className="shrink-0" />
         </WindowsControl>
     );
 }
@@ -219,7 +190,11 @@ function WindowsMaximize() {
             aria-label="Maximize"
             onClick={() => getCurrentWindow().toggleMaximize()}
         >
-            {isMaximized ? <WindowsRestoreIcon /> : <WindowsMaximizeIcon />}
+            {isMaximized ? (
+                <WindowsRestoreSvg className="shrink-0" />
+            ) : (
+                <WindowsMaximizeSvg className="shrink-0" />
+            )}
         </WindowsControl>
     );
 }
@@ -231,7 +206,7 @@ function WindowsClose() {
             onClick={() => getCurrentWindow().close()}
             variant="close"
         >
-            <WindowsCloseIcon />
+            <WindowsCloseSvg className="shrink-0" />
         </WindowsControl>
     );
 }
