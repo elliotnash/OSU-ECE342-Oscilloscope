@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
 use serialport::{SerialPortType, UsbPortInfo};
-use serial2_tokio::{KeepSettings, SerialPort};
+use serial2_tokio::SerialPort;
 use specta::{ Type };
 use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
@@ -101,7 +101,7 @@ pub async fn serial_task(app: AppHandle) {
 
         println!("Device found at {}! Connecting...", port_path);
 
-        let serial_tx = match SerialPort::open(&port_path, 115200) {
+        let serial_tx = match SerialPort::open(&port_path, 921600) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Error opening port: {}. Retrying...", e);

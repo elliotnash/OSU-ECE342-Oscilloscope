@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { titlebarLayout } from "~/main";
 import { Button as RACButton } from "react-aria-components";
 import { type } from "@tauri-apps/plugin-os";
+import { tv } from "tailwind-variants";
 import AdwaitaMinimizeSymbolic from "~/assets/adwaita/window-minimize-symbolic.svg?react";
 import AdwaitaMaximizeSymbolic from "~/assets/adwaita/window-maximize-symbolic.svg?react";
 import AdwaitaRestoreSymbolic from "~/assets/adwaita/window-restore-symbolic.svg?react";
@@ -19,13 +20,33 @@ const osType = type();
 
 const layout = await commands.getTitlebarLayout();
 
+const titlebarStyles = tv({
+    base: "relative flex items-center w-full border-b",
+    variants: {
+        isLinux: {
+            true: "h-12",
+            false: "h-10",
+        },
+    },
+});
+
+const menuButtonWrapperStyles = tv({
+    base: "",
+    variants: {
+        isLinux: {
+            true: "px-2",
+            false: "px-1",
+        },
+    },
+});
+
 export function Titlebar({ menuButton }: { menuButton?: React.ReactNode }) {
     useEffect(() => {
         info(JSON.stringify(titlebarLayout));
     }, []);
 
     return (
-        <div data-tauri-drag-region className="relative flex items-center w-full h-10 border-b">
+        <div data-tauri-drag-region className={titlebarStyles({ isLinux: osType === "linux" })}>
             {/* Left buttons */}
             <div data-tauri-drag-region className="h-full flex items-center flex-1 min-w-0 justify-start">
                 {layout.left.map((button) => mapTitlebarButton(button, menuButton))}
@@ -46,7 +67,7 @@ export function Titlebar({ menuButton }: { menuButton?: React.ReactNode }) {
 function mapTitlebarButton(button: TitlebarButton, menuButton?: React.ReactNode) {
     switch (button) {
         case "Menu":
-            return <div className="px-1">{menuButton}</div>;
+            return <div className={menuButtonWrapperStyles({ isLinux: osType === "linux" })}>{menuButton}</div>;
         case "Minimize":
             return <NativeMinimize/>;
         case "Maximize":
