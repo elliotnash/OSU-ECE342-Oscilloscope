@@ -1,10 +1,10 @@
 use serde::{Deserialize, Serialize};
 use serialport::{SerialPortType, UsbPortInfo};
-use serial2_tokio::SerialPort;
+use serial2_tokio::{KeepSettings, SerialPort};
 use specta::{ Type };
 use tauri::{ AppHandle, Emitter, ipc::Channel };
 use tauri_specta::Event;
-use std::{sync::OnceLock, time::Duration};
+use std::{sync::{Arc, OnceLock}, time::Duration};
 use tokio::{select, sync::{broadcast, watch}, time::{Instant, sleep}};
 use common::{channel::ChannelOptions, frame::{FrameData, FrontendFrameData, ScopeChannel}, message::{CalibrationMessage, Message, VerificationMessage}, trigger::TriggerOptions, usb::{OSCOPE_PID, OSCOPE_VID}};
 
@@ -102,7 +102,7 @@ pub async fn serial_task(app: AppHandle) {
         println!("Device found at {}! Connecting...", port_path);
 
         // Attempt to open port. If it fails we go back to searching.
-        let mut serial_tx = match SerialPort::open(&port_path, 115200) {
+        let serial = match SerialPort::open(&port_path, KeepSettings) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Error opening port: {}. Retrying...", e);
@@ -111,23 +111,16 @@ pub async fn serial_task(app: AppHandle) {
             }
         };
 
-        let mut serial_rx = match serial_tx.try_clone() {
-            Ok(s) => s,
-            Err(e) => {
-                eprintln!("Error cloning port: {}. Retrying...", e);
-                sleep(Duration::from_secs(1)).await;
-                continue; 
-            }
-        };
-
+        // Share the serial port so it can be used by both the receive and send tasks
+        let serial = Arc::new(serial);
 
         // Notify frontend that we are connected
         get_serial_status_watch().send_replace(SerialStatus::Connected);
         app.emit("serial-status", SerialStatus::Connected).unwrap();
 
         let serial_res = select! {
-            res = handle_serial_receive(&mut serial_tx) => res,
-            res = handle_serial_send(&mut serial_rx) => res,
+            res = handle_serial_receive(serial.clone()) => res,
+            res = handle_serial_send(serial) => res,
             res = handle_heartbeat_monitor() => res,
             res = handle_send_heartbeat() => res,
         };
@@ -190,7 +183,7 @@ async fn handle_send_heartbeat() -> std::io::Result<()> {
 /// Accumulates bytes into a message buffer until a null terminator (0x00) is received,
 /// then parses the buffer as a COBS-encoded message. This matches the firmware's
 /// receive_messages logic so messages split across multiple OS read() calls are handled.
-async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
+async fn handle_serial_receive(serial: Arc<SerialPort>) -> std::io::Result<()> {
     let mut read_buf = [0u8; 1024];
     let mut message_buf = Vec::new();
 
@@ -243,7 +236,7 @@ async fn handle_serial_receive(serial: &mut SerialPort) -> std::io::Result<()> {
     }
 }
 
-async fn handle_serial_send(serial: &mut SerialPort) -> std::io::Result<()> {
+async fn handle_serial_send(serial: Arc<SerialPort>) -> std::io::Result<()> {
     let mut serial_tx_broadcast = get_serial_tx_broadcast().subscribe();
 
     // Now that we've connected, send heartbeat. This will likely fail to be deserialized since

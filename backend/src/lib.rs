@@ -16,7 +16,7 @@ pub fn run() {
         .commands(collect_commands![get_system_theme, get_titlebar_layout, get_serial_status, get_current_frame, receive_verification_messages, send_verification_message, send_channel_options, send_sample_rate, send_calibration_message, send_trigger_options])
         .events(collect_events![SerialStatus]);
 
-    #[cfg(debug_assertions)] // <- Only export on non-release builds
+    #[cfg(debug_assertions)]
     builder
         .export(Typescript::default(), "../frontend/src/bindings.ts")
         .expect("Failed to export typescript bindings");
