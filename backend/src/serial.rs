@@ -101,7 +101,7 @@ pub async fn serial_task(app: AppHandle) {
 
         println!("Device found at {}! Connecting...", port_path);
 
-        let serial_tx = match SerialPort::open(&port_path, KeepSettings) {
+        let serial_tx = match SerialPort::open(&port_path, 115200) {
             Ok(s) => s,
             Err(e) => {
                 eprintln!("Error opening port: {}. Retrying...", e);
