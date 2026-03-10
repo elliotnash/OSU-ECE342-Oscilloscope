@@ -27,6 +27,9 @@ import { Tabs, Tab, TabList, TabPanel } from "~/components/tabs";
 import { Input } from "~/components/input";
 import { RangeScaleSlider } from "~/components/range-scale-slider";
 import { toast } from "sonner";
+import { type } from "@tauri-apps/plugin-os";
+
+const osType = type();
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -248,7 +251,7 @@ function Index() {
       <Titlebar menuButton={
         <Menu>
           <MenuTrigger>
-            <Button size="sq-sm" intent="outline">
+            <Button className={osType === "macos" ? "mx-2" : ""} size="sq-sm" intent={osType === "macos" ? "plain" : "outline"}>
               <Bars3Icon/>
             </Button>
           </MenuTrigger>
