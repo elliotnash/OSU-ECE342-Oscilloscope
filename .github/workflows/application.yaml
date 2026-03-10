@@ -6,8 +6,8 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build_and_test:
-    name: Build application
+  build_linux:
+    name: Build Application (Linux)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -44,12 +44,47 @@ jobs:
       - uses: actions/upload-artifact@v6
         with:
           name: bundle-deb
-          path: backend/target/release/bundle/deb/*.deb
+          path: target/release/bundle/deb/*.deb
       - uses: actions/upload-artifact@v6
         with:
           name: bundle-rpm
-          path: backend/target/release/bundle/rpm/*.rpm
+          path: target/release/bundle/rpm/*.rpm
       - uses: actions/upload-artifact@v6
         with:
           name: bundle-appimage
-          path: backend/target/release/bundle/appimage/*.AppImage
+          path: target/release/bundle/appimage/*.AppImage
+
+  build_macos:
+    name: Build Application (MacOS)
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: Swatinem/rust-cache@v2
+
+      - name: setup toolchain
+        uses: hecrj/setup-rust-action@v2
+        with:
+          rust-version: stable
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Install Tauri CLI
+        uses: taiki-e/install-action@v2
+        with:
+          tool: tauri-cli
+
+      - name: Install dependencies
+        run: pnpm install
+        working-directory: ./frontend
+
+      - name: Build client
+        run: cargo tauri build
+
+      - uses: actions/upload-artifact@v6
+        with:
+          name: bundle-dmg
+          path: target/release/bundle/dmg/*.dmg
