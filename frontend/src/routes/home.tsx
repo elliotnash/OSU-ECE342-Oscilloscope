@@ -26,6 +26,7 @@ import { Switch } from "~/components/switch";
 import { Tabs, Tab, TabList, TabPanel } from "~/components/tabs";
 import { Input } from "~/components/input";
 import { RangeScaleSlider } from "~/components/range-scale-slider";
+import { toast } from "sonner";
 
 export const Route = createFileRoute('/home')({
   component: Index,
@@ -323,7 +324,7 @@ function Index() {
                 min={timeScale.min}
                 max={timeScale.max}
                 onChange={handleTimeScaleChange}
-                color="rgb(96, 165, 250)"
+                color="oklch(from var(--muted-fg) l c h / 0.25)"
                 ariaLabel="Time axis scale"
               />
             </div>
@@ -388,6 +389,12 @@ function TriggerCard({
     onSetTriggerPlacing("B");
   }, [onSetTriggerPlacing]);
 
+  useEffect(() => {
+    if (triggerPlacingChannel) {
+      toast("Click on the graph to set trigger level.");
+    }
+  }, [triggerPlacingChannel]);
+
   return (
     <Card className="h-auto landscape:w-full min-w-0 gap-2">
       <CardHeader>
@@ -412,9 +419,6 @@ function TriggerCard({
               Set trigger B
             </Button>
           </div>
-          {triggerPlacingChannel && (
-            <p className="text-sm text-fg/70">Click on the graph to set trigger level.</p>
-          )}
         </div>
       </CardContent>
     </Card>

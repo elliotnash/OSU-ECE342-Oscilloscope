@@ -5,6 +5,7 @@ import { commands, events, type SerialStatus } from '~/bindings';
 import { useNavigate } from '@tanstack/react-router';
 import { info } from '@tauri-apps/plugin-log';
 import "~/styles/global.css";
+import { Toast } from "~/components/toast";
 
 function RootLayout() {
   const navigate = useNavigate();
@@ -42,6 +43,7 @@ function RootLayout() {
   return (
     <main className="h-screen flex flex-col overflow-hidden">
       <Outlet />
+      <Toast />
       <TanStackRouterDevtools position="top-right"/>
     </main>
   )
