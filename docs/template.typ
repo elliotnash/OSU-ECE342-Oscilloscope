@@ -26,10 +26,19 @@
   set par(justify: true)
   show figure: set block(breakable: true)
   
-  align(center + horizon, image("images/cover.jpeg", width: 75%))
+  // align(center + horizon, )
+
+  align(center + horizon)[
+    #move(image("images/OscopeBoard.png", width: 111%), dx: 5pt)
+    #move(image("images/OscopeCaseTop.png", width: 100%), dy: -30pt)
+  ]
 
   colbreak()
 
+  show highlight: it => {
+    show math.equation: box.with(fill: rgb("#fffe69"))
+    it
+  }
 
   body
 }
@@ -72,11 +81,5 @@
 }
 
 #let TODO = (body) => text(fill: red, body)
-
-#let hl(content) = box(
-  content,
-  inset: 0.2em,
-  fill: rgb("#fffe69"),
-) 
 
 #let i2c = [I#super[2]C]

@@ -1,5 +1,5 @@
-#import "../block-diagram.typ": *
-#import "../template.typ": *
+#import "../../block-diagram.typ": *
+#import "../../template.typ": *
 
 == Analog Block Design Details, Elliot Nash <block-3-design-details-name-of-block-owner>
 

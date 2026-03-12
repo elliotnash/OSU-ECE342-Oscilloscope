@@ -163,6 +163,7 @@
         (id: "dsig-in", name: [trigger_mcu_dsig]),
       ),
       east: (
+        (id: "data-out", name: [mcu_backend_data]),
         (id: "dsig-out", name: [mcu_analog_dsig]),
         (id: "trig-out", name: [mcu_trigger_comm]),
         // (id: "comm-out", name: [mcu_backend_comm]),
@@ -199,9 +200,9 @@
     y: y,
     name: [Backend \ (Elliot) #v(6em)],
     ports: (
-      // west: (
-      //   (id: "comm-in", name: [mcu_backend_comm]),
-      // ),
+      west: (
+        (id: "data-in", name: [mcu_backend_data]),
+      ),
       east: (
         (id: "comm-out", name: [backend_frontend_data]),
       )
@@ -216,8 +217,8 @@
 
 #let backend-diagram = circuit({
   backend-block(0,0)
-  // wire.wire("mcu-to-backend", ((rel: (-1,0), to: "backend-port-comm-in"), "backend-port-comm-in"), directed: true)
-  // draw.mark((rel: (-1.1,0), to: "backend-port-comm-in"), (rel: (-2,0), to: "backend-port-comm-in"), symbol: ">", fill: black)
+  wire.wire("mcu-to-backend", ((rel: (-1,0), to: "backend-port-data-in"), "backend-port-data-in"), directed: true)
+  draw.mark((rel: (-1.1,0), to: "backend-port-data-in"), (rel: (-2,0), to: "backend-port-data-in"), symbol: ">", fill: black)
   wire.wire("backend-to-frontend", ("backend-port-comm-out", (rel: (1,0), to: "backend-port-comm-out")), directed: true)
   draw.mark("backend-port-comm-out", (rel: (-1,0), to: "backend-port-comm-out"), symbol: ">", fill: black)
 })
@@ -323,10 +324,15 @@
     element.group(id: "hardware", name: [Hardware], stroke: (dash: "dashed", paint: hw-color), {
       hardware-group(0,0)
     })
-    
 
-    // MCU to backend connection
-    // wire.wire("mcu-to-backend", ("mcu-port-comm-out", "backend-port-comm-in"), style: "zigzag", zigzag-ratio: 90%, directed: true)
+    // MCU Output
+    wire.wire("mcu-to-backend", ("mcu-port-data-out", (rel: (1.75,0), to: "mcu-port-data-out")), directed: true)
+    draw.mark("mcu-port-data-out", (rel: (-2,0), to: "mcu-port-data-out"), symbol: ">", fill: black)
+
+    
+    // Backend Inputs
+    wire.wire("mcu-to-backend", ((rel: (-1,0), to: "backend-port-data-in"), "backend-port-data-in"), directed: true)
+    draw.mark((rel: (-1.1,0), to: "backend-port-data-in"), (rel: (-2,0), to: "backend-port-data-in"), symbol: ">", fill: black)
   })
 
   // Hardware System Inputs
@@ -335,7 +341,7 @@
 
   // Application stubs
   wire.wire("outside-to-frontend", ((rel: (-7,0), to: "frontend-port-usrin"), "frontend-port-usrin"), directed: true)
-  wire.wire("frontend-to-outside", ("frontend-port-usrout", (rel: (8,0), to: "frontend-port-usrout")), directed: true)
+  wire.wire("frontend-to-outside", ("frontend-port-usrout", (rel: (8.5,0), to: "frontend-port-usrout")), directed: true)
 })
 
 

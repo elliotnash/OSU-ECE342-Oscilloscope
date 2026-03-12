@@ -1,0 +1,38 @@
+graph TD
+    %% Define External Interfaces
+    Interface_Backend[backend_frontend_data]
+    Interface_UserOut[frontend_outside_usrout]
+    Interface_UserIn[outside_frontend_usrin]
+
+    subgraph "Frontend Processing"
+        direction BT
+        
+        %% Left Side: RX Path (Waveform Visualization)
+        subgraph "RX: Waveform Visualization"
+            direction TB
+            RX_Listener[Tauri Event Listener]
+            RX_Store["Waveform State Store"]
+            RX_Renderer[Visx Renderer]
+            
+            RX_Listener -->|JSON| RX_Store
+            RX_Store -->|requestAnimationFrame| RX_Renderer
+        end
+
+        %% Right Side: TX Path (User Control)
+        subgraph "TX: User Inputs"
+            direction BT
+            TX_Input["User Input<br/>(DOM Event)"]
+            TX_Handler[React Event Handler]
+            TX_Invoker[Tauri Command Invoker]
+            
+            TX_Input --> TX_Handler
+            TX_Handler --> TX_Invoker
+        end
+    end
+
+    %% Connections to Interfaces
+    Interface_Backend2[backend_frontend_data] -- "Tauri Events" --> RX_Listener
+    TX_Invoker -- "Commands (Serialized JSON)" --> Interface_Backend
+    
+    RX_Renderer --> Interface_UserOut
+    Interface_UserIn --> TX_Input
