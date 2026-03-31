@@ -1,6 +1,6 @@
 View this project on [CADLAB.io](https://cadlab.io/project/29860). 
 
-# OSU-ECE342-Oscilloscope
+# RustScope
 
 A Dual Channel USB Oscilloscope designed for OSU ECE342 Junior Design 2
 
